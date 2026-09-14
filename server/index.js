@@ -11,7 +11,8 @@ const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } 
 
 let state = {
   phase: 'lobby', participants: [], availablePlayers: [], turnIndex: 0,
-  currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null
+  currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
+  currentRound: 0, roundComplete: false, roundReady: []
 };
 
 function getOptionsForParticipant(participant, availablePool) {
@@ -57,12 +58,13 @@ function tryStartMatch(match) {
       match.winner = resolveMatchMath(match.teamA, match.teamB);
       match.status = 'finished';
       advanceTeam(match.winner, match.nextId, match.nextSlot);
-      io.emit('draft-update', state);
       
-      if (match.nextId) {
-        const nextMatch = state.bracket.flat().find(m => m.id === match.nextId);
-        tryStartMatch(nextMatch);
+      const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+      if (allFinished && !state.champion) {
+        state.roundComplete = true;
       }
+
+      io.emit('draft-update', state);
     }, 10000);
   }
 }
@@ -145,7 +147,18 @@ io.on('connection', (socket) => {
       
       if (state.readyPlayers.length === humanCount && humanCount > 0) {
         state.phase = 'simulation';
-        state.bracket[0].forEach(match => tryStartMatch(match));
+        state.currentRound = 0;
+        state.roundComplete = false;
+        state.roundReady = [];
+
+        state.bracket[0].forEach(match => {
+          if (match.teamA && !match.teamB) { match.status = 'finished'; match.winner = match.teamA; advanceTeam(match.winner, match.nextId, match.nextSlot); } 
+          else if (!match.teamA && !match.teamB) { match.status = 'finished'; match.winner = null; }
+        });
+
+        const allFinished = state.bracket[0].every(m => m.status === 'finished');
+        if (allFinished && !state.champion) state.roundComplete = true;
+        else state.bracket[0].forEach(match => tryStartMatch(match));
       }
       io.emit('draft-update', state);
     }
@@ -166,18 +179,53 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('advance-round', () => {
+    if (state.phase === 'simulation' && state.roundComplete) {
+      
+      // Calcule dynamiquement qui est en vie pour la prochaine manche
+      const nextRoundMatches = state.bracket[state.currentRound + 1];
+      const activeHumanIds = [];
+      if (nextRoundMatches) {
+        nextRoundMatches.forEach(match => {
+          if (match.teamA && !match.teamA.id.startsWith('bot-')) activeHumanIds.push(match.teamA.id);
+          if (match.teamB && !match.teamB.id.startsWith('bot-')) activeHumanIds.push(match.teamB.id);
+        });
+      }
+
+      const allHumans = state.participants.filter(p => !p.id.startsWith('bot-')).map(p => p.id);
+      // Si tous les humains sont éliminés, on redonne le contrôle à tous les spectateurs
+      const requiredVoters = activeHumanIds.length > 0 ? activeHumanIds : allHumans;
+
+      if (requiredVoters.includes(socket.id)) {
+        if (!state.roundReady.includes(socket.id)) state.roundReady.push(socket.id);
+      }
+      
+      if (state.roundReady.length === requiredVoters.length) {
+        state.currentRound++;
+        state.roundComplete = false;
+        state.roundReady = [];
+
+        state.bracket[state.currentRound].forEach(match => {
+          if (match.teamA && !match.teamB) { match.status = 'finished'; match.winner = match.teamA; advanceTeam(match.winner, match.nextId, match.nextSlot); } 
+          else if (!match.teamA && !match.teamB) { match.status = 'finished'; match.winner = null; }
+        });
+
+        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+        if (allFinished && !state.champion) state.roundComplete = true;
+        else state.bracket[state.currentRound].forEach(match => tryStartMatch(match));
+      }
+      io.emit('draft-update', state);
+    }
+  });
+
   socket.on('toggle-reset', () => {
     if (state.phase === 'simulation' && state.champion) {
-      if (state.resetPlayers.includes(socket.id)) {
-        state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
-      } else {
-        state.resetPlayers.push(socket.id);
-      }
+      if (state.resetPlayers.includes(socket.id)) state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
+      else state.resetPlayers.push(socket.id);
 
       const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
       if (state.resetPlayers.length === humanCount && humanCount > 0) {
-        // Purge les bots et réinitialise les rosters humains
         state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
         state.participants.forEach(p => p.roster = []);
         state.phase = 'lobby';
@@ -186,6 +234,9 @@ io.on('connection', (socket) => {
         state.readyPlayers = [];
         state.resetPlayers = [];
         state.turnIndex = 0;
+        state.currentRound = 0;
+        state.roundComplete = false;
+        state.roundReady = [];
       }
       io.emit('draft-update', state);
     }

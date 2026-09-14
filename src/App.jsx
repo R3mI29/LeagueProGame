@@ -88,7 +88,11 @@ function ThemeStyles() {
 }
 
 export default function App() {
-  const [state, setState] = useState({ phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null });
+  const [state, setState] = useState({ 
+    phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], 
+    bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
+    currentRound: 0, roundComplete: false, roundReady: [] 
+  });
   const [pseudo, setPseudo] = useState('');
   const [hasJoined, setHasJoined] = useState(false);
   const [showBracket, setShowBracket] = useState(false);
@@ -109,6 +113,7 @@ export default function App() {
   const matchReady = (id) => socket.emit('match-ready', id);
   const dismissMatch = (id) => socket.emit('dismiss-match', id);
   const toggleReset = () => socket.emit('toggle-reset');
+  const advanceRound = () => socket.emit('advance-round');
 
   if (state.phase === 'lobby') {
     const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
@@ -149,8 +154,8 @@ export default function App() {
   const isTournamentPhase = state.phase === 'tournament' || state.phase === 'simulation';
   const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
   
-  const myActiveMatch = state.phase === 'simulation' 
-    ? state.bracket.flat().find(m => m.teamA && m.teamB && (m.teamA.id === socket.id || m.teamB.id === socket.id) && !m.dismissedBy.includes(socket.id))
+  const myActiveMatch = state.phase === 'simulation' && !state.roundComplete && state.bracket[state.currentRound]
+    ? state.bracket[state.currentRound].find(m => m.teamA && m.teamB && (m.teamA.id === socket.id || m.teamB.id === socket.id) && !m.dismissedBy.includes(socket.id))
     : null;
 
   // --- VUE ARÈNE ---
@@ -228,6 +233,24 @@ export default function App() {
   if (isTournamentPhase && showBracket) {
     const isGlobalReady = state.readyPlayers.includes(socket.id);
     const isResetReady = state.resetPlayers?.includes(socket.id);
+    const isRoundReady = state.roundReady?.includes(socket.id);
+
+    // Détermine si le joueur actuel est requis pour valider le tour suivant
+    let requiredVotersCount = humanCount;
+    let amIRequiredForNextRound = true;
+
+    if (state.phase === 'simulation' && state.roundComplete && state.bracket[state.currentRound + 1]) {
+      const activeHumanIds = [];
+      state.bracket[state.currentRound + 1].forEach(match => {
+        if (match.teamA && !match.teamA.id.startsWith('bot-')) activeHumanIds.push(match.teamA.id);
+        if (match.teamB && !match.teamB.id.startsWith('bot-')) activeHumanIds.push(match.teamB.id);
+      });
+
+      // S'il reste des humains qualifiés, seuls eux votent. Sinon, on redonne le pouvoir à tous les humains spectateurs
+      const requiredVoters = activeHumanIds.length > 0 ? activeHumanIds : state.participants.filter(p => !p.id.startsWith('bot-')).map(p => p.id);
+      requiredVotersCount = requiredVoters.length;
+      amIRequiredForNextRound = requiredVoters.includes(socket.id);
+    }
 
     return (
       <div className="container">
@@ -270,12 +293,32 @@ export default function App() {
           ))}
         </div>
 
+        {/* Bouton de lancement initial (Quarts de finale) */}
         {state.phase === 'tournament' && (
           <div className="panel" style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px' }}>
             <span className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '2px' }}>SYNCHRONISATION DES COMMANDANTS...</span>
             <button className={`btn ${isGlobalReady ? 'btn-green' : 'btn-cyan'}`} onClick={toggleReady}>
               {isGlobalReady ? `CONNECTÉ (${state.readyPlayers.length}/${humanCount})` : 'INITIALISER LA PHASE'}
             </button>
+          </div>
+        )}
+
+        {/* Bouton de passage au tour suivant (Demies / Finale) conditionné aux qualifiés */}
+        {state.phase === 'simulation' && state.roundComplete && !state.champion && (
+          <div className="panel" style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', border: '1px solid var(--accent-cyan)' }}>
+            <span className="title-font text-cyan" style={{ fontSize: '18px', letterSpacing: '2px' }}>
+              {state.currentRound === 0 ? 'QUARTS DE FINALE TERMINÉS' : 'DEMI-FINALES TERMINÉES'}
+            </span>
+            
+            {amIRequiredForNextRound ? (
+              <button className={`btn ${isRoundReady ? 'btn-green' : 'btn-cyan'}`} onClick={advanceRound}>
+                {isRoundReady ? `PRÊT (${state.roundReady?.length || 0}/${requiredVotersCount})` : 'PASSER AU TOUR SUIVANT'}
+              </button>
+            ) : (
+              <span className="title-font text-muted" style={{ fontSize: '16px', fontStyle: 'italic' }}>
+                EN ATTENTE DES QUALIFIÉS ({state.roundReady?.length || 0}/{requiredVotersCount})...
+              </span>
+            )}
           </div>
         )}
       </div>
