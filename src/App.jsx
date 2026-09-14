@@ -8,136 +8,142 @@ const getRating = (team) => {
   return Math.round(team.roster.reduce((acc, p) => acc + p.rating, 0) / team.roster.length);
 };
 
+// --- SYSTÈME DE DESIGN GLOBAL ---
 function ThemeStyles() {
   return (
     <style>{`
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
+
       :root {
-        --bg-base: #060913; --bg-panel: #0d1323; --bg-card: #151d33;
-        --accent-cyan: #00e5ff; --accent-pink: #ff3366; --accent-green: #00e676;
-        --text-main: #f8fafc; --text-muted: #8b9bb4; --border: rgba(139, 155, 180, 0.15);
+        --bg-base: #060913;
+        --bg-panel: #0d1323;
+        --bg-card: #151d33;
+        --accent-cyan: #00e5ff;
+        --accent-pink: #ff3366;
+        --accent-green: #00e676;
+        --text-main: #f8fafc;
+        --text-muted: #8b9bb4;
+        --border: rgba(139, 155, 180, 0.15);
       }
+
       * { box-sizing: border-box; }
       body { margin: 0; background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+      
+      /* Typographie */
       .title-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
-      .text-cyan { color: var(--accent-cyan); } .text-pink { color: var(--accent-pink); } .text-green { color: var(--accent-green); } .text-muted { color: var(--text-muted); }
-      .btn { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 12px 28px; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; }
-      .btn-cyan { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); } .btn-cyan:hover { background: #00b3cc; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); transform: translateY(-2px); }
-      .btn-green { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); } .btn-green:hover { background: #00b25c; box-shadow: 0 0 25px rgba(0, 230, 118, 0.4); transform: translateY(-2px); }
-      .btn-outline { background: transparent; border: 2px solid var(--text-muted); color: var(--text-main); } .btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+      .text-cyan { color: var(--accent-cyan); }
+      .text-pink { color: var(--accent-pink); }
+      .text-green { color: var(--accent-green); }
+      .text-muted { color: var(--text-muted); }
+
+      /* Boutons */
+      .btn {
+        font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+        padding: 12px 28px; border: none; borderRadius: 4px; cursor: pointer; transition: all 0.3s ease;
+      }
+      .btn-cyan { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
+      .btn-cyan:hover { background: #00b3cc; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); transform: translateY(-2px); }
+      .btn-green { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); }
+      .btn-green:hover { background: #00b25c; box-shadow: 0 0 25px rgba(0, 230, 118, 0.4); transform: translateY(-2px); }
+      .btn-outline { background: transparent; border: 2px solid var(--text-muted); color: var(--text-main); }
+      .btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
       .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-      .input-styled { width: 100%; padding: 14px; background: var(--bg-card); border: 1px solid var(--border); color: white; border-radius: 4px; outline: none; font-size: 16px; margin-bottom: 16px; text-transform: uppercase; }
+
+      /* Layouts & Cartes */
       .container { min-height: 100vh; padding: 40px; display: flex; flex-direction: column; align-items: center; }
       .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      
       .draft-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%; max-width: 1400px; }
-      .roster-card { background: var(--bg-panel); width: 240px; border-radius: 8px; padding: 20px; border-top: 3px solid var(--border); transition: border-color 0.3s ease; }
+      
+      .roster-card {
+        background: var(--bg-panel); width: 240px; border-radius: 8px; padding: 20px;
+        border-top: 3px solid var(--border); transition: border-color 0.3s ease;
+      }
       .roster-card.active { border-top-color: var(--accent-green); background: linear-gradient(180deg, rgba(0,230,118,0.05) 0%, var(--bg-panel) 100%); }
+      
       .player-slot { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; }
       .player-slot.empty { background: transparent; border: 1px dashed var(--border); }
-      .pick-card { background: var(--bg-card); width: 160px; padding: 24px 16px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; }
+
+      .pick-card {
+        background: var(--bg-card); width: 160px; padding: 24px 16px; border-radius: 8px; cursor: pointer;
+        border: 1px solid var(--border); transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center;
+      }
       .pick-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 10px 20px rgba(0, 229, 255, 0.15); background: var(--bg-panel); }
-      .bracket-match { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; overflow: hidden; transition: transform 0.2s ease, border-color 0.2s ease; }
+
+      /* Arbre et Arène */
+      .bracket-match {
+        background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; overflow: hidden;
+        transition: transform 0.2s ease, border-color 0.2s ease;
+      }
       .bracket-match:hover { border-color: rgba(255, 255, 255, 0.2); }
-      .bracket-row { padding: 12px 16px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); } .bracket-row:last-child { border-bottom: none; }
+      .bracket-row { padding: 12px 16px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); }
+      .bracket-row:last-child { border-bottom: none; }
       .bracket-row.winner { font-weight: 600; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); }
-      .arena-box { display: flex; width: 100%; max-width: 1000px; gap: 40px; align-items: center; margin-top: 40px; } .arena-team { flex: 1; }
+
+      .arena-box { display: flex; width: 100%; max-width: 1000px; gap: 40px; align-items: center; margin-top: 40px; }
+      .arena-team { flex: 1; }
       .arena-vs { font-size: 48px; color: var(--text-muted); text-shadow: 0 0 20px rgba(255, 51, 102, 0); transition: all 0.3s ease; }
       .arena-vs.simulating { color: var(--accent-pink); text-shadow: 0 0 20px rgba(255, 51, 102, 0.6); animation: pulse 1s infinite alternate; }
-      @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } } .pulse-text { animation: pulse 1s infinite alternate; }
+      
+      @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
+      .pulse-text { animation: pulse 1s infinite alternate; }
     `}</style>
   );
 }
 
 export default function App() {
-  const [state, setState] = useState(null); // Null indique qu'on est sur le menu principal
+  const [state, setState] = useState({ phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], bracket: [], readyPlayers: [], champion: null });
   const [pseudo, setPseudo] = useState('');
-  const [roomInput, setRoomInput] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [hasJoined, setHasJoined] = useState(false);
   const [showBracket, setShowBracket] = useState(false);
-  const [menuView, setMenuView] = useState('main'); // main, create, join
 
   useEffect(() => {
     socket.on('draft-update', (newState) => {
       setState(newState);
-      setErrorMsg('');
+      setHasJoined(newState.participants.some(p => p.id === socket.id));
       if (newState.phase === 'lobby') setShowBracket(false); 
     });
-    socket.on('error', (msg) => setErrorMsg(msg));
-    return () => { socket.off('draft-update'); socket.off('error'); };
+    return () => socket.off('draft-update');
   }, []);
 
-  const createRoom = () => { if (pseudo.trim()) socket.emit('create-room', pseudo); };
-  const joinRoom = () => { if (pseudo.trim() && roomInput.trim()) socket.emit('join-room', { name: pseudo, code: roomInput }); };
+  const joinLobby = () => { if (pseudo.trim()) socket.emit('join-lobby', pseudo.trim()); };
   const startDraft = () => socket.emit('start-draft');
   const pickPlayer = (id) => socket.emit('pick-player', id);
   const toggleReady = () => socket.emit('toggle-ready');
   const matchReady = (id) => socket.emit('match-ready', id);
   const dismissMatch = (id) => socket.emit('dismiss-match', id);
 
-  // --- MENU DE CONNEXION ---
-  if (!state) {
-    return (
-      <div className="container" style={{ justifyContent: 'center' }}>
-        <ThemeStyles />
-        <h1 className="title-font" style={{ fontSize: '42px', marginBottom: '40px', color: 'var(--accent-cyan)' }}>NEXUS ESPORT DRAFT</h1>
-        <div className="panel" style={{ width: '100%', maxWidth: '450px', textAlign: 'center' }}>
-          
-          {errorMsg && <div style={{ background: 'rgba(255,51,102,0.1)', border: '1px solid var(--accent-pink)', padding: '10px', color: 'var(--accent-pink)', marginBottom: '20px', borderRadius: '4px' }}>{errorMsg}</div>}
-
-          {menuView === 'main' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <button className="btn btn-cyan" onClick={() => setMenuView('create')}>Créer une partie</button>
-              <button className="btn btn-outline" onClick={() => setMenuView('join')}>Rejoindre une partie</button>
-            </div>
-          )}
-
-          {menuView === 'create' && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <h3 className="title-font text-muted" style={{ marginBottom: '20px' }}>NOUVELLE PARTIE</h3>
-              <input className="input-styled" value={pseudo} onChange={(e) => setPseudo(e.target.value)} placeholder="Votre pseudonyme" maxLength={15} />
-              <button className="btn btn-cyan" onClick={createRoom}>Générer le salon</button>
-              <button className="btn" style={{ background: 'transparent', color: 'var(--text-muted)', marginTop: '10px' }} onClick={() => setMenuView('main')}>Retour</button>
-            </div>
-          )}
-
-          {menuView === 'join' && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <h3 className="title-font text-muted" style={{ marginBottom: '20px' }}>REJOINDRE</h3>
-              <input className="input-styled" value={pseudo} onChange={(e) => setPseudo(e.target.value)} placeholder="Votre pseudonyme" maxLength={15} />
-              <input className="input-styled" value={roomInput} onChange={(e) => setRoomInput(e.target.value)} placeholder="CODE DU SALON (4 lettres)" maxLength={4} />
-              <button className="btn btn-cyan" onClick={joinRoom}>Connexion</button>
-              <button className="btn" style={{ background: 'transparent', color: 'var(--text-muted)', marginTop: '10px' }} onClick={() => setMenuView('main')}>Retour</button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // --- LOBBY DU SALON ---
   if (state.phase === 'lobby') {
     const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
     return (
       <div className="container" style={{ justifyContent: 'center' }}>
         <ThemeStyles />
-        <h1 className="title-font" style={{ fontSize: '42px', marginBottom: '20px', color: 'var(--accent-cyan)' }}>NEXUS ESPORT DRAFT</h1>
+        <h1 className="title-font" style={{ fontSize: '42px', marginBottom: '40px', color: 'var(--accent-cyan)' }}>NEXUS ESPORT DRAFT</h1>
         
-        <div style={{ background: 'var(--bg-card)', padding: '16px 32px', borderRadius: '8px', border: '1px dashed var(--accent-cyan)', marginBottom: '30px', textAlign: 'center' }}>
-          <div className="title-font text-muted" style={{ fontSize: '14px', letterSpacing: '2px', marginBottom: '8px' }}>CODE D'ACCÈS DU SALON</div>
-          <div className="title-font text-cyan" style={{ fontSize: '36px', letterSpacing: '6px' }}>{state.roomCode}</div>
-        </div>
-
         <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
-          <h3 className="title-font text-muted" style={{ marginBottom: '20px', textAlign: 'center' }}>Commandants connectés ({humanParticipants.length}/8)</h3>
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
-            {humanParticipants.map(p => (
-              <li key={p.id} style={{ padding: '12px 16px', background: 'var(--bg-card)', marginBottom: '8px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: p.id === socket.id ? '600' : '400' }}>{p.name}</span>
-                {p.id === socket.id && <span className="text-cyan title-font" style={{ fontSize: '14px' }}>Vous</span>}
-              </li>
-            ))}
-          </ul>
-          {humanParticipants.length >= 2 && <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>Lancer la séquence de Draft</button>}
+          {!hasJoined ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <input 
+                value={pseudo} onChange={(e) => setPseudo(e.target.value)} 
+                placeholder="Entrez votre pseudonyme" 
+                style={{ width: '100%', padding: '14px', background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'white', borderRadius: '4px', outline: 'none', fontSize: '16px' }} 
+              />
+              <button className="btn btn-cyan" onClick={joinLobby}>Se connecter</button>
+            </div>
+          ) : (
+            <div>
+              <h3 className="title-font text-muted" style={{ marginBottom: '20px' }}>Commandants connectés ({humanParticipants.length}/8)</h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
+                {humanParticipants.map(p => (
+                  <li key={p.id} style={{ padding: '12px 16px', background: 'var(--bg-card)', marginBottom: '8px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontWeight: p.id === socket.id ? '600' : '400' }}>{p.name}</span>
+                    {p.id === socket.id && <span className="text-cyan title-font" style={{ fontSize: '14px' }}>Vous</span>}
+                  </li>
+                ))}
+              </ul>
+              {humanParticipants.length >= 2 && <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>Lancer la séquence de Draft</button>}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -193,7 +199,9 @@ export default function App() {
 
               {isFinished && (
                 <div>
-                  <div className="title-font text-cyan" style={{ fontSize: '28px', marginBottom: '20px' }}>VICTOIRE<br/>{myActiveMatch.winner.name}</div>
+                  <div className="title-font text-cyan" style={{ fontSize: '28px', marginBottom: '20px' }}>
+                    VICTOIRE<br/>{myActiveMatch.winner.name}
+                  </div>
                   <button className="btn btn-cyan" onClick={() => dismissMatch(myActiveMatch.id)}>Poursuivre</button>
                 </div>
               )}
@@ -238,7 +246,9 @@ export default function App() {
         <div style={{ display: 'flex', gap: '40px', width: '100%', maxWidth: '1200px' }}>
           {state.bracket.map((round, rIndex) => (
             <div key={rIndex} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', flex: 1 }}>
-              <h3 className="title-font text-muted" style={{ textAlign: 'center', fontSize: '14px', letterSpacing: '2px', marginBottom: '20px' }}>{rIndex === 0 ? 'QUARTS' : rIndex === 1 ? 'DEMIES' : 'FINALE'}</h3>
+              <h3 className="title-font text-muted" style={{ textAlign: 'center', fontSize: '14px', letterSpacing: '2px', marginBottom: '20px' }}>
+                {rIndex === 0 ? 'QUARTS' : rIndex === 1 ? 'DEMIES' : 'FINALE'}
+              </h3>
               {round.map(match => {
                  const isSim = match.status === 'simulating';
                  const isFin = match.status === 'finished';
