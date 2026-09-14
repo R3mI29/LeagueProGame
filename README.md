@@ -1,3 +1,12 @@
+# U have to start the server for using this website.
+
+    - Open a terminal in the "LeagueProGame" directory, and type " node server/index.js "
+
+    - Open another terminal in the same directory, and type " npm run dev -- --host  "
+
+    Now u should have a network adress in the second terminal, use it for the host and for all players.
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
