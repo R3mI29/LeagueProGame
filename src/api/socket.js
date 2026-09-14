@@ -1,6 +1,8 @@
 import { io } from 'socket.io-client';
 
-const URL = 'http://localhost:3001';
-export const socket = io(URL, {
-  autoConnect: true
+export const socket = io('https://brown-snakes-smile.loca.lt', {
+  extraHeaders: {
+    "Bypass-Tunnel-Reminder": "true"
+  },
+  transports: ["websocket"] // <-- LA SOLUTION EST ICI
 });
