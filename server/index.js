@@ -7,7 +7,15 @@ import { PRO_PLAYERS } from '../src/constants.js';
 const app = express();
 app.use(cors());
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } });
+const io = new Server(server, { 
+  cors: { 
+    origin: "*",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Bypass-Tunnel-Reminder"] // Autorise expressément l'en-tête de Localtunnel
+  } 
+});
+
+
 
 let state = {
   phase: 'lobby', participants: [], availablePlayers: [], turnIndex: 0,
