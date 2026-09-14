@@ -3,12 +3,6 @@ import { socket } from './api/socket';
 
 const ORDERED_ROLES = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
 
-const getRating = (team) => {
-  if (!team || !team.roster) return 0;
-  return Math.round(team.roster.reduce((acc, p) => acc + p.rating, 0) / team.roster.length);
-};
-
-// --- SYSTÈME DE DESIGN GLOBAL ---
 function ThemeStyles() {
   return (
     <style>{`
@@ -45,6 +39,8 @@ function ThemeStyles() {
       .btn-cyan:hover { background: #00b3cc; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); transform: translateY(-2px); }
       .btn-green { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); }
       .btn-green:hover { background: #00b25c; box-shadow: 0 0 25px rgba(0, 230, 118, 0.4); transform: translateY(-2px); }
+      .btn-pink { background: var(--accent-pink); color: #000; box-shadow: 0 0 15px rgba(255, 51, 102, 0.2); }
+      .btn-pink:hover { background: #ff1a53; box-shadow: 0 0 25px rgba(255, 51, 102, 0.4); transform: translateY(-2px); }
       .btn-outline { background: transparent; border: 2px solid var(--text-muted); color: var(--text-main); }
       .btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
       .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
@@ -92,7 +88,7 @@ function ThemeStyles() {
 }
 
 export default function App() {
-  const [state, setState] = useState({ phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], bracket: [], readyPlayers: [], champion: null });
+  const [state, setState] = useState({ phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null });
   const [pseudo, setPseudo] = useState('');
   const [hasJoined, setHasJoined] = useState(false);
   const [showBracket, setShowBracket] = useState(false);
@@ -112,6 +108,7 @@ export default function App() {
   const toggleReady = () => socket.emit('toggle-ready');
   const matchReady = (id) => socket.emit('match-ready', id);
   const dismissMatch = (id) => socket.emit('dismiss-match', id);
+  const toggleReset = () => socket.emit('toggle-reset');
 
   if (state.phase === 'lobby') {
     const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
@@ -230,6 +227,8 @@ export default function App() {
   // --- VUE ARBRE DE TOURNOI ---
   if (isTournamentPhase && showBracket) {
     const isGlobalReady = state.readyPlayers.includes(socket.id);
+    const isResetReady = state.resetPlayers?.includes(socket.id);
+
     return (
       <div className="container">
         <ThemeStyles />
@@ -237,7 +236,11 @@ export default function App() {
         {state.phase === 'simulation' && state.champion ? (
           <div style={{ textAlign: 'center', marginBottom: '50px' }}>
             <div className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '4px', marginBottom: '10px' }}>VAINQUEUR ABSOLU</div>
-            <h1 className="title-font text-cyan" style={{ fontSize: '48px', margin: 0, textShadow: '0 0 30px rgba(0,229,255,0.4)' }}>{state.champion.name}</h1>
+            <h1 className="title-font text-cyan" style={{ fontSize: '48px', margin: 0, textShadow: '0 0 30px rgba(0,229,255,0.4)', marginBottom: '30px' }}>{state.champion.name}</h1>
+            
+            <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
+              {isResetReady ? `EN ATTENTE DES COMMANDANTS (${state.resetPlayers?.length || 0}/${humanCount})` : 'NOUVELLE PARTIE'}
+            </button>
           </div>
         ) : (
           <h1 className="title-font text-cyan" style={{ fontSize: '32px', marginBottom: '50px' }}>RÉSEAU DU TOURNOI</h1>

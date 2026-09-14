@@ -11,7 +11,7 @@ const io = new Server(server, { cors: { origin: "*", methods: ["GET", "POST"] } 
 
 let state = {
   phase: 'lobby', participants: [], availablePlayers: [], turnIndex: 0,
-  currentOptions: [], bracket: [], readyPlayers: [], champion: null
+  currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null
 };
 
 function getOptionsForParticipant(participant, availablePool) {
@@ -43,7 +43,6 @@ function advanceTeam(team, nextId, nextSlot) {
   if (nextMatch) nextMatch[nextSlot] = team;
 }
 
-// Gère le démarrage automatique des matchs incluant des Bots
 function tryStartMatch(match) {
   if (!match || match.status !== 'pending' || !match.teamA || !match.teamB) return;
   
@@ -60,7 +59,6 @@ function tryStartMatch(match) {
       advanceTeam(match.winner, match.nextId, match.nextSlot);
       io.emit('draft-update', state);
       
-      // Relance la vérification pour le match suivant (utile si Bot vs Bot)
       if (match.nextId) {
         const nextMatch = state.bracket.flat().find(m => m.id === match.nextId);
         tryStartMatch(nextMatch);
@@ -101,8 +99,6 @@ io.on('connection', (socket) => {
       state.availablePlayers = state.availablePlayers.filter(p => p.id !== playerId);
       
       if (state.participants.every(p => p.roster.length === 5)) {
-        
-        // --- GÉNÉRATION DES BOTS ---
         const numBots = 8 - state.participants.length;
         for (let i = 1; i <= numBots; i++) {
           const bot = { id: `bot-${i}`, name: `Bot ${i}`, roster: [] };
@@ -115,7 +111,6 @@ io.on('connection', (socket) => {
           state.participants.push(bot);
         }
 
-        // --- GÉNÉRATION DE L'ARBRE ---
         state.phase = 'tournament';
         state.currentOptions = [];
         state.readyPlayers = [];
@@ -150,7 +145,6 @@ io.on('connection', (socket) => {
       
       if (state.readyPlayers.length === humanCount && humanCount > 0) {
         state.phase = 'simulation';
-        // Lance automatiquement les matchs impliquant des bots au premier tour
         state.bracket[0].forEach(match => tryStartMatch(match));
       }
       io.emit('draft-update', state);
@@ -172,8 +166,32 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('toggle-reset', () => {
+    if (state.phase === 'simulation' && state.champion) {
+      if (state.resetPlayers.includes(socket.id)) {
+        state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
+      } else {
+        state.resetPlayers.push(socket.id);
+      }
+
+      const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
+
+      if (state.resetPlayers.length === humanCount && humanCount > 0) {
+        // Purge les bots et réinitialise les rosters humains
+        state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
+        state.participants.forEach(p => p.roster = []);
+        state.phase = 'lobby';
+        state.bracket = [];
+        state.champion = null;
+        state.readyPlayers = [];
+        state.resetPlayers = [];
+        state.turnIndex = 0;
+      }
+      io.emit('draft-update', state);
+    }
+  });
+
   socket.on('disconnect', () => {
-    // Si ce n'est pas un bot qui se déconnecte, on nettoie
     if (!socket.id.startsWith('bot-')) {
       const humansBefore = state.participants.filter(p => !p.id.startsWith('bot-')).length;
       state.participants = state.participants.filter(p => p.id !== socket.id);
@@ -182,7 +200,8 @@ io.on('connection', (socket) => {
       if (humansAfter === 0 && humansBefore > 0) {
         state.phase = 'lobby'; 
         state.champion = null;
-        state.participants = []; // On supprime aussi les bots
+        state.participants = []; 
+        state.resetPlayers = [];
       }
       io.emit('draft-update', state);
     }
