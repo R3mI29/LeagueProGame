@@ -1,0 +1,12 @@
+export const PRO_PLAYERS = [
+  // Top
+  { id: 'zeus', name: 'Zeus', role: 'Top' }, { id: 'bin', name: 'Bin', role: 'Top' }, { id: '369', name: '369', role: 'Top' }, { id: 'kiin', name: 'Kiin', role: 'Top' }, { id: 'brokenblade', name: 'BrokenBlade', role: 'Top' }, { id: 'adam', name: 'Adam', role: 'Top' }, { id: 'impact', name: 'Impact', role: 'Top' }, { id: 'doran', name: 'Doran', role: 'Top' }, { id: 'wunder', name: 'Wunder', role: 'Top' },
+  // Jungle
+  { id: 'canyon', name: 'Canyon', role: 'Jungle' }, { id: 'kanavi', name: 'Kanavi', role: 'Jungle' }, { id: 'oner', name: 'Oner', role: 'Jungle' }, { id: 'peanut', name: 'Peanut', role: 'Jungle' }, { id: 'tian', name: 'Tian', role: 'Jungle' }, { id: 'elyoya', name: 'Elyoya', role: 'Jungle' }, { id: 'yike', name: 'Yike', role: 'Jungle' }, { id: 'jankos', name: 'Jankos', role: 'Jungle' }, { id: 'razork', name: 'Razork', role: 'Jungle' },
+  // Mid
+  { id: 'faker', name: 'Faker', role: 'Mid' }, { id: 'chovy', name: 'Chovy', role: 'Mid' }, { id: 'showmaker', name: 'ShowMaker', role: 'Mid' }, { id: 'knight', name: 'Knight', role: 'Mid' }, { id: 'rookie', name: 'Rookie', role: 'Mid' }, { id: 'caps', name: 'Caps', role: 'Mid' }, { id: 'nisqy', name: 'Nisqy', role: 'Mid' }, { id: 'bdd', name: 'Bdd', role: 'Mid' }, { id: 'larssen', name: 'Larssen', role: 'Mid' },
+  // ADC
+  { id: 'ruler', name: 'Ruler', role: 'ADC' }, { id: 'viper', name: 'Viper', role: 'ADC' }, { id: 'gumayusi', name: 'Gumayusi', role: 'ADC' }, { id: 'elk', name: 'Elk', role: 'ADC' }, { id: 'jackeylove', name: 'JackeyLove', role: 'ADC' }, { id: 'peyz', name: 'Peyz', role: 'ADC' }, { id: 'caliste', name: 'Caliste', role: 'ADC' }, { id: 'hanssama', name: 'Hans Sama', role: 'ADC' }, { id: 'upset', name: 'Upset', role: 'ADC' },
+  // Support
+  { id: 'keria', name: 'Keria', role: 'Support' }, { id: 'missing', name: 'Missing', role: 'Support' }, { id: 'delight', name: 'Delight', role: 'Support' }, { id: 'lehends', name: 'Lehends', role: 'Support' }, { id: 'mikyx', name: 'Mikyx', role: 'Support' }, { id: 'targamas', name: 'Targamas', role: 'Support' }, { id: 'hylissang', name: 'Hylissang', role: 'Support' }, { id: 'corejj', name: 'CoreJJ', role: 'Support' }, { id: 'meiko', name: 'Meiko', role: 'Support' }
+];
