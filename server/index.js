@@ -267,4 +267,4 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3001, () => console.log('Serveur Esport actif sur le port 3001'));
+server.listen(3001, '0.0.0.0', () => console.log('Serveur Esport actif sur le port 3001'));
