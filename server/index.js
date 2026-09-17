@@ -11,14 +11,13 @@ const io = new Server(server, {
   cors: { 
     origin: "*",
     methods: ["GET", "POST"],
-    allowedHeaders: ["Bypass-Tunnel-Reminder"] // Autorise expressément l'en-tête de Localtunnel
+    allowedHeaders: ["Bypass-Tunnel-Reminder"] 
   } 
 });
 
-
-
+// 1. MODIFICATION ICI : Ajout de "gameMode: null" dans le state initial
 let state = {
-  phase: 'lobby', participants: [], availablePlayers: [], turnIndex: 0,
+  phase: 'lobby', gameMode: null, participants: [], availablePlayers: [], turnIndex: 0,
   currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
   currentRound: 0, roundComplete: false, roundReady: []
 };
@@ -79,6 +78,15 @@ function tryStartMatch(match) {
 
 io.on('connection', (socket) => {
   socket.emit('draft-update', state);
+
+  // 2. MODIFICATION ICI : Nouveau bloc pour recevoir le choix du mode de jeu
+  socket.on('select-mode', (modeId) => {
+    // On n'accepte le changement que si aucun mode n'a été choisi
+    if (state.phase === 'lobby' && state.gameMode === null) {
+      state.gameMode = modeId;
+      io.emit('draft-update', state);
+    }
+  });
 
   socket.on('join-lobby', (name) => {
     if (state.phase !== 'lobby' || state.participants.length >= 8) return;
@@ -190,7 +198,6 @@ io.on('connection', (socket) => {
   socket.on('advance-round', () => {
     if (state.phase === 'simulation' && state.roundComplete) {
       
-      // Calcule dynamiquement qui est en vie pour la prochaine manche
       const nextRoundMatches = state.bracket[state.currentRound + 1];
       const activeHumanIds = [];
       if (nextRoundMatches) {
@@ -201,7 +208,6 @@ io.on('connection', (socket) => {
       }
 
       const allHumans = state.participants.filter(p => !p.id.startsWith('bot-')).map(p => p.id);
-      // Si tous les humains sont éliminés, on redonne le contrôle à tous les spectateurs
       const requiredVoters = activeHumanIds.length > 0 ? activeHumanIds : allHumans;
 
       if (requiredVoters.includes(socket.id)) {
@@ -237,6 +243,7 @@ io.on('connection', (socket) => {
         state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
         state.participants.forEach(p => p.roster = []);
         state.phase = 'lobby';
+        state.gameMode = null; // 3. MODIFICATION ICI : On réinitialise le mode
         state.bracket = [];
         state.champion = null;
         state.readyPlayers = [];
@@ -258,6 +265,7 @@ io.on('connection', (socket) => {
       
       if (humansAfter === 0 && humansBefore > 0) {
         state.phase = 'lobby'; 
+        state.gameMode = null; // 4. MODIFICATION ICI : On réinitialise le mode si le serveur est vide
         state.champion = null;
         state.participants = []; 
         state.resetPlayers = [];
