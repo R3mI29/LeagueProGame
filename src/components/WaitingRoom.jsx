@@ -1,5 +1,11 @@
 import { socket } from '../api/socket';
 
+const MODE_LABELS = {
+  draft_classique: 'CLASSIQUE',
+  draft_aveugle: 'AVEUGLE',
+  draft_encheres: 'ENCHÈRES'
+};
+
 export default function WaitingRoom({ state, startDraft }) {
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
 
@@ -14,7 +20,7 @@ export default function WaitingRoom({ state, startDraft }) {
             className="title-font text-cyan"
             style={{ fontSize: '12px', border: '1px solid var(--accent-cyan)', padding: '2px 8px', borderRadius: '4px' }}
           >
-            {state.gameMode === 'draft_classique' ? 'CLASSIQUE' : 'AVEUGLE'}
+            {MODE_LABELS[state.gameMode] || state.gameMode}
           </span>
         </div>
         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>

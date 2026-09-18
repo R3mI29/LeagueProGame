@@ -3,6 +3,7 @@ import { useDraftSocket } from './hooks/useDraftSocket';
 import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import LobbyView from './views/LobbyView';
 import DraftView from './views/DraftView';
+import AuctionView from './views/AuctionView';
 import ArenaView from './views/ArenaView';
 import BracketView from './views/BracketView';
 import './styles/theme.css';
@@ -13,6 +14,17 @@ export default function App() {
 
   if (state.phase === 'lobby') {
     return <LobbyView {...draft} />;
+  }
+
+  if (state.phase === 'auction') {
+    return (
+      <AuctionView
+        state={state}
+        placeBid={draft.placeBid}
+        toggleSkipVote={draft.toggleSkipVote}
+        acquireForced={draft.acquireForced}
+      />
+    );
   }
 
   const tournamentPhase = isTournamentPhase(state);

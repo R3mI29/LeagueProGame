@@ -4,7 +4,8 @@ import { socket } from '../api/socket';
 const INITIAL_STATE = {
   phase: 'lobby', gameMode: null, participants: [], turnIndex: 0, currentOptions: [],
   bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
-  currentRound: 0, roundComplete: false, roundReady: []
+  currentRound: 0, roundComplete: false, roundReady: [],
+  auction: null, budgets: {}
 };
 
 /**
@@ -44,5 +45,8 @@ export function useDraftSocket() {
     dismissMatch: (id) => socket.emit('dismiss-match', id),
     toggleReset: () => socket.emit('toggle-reset'),
     advanceRound: () => socket.emit('advance-round'),
+    placeBid: (amount) => socket.emit('place-bid', amount),
+    toggleSkipVote: () => socket.emit('toggle-skip-vote'),
+    acquireForced: () => socket.emit('acquire-forced'),
   };
 }

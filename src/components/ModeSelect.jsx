@@ -28,6 +28,17 @@ export default function ModeSelect({ selectMode }) {
             Les attributions sont secrètes. Le chaos total règne sur le Circuit.
           </p>
         </div>
+
+        <div
+          className="pick-card"
+          style={{ width: '280px', padding: '30px 20px', alignItems: 'flex-start', textAlign: 'left', borderColor: 'var(--border)' }}
+          onClick={() => selectMode('draft_encheres')}
+        >
+          <h3 className="title-font text-green" style={{ fontSize: '24px', margin: '0 0 10px 0' }}>DRAFT AUX ENCHÈRES</h3>
+          <p className="text-muted" style={{ fontSize: '14px', margin: 0, lineHeight: 1.5, fontWeight: 'normal' }}>
+            Chaque commandant dispose d'un budget et doit remporter les enchères pour recruter ses joueurs.
+          </p>
+        </div>
       </div>
     </div>
   );
