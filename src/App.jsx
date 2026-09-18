@@ -89,7 +89,7 @@ function ThemeStyles() {
 
 export default function App() {
   const [state, setState] = useState({ 
-    phase: 'lobby', participants: [], turnIndex: 0, currentOptions: [], 
+    phase: 'lobby', gameMode: null, participants: [], turnIndex: 0, currentOptions: [], 
     bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
     currentRound: 0, roundComplete: false, roundReady: [] 
   });
@@ -107,6 +107,7 @@ export default function App() {
   }, []);
 
   const joinLobby = () => { if (pseudo.trim()) socket.emit('join-lobby', pseudo.trim()); };
+  const selectMode = (mode) => socket.emit('select-mode', mode);
   const startDraft = () => socket.emit('start-draft');
   const pickPlayer = (id) => socket.emit('pick-player', id);
   const toggleReady = () => socket.emit('toggle-ready');
@@ -122,8 +123,8 @@ export default function App() {
         <ThemeStyles />
         <h1 className="title-font" style={{ fontSize: '42px', marginBottom: '40px', color: 'var(--accent-cyan)' }}>NEXUS ESPORT DRAFT</h1>
         
-        <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
-          {!hasJoined ? (
+        {!hasJoined ? (
+          <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <input 
                 value={pseudo} onChange={(e) => setPseudo(e.target.value)} 
@@ -132,9 +133,33 @@ export default function App() {
               />
               <button className="btn btn-cyan" onClick={joinLobby}>Se connecter</button>
             </div>
-          ) : (
+          </div>
+        ) : state.gameMode === null ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 className="title-font" style={{ fontSize: '28px', marginBottom: '10px' }}>SÉLECTION DU PROTOCOLE</h2>
+            <p className="text-muted" style={{ marginBottom: '40px' }}>En tant que premier commandant, choisissez les règles de la session.</p>
+            
+            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div className="pick-card" style={{ width: '280px', padding: '30px 20px', alignItems: 'flex-start', textAlign: 'left' }} onClick={() => selectMode('draft_classique')}>
+                <h3 className="title-font text-cyan" style={{ fontSize: '24px', margin: '0 0 10px 0' }}>DRAFT CLASSIQUE</h3>
+                <p className="text-muted" style={{ fontSize: '14px', margin: 0, lineHeight: 1.5, fontWeight: 'normal' }}>Les joueurs choisissent leurs agents à tour de rôle pour bâtir la meilleure équipe.</p>
+              </div>
+              
+              <div className="pick-card" style={{ width: '280px', padding: '30px 20px', alignItems: 'flex-start', textAlign: 'left', borderColor: 'var(--border)' }} onClick={() => selectMode('draft_aveugle')}>
+                <h3 className="title-font text-pink" style={{ fontSize: '24px', margin: '0 0 10px 0' }}>DRAFT AVEUGLE</h3>
+                <p className="text-muted" style={{ fontSize: '14px', margin: 0, lineHeight: 1.5, fontWeight: 'normal' }}>Les attributions sont secrètes. Le chaos total règne sur le Circuit.</p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
             <div>
-              <h3 className="title-font text-muted" style={{ marginBottom: '20px' }}>Commandants connectés ({humanParticipants.length}/8)</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h3 className="title-font text-muted" style={{ margin: 0 }}>Commandants connectés ({humanParticipants.length}/8)</h3>
+                <span className="title-font text-cyan" style={{ fontSize: '12px', border: '1px solid var(--accent-cyan)', padding: '2px 8px', borderRadius: '4px' }}>
+                  {state.gameMode === 'draft_classique' ? 'CLASSIQUE' : 'AVEUGLE'}
+                </span>
+              </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
                 {humanParticipants.map(p => (
                   <li key={p.id} style={{ padding: '12px 16px', background: 'var(--bg-card)', marginBottom: '8px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}>
@@ -143,10 +168,10 @@ export default function App() {
                   </li>
                 ))}
               </ul>
-              {humanParticipants.length >= 2 && <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>Lancer la séquence de Draft</button>}
+              {humanParticipants.length >= 2 && <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>Lancer la séquence</button>}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -235,7 +260,6 @@ export default function App() {
     const isResetReady = state.resetPlayers?.includes(socket.id);
     const isRoundReady = state.roundReady?.includes(socket.id);
 
-    // Détermine si le joueur actuel est requis pour valider le tour suivant
     let requiredVotersCount = humanCount;
     let amIRequiredForNextRound = true;
 
@@ -246,7 +270,6 @@ export default function App() {
         if (match.teamB && !match.teamB.id.startsWith('bot-')) activeHumanIds.push(match.teamB.id);
       });
 
-      // S'il reste des humains qualifiés, seuls eux votent. Sinon, on redonne le pouvoir à tous les humains spectateurs
       const requiredVoters = activeHumanIds.length > 0 ? activeHumanIds : state.participants.filter(p => !p.id.startsWith('bot-')).map(p => p.id);
       requiredVotersCount = requiredVoters.length;
       amIRequiredForNextRound = requiredVoters.includes(socket.id);
@@ -293,7 +316,6 @@ export default function App() {
           ))}
         </div>
 
-        {/* Bouton de lancement initial (Quarts de finale) */}
         {state.phase === 'tournament' && (
           <div className="panel" style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px' }}>
             <span className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '2px' }}>SYNCHRONISATION DES COMMANDANTS...</span>
@@ -303,7 +325,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Bouton de passage au tour suivant (Demies / Finale) conditionné aux qualifiés */}
         {state.phase === 'simulation' && state.roundComplete && !state.champion && (
           <div className="panel" style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', border: '1px solid var(--accent-cyan)' }}>
             <span className="title-font text-cyan" style={{ fontSize: '18px', letterSpacing: '2px' }}>
