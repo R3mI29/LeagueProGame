@@ -1,6 +1,6 @@
-import JoinForm from './lobby/JoinForm';
-import ModeSelect from './lobby/ModeSelect';
-import WaitingRoom from './lobby/WaitingRoom';
+import JoinForm from '../components/JoinForm';
+import ModeSelect from '../components/ModeSelect';
+import WaitingRoom from '../components/WaitingRoom';
 
 export default function LobbyView({ state, hasJoined, pseudo, setPseudo, joinLobby, selectMode, startDraft }) {
   return (

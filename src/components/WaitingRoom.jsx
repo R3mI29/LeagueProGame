@@ -1,4 +1,4 @@
-import { socket } from '../../api/socket';
+import { socket } from '../api/socket';
 
 export default function WaitingRoom({ state, startDraft }) {
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));

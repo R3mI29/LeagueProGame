@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import { PRO_PLAYERS } from '../src/constants.js';
+import { PRO_PLAYERS } from '../src/constants/players.js';
 
 const app = express();
 app.use(cors());
