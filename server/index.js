@@ -28,7 +28,10 @@ let state = {
   phase: 'lobby', gameMode: null, participants: [], availablePlayers: [], turnIndex: 0,
   currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
   currentRound: 0, roundComplete: false, roundReady: [],
-  auction: null, budgets: {}
+  auction: null, budgets: {},
+  // Joueurs "passés" (skip) durant les enchères : ils ne sont plus jamais
+  // reproposés aux humains, mais restent piochables par les bots en fin de draft.
+  skippedPlayers: []
 };
 
 function getOptionsForParticipant(participant, availablePool) {
@@ -91,13 +94,17 @@ function tryStartMatch(match) {
  */
 function completeDraftAndStartTournament() {
   const numBots = 8 - state.participants.length;
+  const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
   for (let i = 1; i <= numBots; i++) {
-    const bot = { id: `bot-${i}`, name: `Bot ${i}`, roster: [] };
+    const bot = { id: `bot-${i}`, name: teamNames[Math.floor(Math.random() * teamNames.length)], roster: [] };
     ORDERED_ROLES.forEach(role => {
-      const pool = state.availablePlayers.filter(p => p.role === role);
+      // Pool des bots = joueurs disponibles + joueurs passés durant les enchères
+      const pool = [...state.availablePlayers, ...state.skippedPlayers].filter(p => p.role === role);
+      if (pool.length === 0) return; // sécurité, ne devrait pas arriver
       const pick = pool[Math.floor(Math.random() * pool.length)];
       bot.roster.push(pick);
       state.availablePlayers = state.availablePlayers.filter(p => p.id !== pick.id);
+      state.skippedPlayers = state.skippedPlayers.filter(p => p.id !== pick.id);
     });
     state.participants.push(bot);
   }
@@ -155,13 +162,18 @@ function startAuctionRound() {
     const needers = getRoleNeeders(role);
     if (needers.length === 0) continue;
 
-    const pool = state.availablePlayers.filter(p => p.role === role);
-    if (pool.length === 0) continue; // sécurité, ne devrait pas arriver
+    let pool = state.availablePlayers.filter(p => p.role === role);
+    if (pool.length === 0) {
+      // Filet de sécurité : si tous les joueurs de ce rôle ont été passés,
+      // on repioche exceptionnellement dans la réserve "skip" plutôt que
+      // de bloquer un humain qui a encore besoin de ce rôle.
+      pool = state.skippedPlayers.filter(p => p.role === role);
+    }
+    if (pool.length === 0) continue; // vraiment plus aucun joueur de ce rôle
 
     const player = pool[Math.floor(Math.random() * pool.length)];
     const contenders = needers.map(p => p.id);
     const forced = contenders.length === 1;
-    const stockRestant = pool.length - 1; // une fois ce joueur retiré du pool
 
     state.auction = {
       player,
@@ -173,7 +185,10 @@ function startAuctionRound() {
       increment: MIN_INCREMENT,
       forced,
       skipVotes: [],
-      skipEligible: !forced && stockRestant >= contenders.length,
+      // Un joueur passé n'est pas perdu (il reste disponible pour une
+      // prochaine enchère ou pour les bots), donc le skip est toujours
+      // possible dès qu'il y a au moins 2 prétendants.
+      skipEligible: !forced,
       deadline: null
     };
     return;
@@ -190,6 +205,7 @@ function assignAuctionPlayer(participantId, price) {
   if (participant) {
     participant.roster.push(auction.player);
     state.availablePlayers = state.availablePlayers.filter(p => p.id !== auction.player.id);
+    state.skippedPlayers = state.skippedPlayers.filter(p => p.id !== auction.player.id);
     state.budgets[participantId] = (state.budgets[participantId] ?? STARTING_BUDGET) - price;
   }
   state.auction = null;
@@ -199,7 +215,13 @@ function assignAuctionPlayer(participantId, price) {
 function discardAuctionPlayer() {
   const auction = state.auction;
   if (!auction) return;
+  // Le joueur "passé" est retiré des enchères pour de bon : il ne sera plus
+  // jamais reproposé aux humains, mais reste disponible pour les bots
+  // générés en fin de draft.
   state.availablePlayers = state.availablePlayers.filter(p => p.id !== auction.player.id);
+  if (!state.skippedPlayers.some(p => p.id === auction.player.id)) {
+    state.skippedPlayers.push(auction.player);
+  }
   state.auction = null;
   startAuctionRound();
 }
@@ -230,8 +252,7 @@ function refreshAuctionAfterDisconnect() {
   }
 
   auction.forced = auction.contenders.length === 1;
-  const pool = state.availablePlayers.filter(p => p.role === auction.role);
-  auction.skipEligible = !auction.forced && (pool.length - 1) >= auction.contenders.length;
+  auction.skipEligible = !auction.forced;
 }
 
 io.on('connection', (socket) => {
@@ -260,6 +281,7 @@ io.on('connection', (socket) => {
 
       if (state.gameMode === 'draft_encheres') {
         state.budgets = {};
+        state.skippedPlayers = [];
         state.participants.forEach(p => { state.budgets[p.id] = STARTING_BUDGET; });
         state.phase = 'auction';
         startAuctionRound();
@@ -449,6 +471,7 @@ io.on('connection', (socket) => {
         state.roundReady = [];
         state.auction = null;
         state.budgets = {};
+        state.skippedPlayers = [];
       }
       io.emit('draft-update', state);
     }
@@ -468,6 +491,7 @@ io.on('connection', (socket) => {
         state.resetPlayers = [];
         state.auction = null;
         state.budgets = {};
+        state.skippedPlayers = [];
         clearAuctionTimer();
       } else {
         refreshAuctionAfterDisconnect();
