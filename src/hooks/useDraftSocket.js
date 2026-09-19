@@ -48,5 +48,7 @@ export function useDraftSocket() {
     placeBid: (amount) => socket.emit('place-bid', amount),
     toggleSkipVote: () => socket.emit('toggle-skip-vote'),
     acquireForced: () => socket.emit('acquire-forced'),
+    withdrawFromAuction: () => socket.emit('withdraw-from-auction'),
+    claimPlayer: () => socket.emit('claim-player'),
   };
 }

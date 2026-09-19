@@ -16,7 +16,7 @@ function useCountdown(deadline) {
   return remaining;
 }
 
-export default function AuctionView({ state, placeBid, toggleSkipVote, acquireForced }) {
+export default function AuctionView({ state, placeBid, toggleSkipVote, acquireForced, withdrawFromAuction, claimPlayer }) {
   const { auction, participants } = state;
   const budgets = state.budgets || {};
   const myId = socket.id;
@@ -39,7 +39,14 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
     );
   }
 
-  const isContender = auction.contenders.includes(myId);
+  const isBroke = (id) => (budgets[id] ?? 0) < auction.minBid;
+
+  const isActive = auction.activeIds.includes(myId);
+  const iAmBroke = isBroke(myId);
+  const solventActiveIds = auction.activeIds.filter(id => !isBroke(id));
+  const soleChoice = !auction.forced && auction.activeIds.length === 1;
+  const rescuePhase = !auction.forced && !soleChoice && solventActiveIds.length === 0;
+
   const highestBidder = participants.find(p => p.id === auction.highestBidderId);
   const hasVotedSkip = auction.skipVotes.includes(myId);
 
@@ -61,21 +68,62 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
         <div className="title-font text-muted" style={{ fontSize: '13px', letterSpacing: '2px', marginBottom: '8px' }}>
           {auction.player.role}
         </div>
-        <h2 className="title-font" style={{ fontSize: '30px', margin: '0 0 6px 0' }}>{auction.player.name}</h2>
-        <div className="text-muted" style={{ marginBottom: '20px' }}>Cote : {auction.player.rating}</div>
+        <h2 className="title-font" style={{ fontSize: '30px', margin: '0 0 20px 0' }}>{auction.player.name}</h2>
 
         {auction.forced ? (
           <div>
             <p className="text-muted" style={{ marginBottom: '20px' }}>
-              Vous êtes le seul commandant à avoir encore besoin de ce poste.
-              Acquisition obligatoire pour la mise minimale.
+              Vous êtes le dernier commandant encore en lice pour ce poste.
+              Acquisition obligatoire, fauché ou non.
             </p>
-            {isContender ? (
+            {isActive ? (
               <button className="btn btn-pink" onClick={acquireForced}>
-                ACQUÉRIR POUR {auction.minBid}⚡
+                ACQUÉRIR {iAmBroke ? `POUR TOUT VOTRE SOLDE (max ${auction.minBid}⚡)` : `POUR ${auction.highestBid > 0 ? auction.highestBid : auction.minBid}⚡`}
               </button>
             ) : (
               <div className="title-font text-muted pulse-text">EN ATTENTE DE L'ACQUISITION...</div>
+            )}
+          </div>
+        ) : soleChoice ? (
+          <div>
+            <p className="text-muted" style={{ marginBottom: '20px' }}>
+              Vous êtes le dernier commandant encore en lice pour ce lot.
+              Vous pouvez le récupérer ou y renoncer.
+            </p>
+            {isActive ? (
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button className="btn btn-pink" onClick={claimPlayer}>
+                  RÉCUPÉRER {iAmBroke ? `(max ${auction.minBid}⚡)` : `POUR ${auction.highestBid > 0 ? auction.highestBid : auction.minBid}⚡`}
+                </button>
+                <button className="btn btn-outline" onClick={withdrawFromAuction}>
+                  PASSER
+                </button>
+              </div>
+            ) : (
+              <div className="text-muted" style={{ fontStyle: 'italic' }}>Vous n'êtes plus dans la course pour ce lot.</div>
+            )}
+          </div>
+        ) : rescuePhase ? (
+          <div>
+            <p className="text-pink title-font" style={{ letterSpacing: '1px', marginBottom: '20px' }}>
+              LES COMMANDANTS SOLVABLES ONT RENONCÉ
+            </p>
+            <p className="text-muted" style={{ marginBottom: '20px' }}>
+              Ce lot est maintenant proposé aux commandants fauchés. Premier arrivé, premier servi.
+            </p>
+            {isActive && iAmBroke ? (
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button className="btn btn-pink" onClick={claimPlayer}>
+                  RÉCUPÉRER (max {auction.minBid}⚡)
+                </button>
+                <button className="btn btn-outline" onClick={withdrawFromAuction}>
+                  PASSER
+                </button>
+              </div>
+            ) : isActive ? (
+              <div className="title-font text-muted pulse-text">EN ATTENTE DES COMMANDANTS FAUCHÉS...</div>
+            ) : (
+              <div className="text-muted" style={{ fontStyle: 'italic' }}>Vous n'êtes plus dans la course pour ce lot.</div>
             )}
           </div>
         ) : (
@@ -95,9 +143,9 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
               )}
             </div>
 
-            {isContender && (
+            {isActive && !iAmBroke ? (
               <>
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '16px' }}>
                   <input
                     type="number"
                     min={minNextBid}
@@ -116,16 +164,27 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
                 <div className="text-muted" style={{ fontSize: '13px', marginBottom: '20px' }}>
                   Votre budget : {myBudget}⚡ · Mise minimale : {minNextBid}⚡
                 </div>
-              </>
-            )}
 
-            {auction.skipEligible && isContender && (
-              <button
-                className={`btn ${hasVotedSkip ? 'btn-green' : 'btn-outline'}`}
-                onClick={toggleSkipVote}
-              >
-                {hasVotedSkip ? 'VOTE ENREGISTRÉ' : 'VOTER POUR PASSER'} ({auction.skipVotes.length}/{auction.contenders.length})
-              </button>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button className="btn btn-outline" onClick={withdrawFromAuction}>
+                    SE RETIRER
+                  </button>
+                  {auction.skipEligible && (
+                    <button
+                      className={`btn ${hasVotedSkip ? 'btn-green' : 'btn-outline'}`}
+                      onClick={toggleSkipVote}
+                    >
+                      {hasVotedSkip ? 'VOTE ENREGISTRÉ' : 'VOTER POUR PASSER'} ({auction.skipVotes.length}/{solventActiveIds.length})
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : isActive && iAmBroke ? (
+              <div className="title-font text-muted pulse-text">
+                VOUS N'AVEZ PAS ASSEZ POUR ENCHÉRIR · EN ATTENTE DES SOLVABLES...
+              </div>
+            ) : (
+              <div className="text-muted" style={{ fontStyle: 'italic' }}>Vous n'êtes plus dans la course pour ce lot.</div>
             )}
           </div>
         )}
@@ -133,7 +192,7 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
 
       <div className="draft-grid">
         {participants.map(p => (
-          <div key={p.id} className={`roster-card ${auction.contenders.includes(p.id) ? 'active' : ''}`}>
+          <div key={p.id} className={`roster-card ${auction.activeIds.includes(p.id) ? 'active' : ''}`}>
             <h3
               className="title-font"
               style={{ fontSize: '18px', marginBottom: '6px', borderBottom: '1px solid var(--border)', paddingBottom: '10px', display: 'flex', justifyContent: 'space-between' }}

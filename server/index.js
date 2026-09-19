@@ -94,9 +94,8 @@ function tryStartMatch(match) {
  */
 function completeDraftAndStartTournament() {
   const numBots = 8 - state.participants.length;
-  const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
   for (let i = 1; i <= numBots; i++) {
-    const bot = { id: `bot-${i}`, name: teamNames[Math.floor(Math.random() * teamNames.length)], roster: [] };
+    const bot = { id: `bot-${i}`, name: `Bot ${i}`, roster: [] };
     ORDERED_ROLES.forEach(role => {
       // Pool des bots = joueurs disponibles + joueurs passés durant les enchères
       const pool = [...state.availablePlayers, ...state.skippedPlayers].filter(p => p.role === role);
@@ -145,6 +144,12 @@ function getRoleNeeders(role) {
   );
 }
 
+/** Un commandant est "fauché" s'il n'a plus de quoi payer la mise minimale. */
+function isBroke(participantId) {
+  const budget = state.budgets[participantId] ?? STARTING_BUDGET;
+  return budget < MIN_BID;
+}
+
 /**
  * Fait apparaître le prochain joueur pro aux enchères, pour le premier rôle
  * (dans l'ordre ORDERED_ROLES) encore recherché par au moins un humain.
@@ -158,9 +163,18 @@ function getRoleNeeders(role) {
 function startAuctionRound() {
   clearAuctionTimer();
 
-  for (const role of ORDERED_ROLES) {
+  const candidateRoles = ORDERED_ROLES.filter(role => getRoleNeeders(role).length > 0);
+  if (candidateRoles.length === 0) {
+    // Plus aucun rôle recherché : fin de la phase d'enchères
+    completeDraftAndStartTournament();
+    return;
+  }
+
+  // Ordre tiré au sort à chaque manche : pas de séquence figée Top->Jungle->Mid->ADC->Support.
+  const shuffledRoles = [...candidateRoles].sort(() => Math.random() - 0.5);
+
+  for (const role of shuffledRoles) {
     const needers = getRoleNeeders(role);
-    if (needers.length === 0) continue;
 
     let pool = state.availablePlayers.filter(p => p.role === role);
     if (pool.length === 0) {
@@ -174,27 +188,31 @@ function startAuctionRound() {
     const player = pool[Math.floor(Math.random() * pool.length)];
     const contenders = needers.map(p => p.id);
     const forced = contenders.length === 1;
+    const solventContenders = contenders.filter(id => !isBroke(id));
 
     state.auction = {
       player,
       role,
       contenders,
+      // activeIds : liste dynamique des prétendants encore en lice (se réduit
+      // au fil des retraits/skips, contrairement à "contenders" qui est figée).
+      activeIds: [...contenders],
       highestBid: 0,
       highestBidderId: null,
       minBid: MIN_BID,
       increment: MIN_INCREMENT,
       forced,
       skipVotes: [],
-      // Un joueur passé n'est pas perdu (il reste disponible pour une
-      // prochaine enchère ou pour les bots), donc le skip est toujours
-      // possible dès qu'il y a au moins 2 prétendants.
-      skipEligible: !forced,
+      // Le vote de passage ne concerne que les prétendants solvables : il ne
+      // fait sens (et n'est ouvert) que s'ils sont au moins deux à pouvoir
+      // encore enchérir normalement.
+      skipEligible: !forced && solventContenders.length >= 2,
       deadline: null
     };
     return;
   }
 
-  // Plus aucun rôle recherché : fin de la phase d'enchères
+  // Aucun rôle "candidat" n'avait finalement de joueur disponible (cas extrême)
   completeDraftAndStartTournament();
 }
 
@@ -210,6 +228,57 @@ function assignAuctionPlayer(participantId, price) {
   }
   state.auction = null;
   startAuctionRound();
+}
+
+/**
+ * Attribue le joueur de l'enchère en cours à participantId, au prix demandé
+ * (la meilleure offre en cours, ou la mise minimale s'il n'y en a pas eu),
+ * mais jamais plus que ce que le commandant possède : son solde tombe à 0
+ * au pire, il ne passe jamais en négatif.
+ */
+function resolveAuctionWin(participantId) {
+  const auction = state.auction;
+  if (!auction) return;
+  const budget = state.budgets[participantId] ?? STARTING_BUDGET;
+  const askedPrice = auction.highestBid > 0 ? auction.highestBid : auction.minBid;
+  const price = Math.min(budget, askedPrice);
+  assignAuctionPlayer(participantId, price);
+}
+
+/**
+ * À appeler après toute modification de auction.activeIds (retrait, passage
+ * de skip, déconnexion...). Gère les cas :
+ * - plus personne en lice -> le joueur est écarté (réservé aux bots)
+ * - 1 seul restant -> il garde le choix de récupérer ou de passer (SAUF si
+ *   "forced" était déjà vrai depuis la création de l'enchère, càd que ce
+ *   rôle n'était de toute façon recherché que par cette seule personne :
+ *   dans ce cas précis, pas de choix, c'est obligatoire)
+ * - 2+ restants -> l'enchère continue, on recalcule juste le droit au skip
+ */
+function resolveActiveIdsChange() {
+  const auction = state.auction;
+  if (!auction) return;
+
+  if (auction.activeIds.length === 0) {
+    clearAuctionTimer();
+    discardAuctionPlayer();
+    return;
+  }
+
+  if (auction.activeIds.length === 1) {
+    // Note : si auction.forced était déjà vrai (rareté dès la création),
+    // il le reste. Sinon, on NE force PAS : le dernier restant a le choix
+    // (bouton "récupérer" ou "passer" côté client), même s'il est fauché.
+    auction.skipEligible = false;
+    auction.skipVotes = [];
+    clearAuctionTimer();
+    auction.deadline = null;
+    return;
+  }
+
+  auction.forced = false;
+  const solventActive = auction.activeIds.filter(id => !isBroke(id));
+  auction.skipEligible = solventActive.length >= 2;
 }
 
 function discardAuctionPlayer() {
@@ -232,27 +301,21 @@ function discardAuctionPlayer() {
  */
 function refreshAuctionAfterDisconnect() {
   if (state.phase !== 'auction' || !state.auction) return;
-
-  const needers = getRoleNeeders(state.auction.role);
-  if (needers.length === 0) {
-    clearAuctionTimer();
-    discardAuctionPlayer();
-    return;
-  }
-
   const auction = state.auction;
-  auction.contenders = needers.map(p => p.id);
-  auction.skipVotes = auction.skipVotes.filter(id => auction.contenders.includes(id));
+  const stillHere = (id) => state.participants.some(p => p.id === id);
 
-  if (!auction.contenders.includes(auction.highestBidderId)) {
+  auction.contenders = auction.contenders.filter(stillHere);
+  auction.activeIds = auction.activeIds.filter(stillHere);
+  auction.skipVotes = auction.skipVotes.filter(id => auction.activeIds.includes(id));
+
+  if (auction.highestBidderId && !auction.activeIds.includes(auction.highestBidderId)) {
     auction.highestBid = 0;
     auction.highestBidderId = null;
     auction.deadline = null;
     clearAuctionTimer();
   }
 
-  auction.forced = auction.contenders.length === 1;
-  auction.skipEligible = !auction.forced;
+  resolveActiveIdsChange();
 }
 
 io.on('connection', (socket) => {
@@ -317,7 +380,8 @@ io.on('connection', (socket) => {
   socket.on('place-bid', (amount) => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced) return;
-    if (!auction.contenders.includes(socket.id)) return;
+    if (!auction.activeIds.includes(socket.id)) return;
+    if (isBroke(socket.id)) return; // les fauchés ne peuvent pas enchérir
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount)) return;
@@ -344,19 +408,64 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
+  // Un seul prétendant encore en lice (fauché ou non) : acquisition obligatoire.
   socket.on('acquire-forced', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || !auction.forced) return;
-    if (!auction.contenders.includes(socket.id)) return;
+    if (!auction.activeIds.includes(socket.id)) return;
 
-    assignAuctionPlayer(socket.id, auction.minBid);
+    resolveAuctionWin(socket.id);
     io.emit('draft-update', state);
   });
 
+  // Se retirer de l'enchère en cours pour CE joueur précis (le prix est trop
+  // haut pour soi, ou on est fauché et on décline le lot de secours).
+  socket.on('withdraw-from-auction', () => {
+    const auction = state.auction;
+    if (state.phase !== 'auction' || !auction || auction.forced) return;
+    if (!auction.activeIds.includes(socket.id)) return;
+
+    auction.activeIds = auction.activeIds.filter(id => id !== socket.id);
+    auction.skipVotes = auction.skipVotes.filter(id => id !== socket.id);
+
+    if (auction.highestBidderId === socket.id) {
+      auction.highestBid = 0;
+      auction.highestBidderId = null;
+      auction.deadline = null;
+      clearAuctionTimer();
+    }
+
+    resolveActiveIdsChange();
+    io.emit('draft-update', state);
+  });
+
+  // Récupération du joueur restant : soit on est le dernier encore en lice
+  // (peu importe qu'on soit fauché ou non, on a le choix), soit on est un
+  // commandant fauché et tous les solvables ont déjà renoncé (course au clic).
+  socket.on('claim-player', () => {
+    const auction = state.auction;
+    if (state.phase !== 'auction' || !auction || auction.forced) return;
+    if (!auction.activeIds.includes(socket.id)) return;
+
+    const isSoleSurvivor = auction.activeIds.length === 1 && auction.activeIds[0] === socket.id;
+    if (!isSoleSurvivor) {
+      if (!isBroke(socket.id)) return;
+      const solventActive = auction.activeIds.filter(id => !isBroke(id));
+      if (solventActive.length > 0) return; // les solvables n'ont pas encore tous renoncé
+    }
+
+    resolveAuctionWin(socket.id);
+    io.emit('draft-update', state);
+  });
+
+  // Vote (uniquement les prétendants solvables) pour passer ce joueur : à
+  // l'unanimité des solvables, la main passe aux fauchés (ou le joueur est
+  // écarté s'il n'y en a aucun).
   socket.on('toggle-skip-vote', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced || !auction.skipEligible) return;
-    if (!auction.contenders.includes(socket.id)) return;
+    if (!auction.activeIds.includes(socket.id)) return;
+    if (isBroke(socket.id)) return;
 
     if (auction.skipVotes.includes(socket.id)) {
       auction.skipVotes = auction.skipVotes.filter(id => id !== socket.id);
@@ -364,9 +473,16 @@ io.on('connection', (socket) => {
       auction.skipVotes.push(socket.id);
     }
 
-    if (auction.skipVotes.length === auction.contenders.length) {
+    const solventActive = auction.activeIds.filter(id => !isBroke(id));
+    if (auction.skipVotes.length > 0 && auction.skipVotes.length === solventActive.length) {
+      // Unanimité des solvables : ils sortent tous de la course, place aux fauchés.
+      auction.activeIds = auction.activeIds.filter(id => isBroke(id));
+      auction.skipVotes = [];
+      auction.highestBid = 0;
+      auction.highestBidderId = null;
+      auction.deadline = null;
       clearAuctionTimer();
-      discardAuctionPlayer();
+      resolveActiveIdsChange();
     }
     io.emit('draft-update', state);
   });

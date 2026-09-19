@@ -23,6 +23,8 @@ export default function App() {
         placeBid={draft.placeBid}
         toggleSkipVote={draft.toggleSkipVote}
         acquireForced={draft.acquireForced}
+        withdrawFromAuction={draft.withdrawFromAuction}
+        claimPlayer={draft.claimPlayer}
       />
     );
   }
