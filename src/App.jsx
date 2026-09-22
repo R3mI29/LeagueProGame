@@ -4,6 +4,7 @@ import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import LobbyView from './views/LobbyView';
 import DraftView from './views/DraftView';
 import AuctionView from './views/AuctionView';
+import CardsView from './views/CardsView';
 import ArenaView from './views/ArenaView';
 import BracketView from './views/BracketView';
 import './styles/theme.css';
@@ -29,6 +30,17 @@ export default function App() {
     );
   }
 
+  if (state.phase === 'cards') {
+    return (
+      <CardsView
+        state={state}
+        openPack={draft.openPack}
+        setLineupCard={draft.setLineupCard}
+        toggleLineupReady={draft.toggleLineupReady}
+      />
+    );
+  }
+
   const tournamentPhase = isTournamentPhase(state);
   const myActiveMatch = getMyActiveMatch(state, socket.id);
 
@@ -38,6 +50,7 @@ export default function App() {
         match={myActiveMatch}
         matchReady={draft.matchReady}
         dismissMatch={draft.dismissMatch}
+        state={state} 
       />
     );
   }
@@ -49,6 +62,7 @@ export default function App() {
         toggleReady={draft.toggleReady}
         toggleReset={draft.toggleReset}
         advanceRound={draft.advanceRound}
+        continueSeason={draft.continueSeason}
       />
     );
   }

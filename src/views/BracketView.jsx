@@ -1,12 +1,14 @@
 import { socket } from '../api/socket';
 import { getHumanCount, getNextRoundVoting } from '../utils/bracketHelpers';
 
-export default function BracketView({ state, toggleReady, toggleReset, advanceRound }) {
+export default function BracketView({ state, toggleReady, toggleReset, advanceRound, continueSeason }) {
   const humanCount = getHumanCount(state);
   const isGlobalReady = state.readyPlayers.includes(socket.id);
   const isResetReady = state.resetPlayers?.includes(socket.id);
+  const isContinueReady = state.continueSeasonVotes?.includes(socket.id);
   const isRoundReady = state.roundReady?.includes(socket.id);
   const { requiredVotersCount, amIRequiredForNextRound } = getNextRoundVoting(state, socket.id);
+  const isCardMode = state.gameMode === 'draft_cartes';
 
   return (
     <div className="container">
@@ -22,9 +24,22 @@ export default function BracketView({ state, toggleReady, toggleReset, advanceRo
             {state.champion.name}
           </h1>
 
-          <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
-            {isResetReady ? `EN ATTENTE DES COMMANDANTS (${state.resetPlayers?.length || 0}/${humanCount})` : 'NOUVELLE PARTIE'}
-          </button>
+          {isCardMode ? (
+            <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className={`btn ${isContinueReady ? 'btn-green' : 'btn-cyan'}`} onClick={continueSeason}>
+                {isContinueReady
+                  ? `PRÊT POUR LA SUITE (${state.continueSeasonVotes?.length || 0}/${humanCount})`
+                  : 'CONTINUER LA SAISON'}
+              </button>
+              <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
+                {isResetReady ? `EN ATTENTE (${state.resetPlayers?.length || 0}/${humanCount})` : 'TERMINER LA SAISON'}
+              </button>
+            </div>
+          ) : (
+            <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
+              {isResetReady ? `EN ATTENTE DES COMMANDANTS (${state.resetPlayers?.length || 0}/${humanCount})` : 'NOUVELLE PARTIE'}
+            </button>
+          )}
         </div>
       ) : (
         <h1 className="title-font text-cyan" style={{ fontSize: '32px', marginBottom: '50px' }}>RÉSEAU DU TOURNOI</h1>
@@ -43,9 +58,11 @@ export default function BracketView({ state, toggleReady, toggleReset, advanceRo
                 <div key={match.id} className="bracket-match">
                   <div className={`bracket-row ${isFin && match.winner?.id === match.teamA?.id ? 'winner' : ''}`}>
                     <span>{match.teamA ? match.teamA.name : '---'} {isSim && <span className="pulse-text text-pink">⚔️</span>}</span>
+                    {isFin && <span className="title-font text-muted" style={{ fontSize: '12px' }}>{match.scoreA ?? 0}</span>}
                   </div>
                   <div className={`bracket-row ${isFin && match.winner?.id === match.teamB?.id ? 'winner' : ''}`}>
                     <span>{match.teamB ? match.teamB.name : '---'} {isSim && <span className="pulse-text text-pink">⚔️</span>}</span>
+                    {isFin && <span className="title-font text-muted" style={{ fontSize: '12px' }}>{match.scoreB ?? 0}</span>}
                   </div>
                 </div>
               );

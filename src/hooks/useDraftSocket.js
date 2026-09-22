@@ -5,7 +5,9 @@ const INITIAL_STATE = {
   phase: 'lobby', gameMode: null, participants: [], turnIndex: 0, currentOptions: [],
   bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
   currentRound: 0, roundComplete: false, roundReady: [],
-  auction: null, budgets: {}
+  auction: null, budgets: {},
+  cardCollections: {}, activeLineups: {}, pendingPacks: {}, lastOpenedPack: {},
+  seasonRound: 0, continueSeasonVotes: []
 };
 
 /**
@@ -50,5 +52,9 @@ export function useDraftSocket() {
     acquireForced: () => socket.emit('acquire-forced'),
     withdrawFromAuction: () => socket.emit('withdraw-from-auction'),
     claimPlayer: () => socket.emit('claim-player'),
+    openPack: () => socket.emit('open-pack'),
+    setLineupCard: (role, cardId) => socket.emit('set-lineup-card', { role, cardId }),
+    toggleLineupReady: () => socket.emit('toggle-lineup-ready'),
+    continueSeason: () => socket.emit('continue-season'),
   };
 }

@@ -109,15 +109,19 @@ export default function AuctionView({ state, placeBid, toggleSkipVote, acquireFo
               LES COMMANDANTS SOLVABLES ONT RENONCÉ
             </p>
             <p className="text-muted" style={{ marginBottom: '20px' }}>
-              Ce lot est maintenant proposé aux commandants fauchés. Premier arrivé, premier servi.
+              Ce lot est maintenant proposé aux commandants fauchés. Premier arrivé, premier servi —
+              ou passez tous d'un commun accord.
             </p>
             {isActive && iAmBroke ? (
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <button className="btn btn-pink" onClick={claimPlayer}>
                   RÉCUPÉRER (max {auction.minBid}⚡)
                 </button>
-                <button className="btn btn-outline" onClick={withdrawFromAuction}>
-                  PASSER
+                <button
+                  className={`btn ${hasVotedSkip ? 'btn-green' : 'btn-outline'}`}
+                  onClick={toggleSkipVote}
+                >
+                  {hasVotedSkip ? 'VOTE ENREGISTRÉ' : 'VOTER POUR PASSER'} ({auction.skipVotes.length}/{auction.activeIds.length})
                 </button>
               </div>
             ) : isActive ? (

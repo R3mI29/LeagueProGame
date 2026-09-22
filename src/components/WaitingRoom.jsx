@@ -3,7 +3,8 @@ import { socket } from '../api/socket';
 const MODE_LABELS = {
   draft_classique: 'CLASSIQUE',
   draft_aveugle: 'AVEUGLE',
-  draft_encheres: 'ENCHÈRES'
+  draft_encheres: 'ENCHÈRES',
+  draft_cartes: 'PACKS'
 };
 
 export default function WaitingRoom({ state, startDraft }) {
