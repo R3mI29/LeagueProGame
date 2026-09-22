@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { socket } from '../api/socket';
 import { ORDERED_ROLES } from '../constants/roles';
 import { CARD_POOL } from '../constants/cardPlayers';
 import CardIllustration from '../components/CardIllustration';
-
-const RARITY_ORDER = { 'Commune': 1, 'Rare': 2, 'Épique': 3, 'Légendaire': 4 };
 
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
@@ -13,31 +11,24 @@ function getCard(id) {
 export default function CardsView({ state, openPack, setLineupCard, toggleLineupReady }) {
   const myId = socket.id;
   
-  // 1. On récupère la collection brute du serveur
+  // 1. On récupère les infos du serveur
   const rawCollection = state.cardCollections?.[myId] || {};
   const myLineup = state.activeLineups?.[myId] || {};
   const myPendingPacks = state.pendingPacks?.[myId] || 0;
-  const lastOpened = state.lastOpenedPack?.[myId] || [];
+  const lastOpened = state.lastOpenedPack?.[myId] || []; // On regarde ce qu'il y a dans le pack actuel
   
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
-  const [currentPack, setCurrentPack] = useState([]);
-  const [revealedCount, setRevealedCount] = useState(5);
 
-  // 2. MAGIE ICI : On déduit les cartes non révélées de l'affichage
+  // 2. ANTI-SPOIL : On déduit temporairement les cartes du pack en cours de la collection visible
   const myCollection = { ...rawCollection };
-  if (currentPack.length > 0 && revealedCount < currentPack.length) {
-    currentPack.forEach((card, index) => {
-      // Si la carte n'est pas encore retournée, on la soustrait temporairement de la vue
-      if (index >= revealedCount) {
-        if (myCollection[card.id]) {
-          myCollection[card.id] -= 1;
-          if (myCollection[card.id] <= 0) {
-            delete myCollection[card.id];
-          }
-        }
+  lastOpened.forEach(cardId => {
+    if (myCollection[cardId]) {
+      myCollection[cardId] -= 1;
+      if (myCollection[cardId] <= 0) {
+        delete myCollection[cardId];
       }
-    });
-  }
+    }
+  });
 
   const isReady = state.readyPlayers.includes(myId);
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
@@ -53,16 +44,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
     titles: scores[p.id]?.titles || 0
   })).sort((a, b) => b.points - a.points);
 
-  const lastOpenedString = lastOpened.join(',');
-  useEffect(() => {
-    if (lastOpenedString) {
-      const cards = lastOpened.map(id => getCard(id)).filter(Boolean);
-      cards.sort((a, b) => (RARITY_ORDER[a.rarity] || 0) - (RARITY_ORDER[b.rarity] || 0));
-      setCurrentPack(cards);
-      setRevealedCount(0);
-    }
-  }, [lastOpenedString]);
-
   return (
     <div className="container" style={{ padding: '20px' }}>
       <h1 className="title-font text-cyan" style={{ fontSize: '32px' }}>MODE CARTES</h1>
@@ -75,75 +56,15 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', flex: '1 1 350px', maxWidth: '500px' }}>
           
           <div className="panel" style={{ textAlign: 'center' }}>
-            {revealedCount >= currentPack.length ? (
-              myPendingPacks > 0 ? (
-                <>
-                  <p className="title-font text-pink" style={{ fontSize: '20px', marginBottom: '16px' }}>
-                    {myPendingPacks} PACK{myPendingPacks > 1 ? 'S' : ''} DISPONIBLE{myPendingPacks > 1 ? 'S' : ''}
-                  </p>
-                  <button className="btn btn-pink" onClick={openPack}>OUVRIR UN PACK</button>
-                </>
-              ) : (
-                <p className="text-muted" style={{ margin: 0 }}>Aucun pack en attente. Gagnez le tournoi pour en obtenir d'autres.</p>
-              )
+            {myPendingPacks > 0 ? (
+              <>
+                <p className="title-font text-pink" style={{ fontSize: '20px', marginBottom: '16px' }}>
+                  {myPendingPacks} PACK{myPendingPacks > 1 ? 'S' : ''} DISPONIBLE{myPendingPacks > 1 ? 'S' : ''}
+                </p>
+                <button className="btn btn-pink" onClick={openPack}>OUVRIR UN PACK</button>
+              </>
             ) : (
-               <p className="title-font text-cyan" style={{ fontSize: '20px', margin: 0, letterSpacing: '1px' }}>
-                DÉCOUVERTE DU PACK...
-              </p>
-            )}
-
-            {currentPack.length > 0 && (
-              <div style={{ marginTop: revealedCount >= currentPack.length ? '30px' : '20px' }}>
-                <div className="title-font text-muted" style={{ fontSize: '12px', letterSpacing: '2px', marginBottom: '16px' }}>
-                  {revealedCount < currentPack.length ? "CLIQUEZ SUR LA CARTE POUR RÉVÉLER" : "DERNIER TIRAGE"}
-                </div>
-                <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                  {currentPack.map((card, i) => {
-                    if (i < revealedCount) {
-                      return (
-                        <div key={i}>
-                          <CardIllustration card={card} width={130} />
-                        </div>
-                      );
-                    }
-                    if (i === revealedCount) {
-                      return (
-                        <div 
-                          key={i} 
-                          onClick={() => setRevealedCount(c => c + 1)}
-                          style={{ 
-                            width: 130, height: Math.round(130 * 1.4), 
-                            background: 'linear-gradient(135deg, #121826, #0D1219)', 
-                            border: '2px dashed #4CE0D2', 
-                            borderRadius: '12px', 
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer',
-                            boxShadow: '0 0 15px rgba(76, 224, 210, 0.2)',
-                            transition: 'transform 0.1s'
-                          }}
-                          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.95)'}
-                          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                        >
-                          <span className="title-font text-cyan" style={{ fontSize: '15px', fontWeight: 'bold' }}>RÉVÉLER</span>
-                        </div>
-                      );
-                    }
-                    return (
-                      <div 
-                        key={i} 
-                        style={{ 
-                          width: 130, height: Math.round(130 * 1.4), 
-                          background: '#0D1219', 
-                          border: '2px solid #1B2333', 
-                          borderRadius: '12px',
-                          opacity: 0.5
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+              <p className="text-muted" style={{ margin: 0 }}>Aucun pack en attente. Gagnez le tournoi pour en obtenir d'autres.</p>
             )}
           </div>
 

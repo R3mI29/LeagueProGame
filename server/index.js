@@ -31,11 +31,14 @@ const matchTimeouts = {};
 const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
 
 // Fonction pour garantir qu'un bot ne prenne pas un nom déjà utilisé
-function getUniqueBotName() {
-  const usedNames = state.participants.map(p => p.name);
-  const availableNames = teamNames.filter(name => !usedNames.includes(name));
+// On ajoute "pendingBots" en paramètre pour qu'il vérifie aussi les bots en cours de création
+function getUniqueBotName(pendingBots = []) {
+  const usedNames = state.participants.map(p => p.name.toLowerCase());
+  const pendingNames = pendingBots.map(b => b.name.toLowerCase());
+  const allUsed = [...usedNames, ...pendingNames];
   
-  // Si par miracle on a plus de 28 joueurs et qu'on manque de noms
+  const availableNames = teamNames.filter(name => !allUsed.includes(name.toLowerCase()));
+  
   if (availableNames.length === 0) return `Bot Squad ${Math.floor(Math.random() * 1000)}`;
   
   return availableNames[Math.floor(Math.random() * availableNames.length)];
@@ -361,7 +364,7 @@ function startCardTournament() {
     for (let i = 1; i <= numBots; i++) {
       bots.push({
         id: `bot-${i}`,
-        name: getUniqueBotName(),
+        name: getUniqueBotName(bots), // <-- LA CORRECTION EST ICI (on passe 'bots')
         roster: generateBotRosterFromCards()
       });
     }
@@ -748,6 +751,18 @@ io.on('connection', (socket) => {
     state.lastOpenedPack[id] = cards.map(c => c.id);
 
     io.emit('draft-update', state);
+  });
+
+  // À rajouter juste en dessous de 'open-pack' ou 'set-lineup-card'
+  socket.on('close-pack', () => {
+    if (state.phase === 'cards') {
+      const id = socket.id;
+      // On vide la mémoire du dernier pack ouvert pour ce joueur
+      if (state.lastOpenedPack[id]) {
+        state.lastOpenedPack[id] = [];
+        io.emit('draft-update', state);
+      }
+    }
   });
 
   socket.on('set-lineup-card', ({ role, cardId }) => {
