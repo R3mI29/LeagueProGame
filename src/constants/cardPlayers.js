@@ -300,6 +300,15 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
+    "id": "painter-t1-2026-sub",
+    "baseName": "Painter",
+    "variant": "T1 Painter",
+    "role": "Jungle",
+    "rating": 74,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/T1_Painter.webp"
+  },
+  {
     "id": "oner-t1-academy",
     "baseName": "Oner",
     "variant": "T1 Academy Oner",
@@ -613,8 +622,9 @@ export const CARD_POOL = [
     "baseName": "Caps",
     "variant": "MSI MVP Caps",
     "role": "Mid",
-    "rating": 93,
-    "rarity": "Épique"
+    "rating": 96,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/msi_mvp_caps.png"
   },
   {
     "id": "nisqy-splyce",
@@ -1077,8 +1087,8 @@ export const CARD_POOL = [
     "variant": "TL CoreJJ",
     "role": "Support",
     "rating": 84,
-    "rarity": "Rare",
-    "image": "/cardsImg/2026-players/tl_corejj.webp"
+    "rarity": "Rare"
+
   },
   {
     "id": "meiko-edg",

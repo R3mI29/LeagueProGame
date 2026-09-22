@@ -30,6 +30,17 @@ const matchTimeouts = {};
 // Noms utilisés pour les bots générés (tous modes confondus)
 const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
 
+// Fonction pour garantir qu'un bot ne prenne pas un nom déjà utilisé
+function getUniqueBotName() {
+  const usedNames = state.participants.map(p => p.name);
+  const availableNames = teamNames.filter(name => !usedNames.includes(name));
+  
+  // Si par miracle on a plus de 28 joueurs et qu'on manque de noms
+  if (availableNames.length === 0) return `Bot Squad ${Math.floor(Math.random() * 1000)}`;
+  
+  return availableNames[Math.floor(Math.random() * availableNames.length)];
+}
+
 let auctionTimer = null;
 
 let state = {
@@ -311,7 +322,7 @@ function buildBracketAndStartTournament() {
 function completeDraftAndStartTournament() {
   const numBots = 8 - state.participants.length;
   for (let i = 1; i <= numBots; i++) {
-    const bot = { id: `bot-${i}`, name: teamNames[Math.floor(Math.random() * teamNames.length)], roster: [] };
+    const bot = { id: `bot-${i}`, name: getUniqueBotName(), roster: [] };
     ORDERED_ROLES.forEach(role => {
       // Pool des bots = joueurs disponibles + joueurs passés durant les enchères
       const pool = [...state.availablePlayers, ...state.skippedPlayers].filter(p => p.role === role);
@@ -350,7 +361,7 @@ function startCardTournament() {
     for (let i = 1; i <= numBots; i++) {
       bots.push({
         id: `bot-${i}`,
-        name: teamNames[Math.floor(Math.random() * teamNames.length)],
+        name: getUniqueBotName(),
         roster: generateBotRosterFromCards()
       });
     }
