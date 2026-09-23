@@ -10,6 +10,8 @@ import ArenaView from './views/ArenaView';
 import BracketView from './views/BracketView';
 import DevCardsView from './views/DevCardView'; 
 import PackOpener from './components/PackOpener'; // <-- IMPORT DU NOUVEAU COMPOSANT
+import SeasonHub from './components/SeasonHub';
+import TournamentWrapper from './views/TournamentWrapper';
 
 import './styles/theme.css';
 
@@ -39,6 +41,13 @@ export default function App() {
           claimPlayer={draft.claimPlayer}
         />
       );
+    }
+    if (state.phase === 'season_hub') {
+      return <SeasonHub state={state} />;
+    }
+    if (state.phase === 'tournament' || state.phase === 'simulation') {
+      // On remplacera BracketView par TournamentWrapper plus tard
+      return <TournamentWrapper state={state} />; 
     }
 
     if (state.phase === 'cards') {

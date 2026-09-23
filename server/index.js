@@ -5,7 +5,6 @@ import cors from 'cors';
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
-// IMPORT DE TON NOUVEAU FICHIER DE CONSTANTES D'ÉVÉNEMENTS
 import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
   openStandardPack, openStarterPack, addCardsToCollection,
@@ -31,7 +30,14 @@ const MIN_INCREMENT = 5;
 const BID_TIMER_MS = 15000; 
 const matchTimeouts = {};
 
-const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
+const teamNames = [
+  "JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", 
+  "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", 
+  "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", 
+  "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", 
+  "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", 
+  "Solary", "Fnatic"
+];
 
 function getUniqueBotName(pendingBots = []) {
   const usedNames = state.participants.map(p => p.name.toLowerCase());
@@ -202,19 +208,16 @@ function simulateGame(match, state) {
   let ratingB = getTeamRating(teamB);
   const triggeredEvents = [];
 
-  // Fusion des événements classiques et de tes événements de cartes
   const ALL_EVENTS = [...MATCH_EVENTS, ...CUSTOM_CARD_EVENTS];
 
   for (const event of ALL_EVENTS) {
     if (Math.random() > event.probability) continue;
     
-    // Le serveur bloque automatiquement l'événement s'il est uniquePerBO et a déjà proc
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
 
     const result = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
     if (!result) continue;
     
-    // Si le buff passe, on l'enregistre pour qu'il ne se reproduise plus dans le BO (si unique)
     if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
 
     if (result.side === 'A') ratingA += result.ratingDelta;
@@ -238,7 +241,7 @@ function tryStartMatch(match) {
     match.scoreB = 0;
     match.games = [];
     match.lastGameEvents = [];
-    match.triggeredUniqueEvents = []; // Initialise le compteur d'événements uniques pour le BO
+    match.triggeredUniqueEvents = [];
     playNextGame(match);
   }
 }
@@ -254,7 +257,6 @@ function playNextGame(match) {
   matchTimeouts[match.id] = setTimeout(() => {
     const gameNumber = match.games.length + 1;
     
-    // Appel de la simulation modifiée
     const { winnerSide, events } = simulateGame(match, state);
 
     if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
@@ -303,7 +305,9 @@ function buildBracketAndStartTournament() {
 }
 
 function completeDraftAndStartTournament() {
-  const numBots = 8 - state.participants.length;
+  const TOTAL_TEAMS = 16;
+  const numBots = TOTAL_TEAMS - state.participants.length;
+  
   for (let i = 1; i <= numBots; i++) {
     const bot = { id: `bot-${i}`, name: getUniqueBotName(), roster: [] };
     ORDERED_ROLES.forEach(role => {
@@ -316,10 +320,14 @@ function completeDraftAndStartTournament() {
     });
     state.participants.push(bot);
   }
-  buildBracketAndStartTournament();
+  
+  state.phase = 'season_hub';
+  state.eventIndex = 0;
+  io.emit('draft-update', state);
 }
 
 function startCardTournament() {
+  const TOTAL_TEAMS = 16;
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
   const existingBots = state.participants.filter(p => p.id.startsWith('bot-'));
 
@@ -329,7 +337,7 @@ function startCardTournament() {
   });
 
   if (existingBots.length === 0) {
-    const numBots = 8 - humanParticipants.length;
+    const numBots = TOTAL_TEAMS - humanParticipants.length;
     const bots = [];
     for (let i = 1; i <= numBots; i++) {
       bots.push({
@@ -350,7 +358,62 @@ function startCardTournament() {
     });
   }
 
-  buildBracketAndStartTournament();
+  state.phase = 'season_hub';
+  if (state.eventIndex === undefined) state.eventIndex = 0;
+  io.emit('draft-update', state);
+}
+
+function startCurrentEvent() {
+  const currentEvent = EVENTS[state.eventIndex];
+  state.phase = 'tournament';
+  state.champion = null;
+  state.currentRound = 0;
+  
+  const shuffledTeams = [...state.participants].sort(() => 0.5 - Math.random());
+
+  if (currentEvent.format === 'gsl_to_single') {
+    state.tournamentPhase = 'groups';
+    state.groups = [];
+
+    // Création des 4 groupes (A, B, C, D)
+    for (let i = 0; i < 4; i++) {
+      const groupTeams = shuffledTeams.slice(i * 4, i * 4 + 4);
+      
+      state.groups.push({
+        id: String.fromCharCode(65 + i), // Génère A, B, C, D
+        teams: groupTeams,
+        qualified: [],
+        matches: [
+          // Match 1 (Seed 1 vs 4)
+          { id: `g${i}-m1`, type: 'open', teamA: groupTeams[0], teamB: groupTeams[3], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], triggeredUniqueEvents: [] },
+          // Match 2 (Seed 2 vs 3)
+          { id: `g${i}-m2`, type: 'open', teamA: groupTeams[1], teamB: groupTeams[2], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], triggeredUniqueEvents: [] },
+          // Match des Gagnants (Qualifie le vainqueur)
+          { id: `g${i}-winner`, type: 'winner', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], triggeredUniqueEvents: [] },
+          // Match des Perdants (Élimine le perdant)
+          { id: `g${i}-loser`, type: 'loser', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], triggeredUniqueEvents: [] },
+          // Match Décisif (Dernière chance de qualification)
+          { id: `g${i}-decider`, type: 'decider', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], triggeredUniqueEvents: [] }
+        ]
+      });
+    }
+    
+    // On peuple bracket[0] avec les matchs d'ouverture pour que la boucle de jeu puisse les jouer
+    state.bracket = [[]];
+    state.groups.forEach(g => {
+      state.bracket[0].push(g.matches[0], g.matches[1]);
+    });
+  } 
+  else if (currentEvent.format === 'swiss_to_single') {
+    state.tournamentPhase = 'swiss';
+    // On mettra la logique Suisse ici à la prochaine étape
+  }
+  else if (currentEvent.format === 'double_elim') {
+    state.tournamentPhase = 'bracket';
+    // On mettra la logique MSI ici plus tard
+  }
+
+  io.emit('draft-update', state);
 }
 
 function awardSeasonPacks() {
@@ -969,6 +1032,13 @@ io.on('connection', (socket) => {
         state.continueSeasonVotes = [];
       }
       io.emit('draft-update', state);
+    }
+  });
+
+  // ---> ICI LE NOUVEL ÉCOUTEUR <---
+  socket.on('start-next-event', () => {
+    if (state.phase === 'season_hub') {
+      startCurrentEvent();
     }
   });
 
