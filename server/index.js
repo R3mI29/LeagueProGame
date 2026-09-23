@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
+import { EVENTS } from '../src/constants/seasonConfig.js';
 import {
   openStandardPack, openStarterPack, addCardsToCollection,
   hasCompleteLineup, getCardById, cardToRosterEntry, generateBotRosterFromCards
@@ -24,14 +25,11 @@ const io = new Server(server, {
 const STARTING_BUDGET = 1000;
 const MIN_BID = 10;
 const MIN_INCREMENT = 5;
-const BID_TIMER_MS = 15000; // délai avant adjudication après la dernière enchère
+const BID_TIMER_MS = 15000; 
 const matchTimeouts = {};
 
-// Noms utilisés pour les bots générés (tous modes confondus)
 const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
 
-// Fonction pour garantir qu'un bot ne prenne pas un nom déjà utilisé
-// On ajoute "pendingBots" en paramètre pour qu'il vérifie aussi les bots en cours de création
 function getUniqueBotName(pendingBots = []) {
   const usedNames = state.participants.map(p => p.name.toLowerCase());
   const pendingNames = pendingBots.map(b => b.name.toLowerCase());
@@ -51,17 +49,18 @@ let state = {
   currentOptions: [], bracket: [], readyPlayers: [], resetPlayers: [], champion: null,
   currentRound: 0, roundComplete: false, roundReady: [],
   auction: null, budgets: {},
-  // Joueurs "passés" (skip) durant les enchères : ils ne sont plus jamais
-  // reproposés aux humains, mais restent piochables par les bots en fin de draft.
   skippedPlayers: [],
   // --- Mode "Draft aux packs" (cartes + saison) ---
-  cardCollections: {}, // { participantId: { cardId: quantité } }
-  activeLineups: {}, // { participantId: { role: cardId } }
-  pendingPacks: {}, // { participantId: nombre de packs non ouverts }
-  lastOpenedPack: {}, // { participantId: [cardId, ...] } dernier pack ouvert, pour l'animation
-  starterPackClaimed: {}, // { participantId: bool }
+  cardCollections: {}, 
+  activeLineups: {}, 
+  pendingPacks: {}, 
+  lastOpenedPack: {}, 
+  starterPackClaimed: {}, 
   seasonRound: 0,
-  continueSeasonVotes: []
+  continueSeasonVotes: [],
+  year: 1,
+  eventIndex: 0, // 0=FS, 1=MSI, 2=EWC, 3=Worlds
+  history: []    // Pour garder une trace des gagnants passés
 };
 
 function getOptionsForParticipant(participant, availablePool) {
@@ -85,18 +84,11 @@ function getTeamRating(team) {
   return Math.round(team.roster.reduce((acc, p) => acc + p.rating, 0) / team.roster.length);
 }
 
-// --- Simulation des matchs : Bo5 (premier à 3 manches) avec événements aléatoires ---
+// --- Simulation des matchs ---
 const GAMES_TO_WIN = 3;
-const GAME_SIMULATE_MS = 6000; // durée de l'animation "en cours" pour une manche
-const GAME_GAP_MS = 2500; // pause entre deux manches d'un même match
+const GAME_SIMULATE_MS = 6000; 
+const GAME_GAP_MS = 2500; 
 
-/**
- * Événements pouvant se déclencher pendant une manche et faire pencher la
- * balance vers une équipe. Chacun a sa propre probabilité (jamais garanti),
- * et certains ont en plus une condition (écart de niveau, synergie de rôles,
- * score de la série...) qui doit être remplie avant même le tirage au sort.
- * apply() renvoie null (rien ne se passe) ou { side: 'A'|'B', ratingDelta, label }.
- */
 const MATCH_EVENTS = [
   {
     id: 'carry-superstar',
@@ -107,7 +99,7 @@ const MATCH_EVENTS = [
         ...teamB.roster.map(p => ({ p, side: 'B' }))
       ];
       const best = allPlayers.reduce((acc, cur) => (cur.p.rating > acc.p.rating ? cur : acc));
-      if (best.p.rating < 90) return null; // il faut un vrai crack pour ce genre de perf
+      if (best.p.rating < 90) return null;
       return { side: best.side, ratingDelta: 6, label: `${best.p.name} est injouable ce game` };
     }
   },
@@ -119,7 +111,7 @@ const MATCH_EVENTS = [
       const team = side === 'A' ? teamA : teamB;
       const adc = team.roster.find(p => p.role === 'ADC');
       const sup = team.roster.find(p => p.role === 'Support');
-      if (!adc || !sup || Math.abs(adc.rating - sup.rating) > 6) return null; // synergie = niveaux proches
+      if (!adc || !sup || Math.abs(adc.rating - sup.rating) > 6) return null;
       return { side, ratingDelta: 4, label: `Bot lane ${adc.name} / ${sup.name} totalement synchronisée` };
     }
   },
@@ -143,7 +135,7 @@ const MATCH_EVENTS = [
       const midB = teamB.roster.find(p => p.role === 'Mid');
       if (!midA || !midB) return null;
       const diff = midA.rating - midB.rating;
-      if (Math.abs(diff) < 5) return null; // il faut un vrai écart pour un duel qui tourne au clash
+      if (Math.abs(diff) < 5) return null;
       const winner = diff > 0 ? midA : midB;
       const loser = diff > 0 ? midB : midA;
       return { side: diff > 0 ? 'A' : 'B', ratingDelta: 5, label: `${winner.name} humilie ${loser.name} en lane mid` };
@@ -177,7 +169,7 @@ const MATCH_EVENTS = [
     apply(teamA, teamB) {
       const ratingA = getTeamRating(teamA);
       const ratingB = getTeamRating(teamB);
-      if (Math.abs(ratingA - ratingB) < 4) return null; // besoin d'un vrai favori pour "thrower"
+      if (Math.abs(ratingA - ratingB) < 4) return null;
       const favoriteSide = ratingA >= ratingB ? 'A' : 'B';
       const underdogSide = favoriteSide === 'A' ? 'B' : 'A';
       const favoriteName = favoriteSide === 'A' ? teamA.name : teamB.name;
@@ -198,7 +190,7 @@ const MATCH_EVENTS = [
     id: 'momentum',
     probability: 0.12,
     apply(teamA, teamB, scoreA, scoreB) {
-      if (scoreA === scoreB) return null; // besoin d'être mené dans la série
+      if (scoreA === scoreB) return null;
       const trailingSide = scoreA < scoreB ? 'A' : 'B';
       const trailingName = trailingSide === 'A' ? teamA.name : teamB.name;
       return { side: trailingSide, ratingDelta: 5, label: `Dos au mur, ${trailingName} hausse enfin le niveau` };
@@ -206,14 +198,13 @@ const MATCH_EVENTS = [
   }
 ];
 
-/** Simule une manche : applique les événements déclenchés puis tire le vainqueur. */
 function simulateGame(teamA, teamB, scoreA, scoreB) {
   let ratingA = getTeamRating(teamA);
   let ratingB = getTeamRating(teamB);
   const triggeredEvents = [];
 
   for (const event of MATCH_EVENTS) {
-    if (Math.random() > event.probability) continue; // ne se déclenche jamais à 100%
+    if (Math.random() > event.probability) continue;
     const result = event.apply(teamA, teamB, scoreA, scoreB);
     if (!result) continue;
     if (result.side === 'A') ratingA += result.ratingDelta;
@@ -241,21 +232,14 @@ function tryStartMatch(match) {
   }
 }
 
-/** Joue une manche du Bo5, puis enchaîne sur la suivante ou termine le match. */
 function playNextGame(match) {
   match.status = 'simulating';
   io.emit('draft-update', state);
 
-  // 1. On vérifie si ce match oppose uniquement des bots
   const isBotOnly = match.teamA.id.startsWith('bot-') && match.teamB.id.startsWith('bot-');
-
-  // 2. On définit des délais dynamiques :
-  // Si bots : 400ms pour simuler + 100ms de pause (BO5 bouclé en 1.5 à 2.5 secondes)
-  // Si humain : On garde tes constantes GAME_SIMULATE_MS (6s) et GAME_GAP_MS (2.5s)
   const currentSimulateMs = isBotOnly ? 400 : GAME_SIMULATE_MS;
   const currentGapMs = isBotOnly ? 100 : GAME_GAP_MS;
 
-  // On stocke le timeout dans notre dictionnaire externe, pas dans le "match"
   matchTimeouts[match.id] = setTimeout(() => {
     const gameNumber = match.games.length + 1;
     const { winnerSide, events } = simulateGame(match.teamA, match.teamB, match.scoreA, match.scoreB);
@@ -277,22 +261,11 @@ function playNextGame(match) {
       io.emit('draft-update', state);
     } else {
       io.emit('draft-update', state);
-      // On utilise le délai d'entre-manche dynamique ici !
       matchTimeouts[match.id] = setTimeout(() => playNextGame(match), currentGapMs);
     }
-  }, currentSimulateMs); // On utilise le délai de simulation dynamique ici !
+  }, currentSimulateMs); 
 }
 
-/**
- * Une fois que tous les commandants humains ont un roster complet (5/5),
- * complète les places restantes avec des bots et met en place le tournoi.
- * Utilisé à la fois par la draft classique/aveugle et par la draft aux enchères.
- */
-/**
- * Construit le bracket (quarts/demies/finale) et démarre le tournoi à partir
- * de state.participants, en supposant que tout le monde (humains + bots) a
- * déjà un roster complet de 5 rôles. Commun à tous les modes de draft.
- */
 function buildBracketAndStartTournament() {
   state.phase = 'tournament';
   state.currentOptions = [];
@@ -316,20 +289,13 @@ function buildBracketAndStartTournament() {
   state.bracket = [qf, sf, [{ id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], nextId: null, nextSlot: null }]];
 }
 
-/**
- * Une fois que tous les commandants humains ont un roster complet (5/5),
- * complète les places restantes avec des bots et met en place le tournoi.
- * Utilisé par la draft classique/aveugle et par la draft aux enchères
- * (celles qui piochent dans state.availablePlayers / state.skippedPlayers).
- */
 function completeDraftAndStartTournament() {
   const numBots = 8 - state.participants.length;
   for (let i = 1; i <= numBots; i++) {
     const bot = { id: `bot-${i}`, name: getUniqueBotName(), roster: [] };
     ORDERED_ROLES.forEach(role => {
-      // Pool des bots = joueurs disponibles + joueurs passés durant les enchères
       const pool = [...state.availablePlayers, ...state.skippedPlayers].filter(p => p.role === role);
-      if (pool.length === 0) return; // sécurité, ne devrait pas arriver
+      if (pool.length === 0) return; 
       const pick = pool[Math.floor(Math.random() * pool.length)];
       bot.roster.push(pick);
       state.availablePlayers = state.availablePlayers.filter(p => p.id !== pick.id);
@@ -337,44 +303,33 @@ function completeDraftAndStartTournament() {
     });
     state.participants.push(bot);
   }
-
   buildBracketAndStartTournament();
 }
 
-/**
- * Équivalent pour le mode "Draft aux packs" : construit le roster de chaque
- * humain depuis sa line-up de cartes choisie, génère les bots depuis le pool
- * de cartes, puis démarre le tournoi. Réutilisable à chaque tour de saison.
- */
-// Trouve la fonction startCardTournament et remplace-la par ceci :
 function startCardTournament() {
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
   const existingBots = state.participants.filter(p => p.id.startsWith('bot-'));
 
-  // Met à jour les rosters des humains
   humanParticipants.forEach(p => {
     const lineup = state.activeLineups[p.id] || {};
     p.roster = ORDERED_ROLES.map(role => cardToRosterEntry(getCardById(lineup[role])));
   });
 
-  // Ne crée des bots que s'ils n'existent pas encore (pour la saison 1)
   if (existingBots.length === 0) {
     const numBots = 8 - humanParticipants.length;
     const bots = [];
     for (let i = 1; i <= numBots; i++) {
       bots.push({
         id: `bot-${i}`,
-        name: getUniqueBotName(bots), // <-- LA CORRECTION EST ICI (on passe 'bots')
+        name: getUniqueBotName(bots),
         roster: generateBotRosterFromCards()
       });
     }
     state.participants = [...humanParticipants, ...bots];
   } else {
-    // Conserve les mêmes bots et leurs mêmes cartes pour le reste de la saison
     state.participants = [...humanParticipants, ...existingBots];
   }
 
-  // Initialisation des scores si c'est la saison 1
   if (!state.seasonScores) {
     state.seasonScores = {};
     state.participants.forEach(p => {
@@ -385,7 +340,6 @@ function startCardTournament() {
   buildBracketAndStartTournament();
 }
 
-// Trouve la fonction awardSeasonPacks et remplace-la par ceci :
 function awardSeasonPacks() {
   const finalMatch = state.bracket[2] && state.bracket[2][0];
   const championId = state.champion?.id;
@@ -393,38 +347,28 @@ function awardSeasonPacks() {
     ? (finalMatch.teamA?.id === championId ? finalMatch.teamB?.id : finalMatch.teamA?.id)
     : null;
 
-  // Calcul du track record de la saison
   if (!state.seasonScores) state.seasonScores = {};
   
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
 
-    // Attribution des points
     if (p.id === championId) {
       state.seasonScores[p.id].points += 5;
       state.seasonScores[p.id].titles += 1;
     } else if (p.id === runnerUpId) {
       state.seasonScores[p.id].points += 3;
     } else if (state.bracket[1].some(m => m.teamA?.id === p.id || m.teamB?.id === p.id)) {
-      // Demi-finaliste
       state.seasonScores[p.id].points += 1;
     }
 
-    // Récompenses en packs (seulement pour les humains)
     if (!p.id.startsWith('bot-')) {
-      let packs = 1; // pack de base
+      let packs = 1; 
       if (p.id === championId) packs = 3;
       else if (p.id === runnerUpId) packs = 2;
       state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packs;
     }
   });
 }
-
-// Optionnel mais recommandé : dans socket.on('start-draft', ...), 
-// sous state.seasonRound = 1;, ajoute state.seasonScores = null; 
-// pour bien réinitialiser les scores au début d'une toute nouvelle partie.
-
-// --- Logique de la draft aux enchères ---
 
 function clearAuctionTimer() {
   if (auctionTimer) {
@@ -434,93 +378,57 @@ function clearAuctionTimer() {
 }
 
 function getRoleNeeders(role) {
-  return state.participants.filter(
-    p => !p.id.startsWith('bot-') && !p.roster.some(pro => pro.role === role)
-  );
+  return state.participants.filter(p => !p.id.startsWith('bot-') && !p.roster.some(pro => pro.role === role));
 }
 
-/** Un commandant est "fauché" s'il n'a plus de quoi payer la mise minimale. */
 function isBroke(participantId) {
   const budget = state.budgets[participantId] ?? STARTING_BUDGET;
   return budget < MIN_BID;
 }
 
-/**
- * Le "groupe habilité à voter" pour passer ce joueur : les prétendants
- * solvables tant qu'il y en a encore en lice, sinon les fauchés restants
- * entre eux (une fois la phase de secours entamée).
- */
 function getSkipVotingGroup(auction) {
   const solventActive = auction.activeIds.filter(id => !isBroke(id));
   return solventActive.length > 0 ? solventActive : auction.activeIds;
 }
 
-/** Le skip n'est ouvert que s'il y a au moins 2 votants dans le groupe actuel. */
 function computeSkipEligible(auction) {
   if (!auction || auction.forced || auction.activeIds.length < 2) return false;
   return getSkipVotingGroup(auction).length >= 2;
 }
 
-/**
- * Fait apparaître le prochain joueur pro aux enchères, pour le premier rôle
- * (dans l'ordre ORDERED_ROLES) encore recherché par au moins un humain.
- * - S'il ne reste qu'1 seul humain à avoir besoin de ce rôle : acquisition
- *   obligatoire au prix minimum (pas d'enchère, pas de skip possible).
- * - S'il en reste 2 ou plus : enchère classique + possibilité de voter à
- *   l'unanimité pour "passer" ce joueur, seulement si le stock restant du
- *   rôle suffit encore à satisfaire tout le monde.
- * Si plus personne n'a besoin d'aucun rôle, la draft est terminée.
- */
 function startAuctionRound() {
   clearAuctionTimer();
 
   const candidateRoles = ORDERED_ROLES.filter(role => getRoleNeeders(role).length > 0);
   if (candidateRoles.length === 0) {
-    // Plus aucun rôle recherché : fin de la phase d'enchères
     completeDraftAndStartTournament();
     return;
   }
 
-  // Ordre tiré au sort à chaque manche : pas de séquence figée Top->Jungle->Mid->ADC->Support.
   const shuffledRoles = [...candidateRoles].sort(() => Math.random() - 0.5);
 
   for (const role of shuffledRoles) {
     const needers = getRoleNeeders(role);
-
     let pool = state.availablePlayers.filter(p => p.role === role);
     if (pool.length === 0) {
-      // Filet de sécurité : si tous les joueurs de ce rôle ont été passés,
-      // on repioche exceptionnellement dans la réserve "skip" plutôt que
-      // de bloquer un humain qui a encore besoin de ce rôle.
       pool = state.skippedPlayers.filter(p => p.role === role);
     }
-    if (pool.length === 0) continue; // vraiment plus aucun joueur de ce rôle
+    if (pool.length === 0) continue; 
 
     const player = pool[Math.floor(Math.random() * pool.length)];
     const contenders = needers.map(p => p.id);
     const forced = contenders.length === 1;
 
     state.auction = {
-      player,
-      role,
-      contenders,
-      // activeIds : liste dynamique des prétendants encore en lice (se réduit
-      // au fil des retraits/skips, contrairement à "contenders" qui est figée).
+      player, role, contenders,
       activeIds: [...contenders],
-      highestBid: 0,
-      highestBidderId: null,
-      minBid: MIN_BID,
-      increment: MIN_INCREMENT,
-      forced,
-      skipVotes: [],
-      skipEligible: false,
-      deadline: null
+      highestBid: 0, highestBidderId: null,
+      minBid: MIN_BID, increment: MIN_INCREMENT,
+      forced, skipVotes: [], skipEligible: false, deadline: null
     };
     state.auction.skipEligible = computeSkipEligible(state.auction);
     return;
   }
-
-  // Aucun rôle "candidat" n'avait finalement de joueur disponible (cas extrême)
   completeDraftAndStartTournament();
 }
 
@@ -538,12 +446,6 @@ function assignAuctionPlayer(participantId, price) {
   startAuctionRound();
 }
 
-/**
- * Attribue le joueur de l'enchère en cours à participantId, au prix demandé
- * (la meilleure offre en cours, ou la mise minimale s'il n'y en a pas eu),
- * mais jamais plus que ce que le commandant possède : son solde tombe à 0
- * au pire, il ne passe jamais en négatif.
- */
 function resolveAuctionWin(participantId) {
   const auction = state.auction;
   if (!auction) return;
@@ -553,16 +455,6 @@ function resolveAuctionWin(participantId) {
   assignAuctionPlayer(participantId, price);
 }
 
-/**
- * À appeler après toute modification de auction.activeIds (retrait, passage
- * de skip, déconnexion...). Gère les cas :
- * - plus personne en lice -> le joueur est écarté (réservé aux bots)
- * - 1 seul restant -> il garde le choix de récupérer ou de passer (SAUF si
- *   "forced" était déjà vrai depuis la création de l'enchère, càd que ce
- *   rôle n'était de toute façon recherché que par cette seule personne :
- *   dans ce cas précis, pas de choix, c'est obligatoire)
- * - 2+ restants -> l'enchère continue, on recalcule juste le droit au skip
- */
 function resolveActiveIdsChange() {
   const auction = state.auction;
   if (!auction) return;
@@ -574,9 +466,6 @@ function resolveActiveIdsChange() {
   }
 
   if (auction.activeIds.length === 1) {
-    // Note : si auction.forced était déjà vrai (rareté dès la création),
-    // il le reste. Sinon, on NE force PAS : le dernier restant a le choix
-    // (bouton "récupérer" ou "passer" côté client), même s'il est fauché.
     auction.skipEligible = false;
     auction.skipVotes = [];
     clearAuctionTimer();
@@ -591,9 +480,6 @@ function resolveActiveIdsChange() {
 function discardAuctionPlayer() {
   const auction = state.auction;
   if (!auction) return;
-  // Le joueur "passé" est retiré des enchères pour de bon : il ne sera plus
-  // jamais reproposé aux humains, mais reste disponible pour les bots
-  // générés en fin de draft.
   state.availablePlayers = state.availablePlayers.filter(p => p.id !== auction.player.id);
   if (!state.skippedPlayers.some(p => p.id === auction.player.id)) {
     state.skippedPlayers.push(auction.player);
@@ -602,10 +488,6 @@ function discardAuctionPlayer() {
   startAuctionRound();
 }
 
-/**
- * Recalcule l'enchère en cours après la déconnexion d'un commandant
- * (retire sa mise éventuelle, met à jour les prétendants restants).
- */
 function refreshAuctionAfterDisconnect() {
   if (state.phase !== 'auction' || !state.auction) return;
   const auction = state.auction;
@@ -621,7 +503,6 @@ function refreshAuctionAfterDisconnect() {
     auction.deadline = null;
     clearAuctionTimer();
   }
-
   resolveActiveIdsChange();
 }
 
@@ -655,10 +536,12 @@ io.on('connection', (socket) => {
         state.starterPackClaimed = {};
         state.seasonRound = 1;
         state.continueSeasonVotes = [];
+        state.seasonScores = null; // On réinitialise bien les scores au début
+        
         state.participants.forEach(p => {
           state.cardCollections[p.id] = {};
           state.activeLineups[p.id] = {};
-          state.pendingPacks[p.id] = 1; // le pack de départ, à ouvrir manuellement
+          state.pendingPacks[p.id] = 1; 
           state.lastOpenedPack[p.id] = [];
           state.starterPackClaimed[p.id] = false;
         });
@@ -688,13 +571,11 @@ io.on('connection', (socket) => {
     const match = state.bracket.flat().find(m => m.id === matchId);
     if (!match || match.status !== 'simulating') return;
 
-    // Coupe l'animation en cours via le dictionnaire externe
     if (matchTimeouts[match.id]) {
       clearTimeout(matchTimeouts[match.id]);
       delete matchTimeouts[match.id];
     }
 
-    // Résout instantanément les manches restantes (Bo5)
     while (match.scoreA < GAMES_TO_WIN && match.scoreB < GAMES_TO_WIN) {
       const gameNumber = match.games.length + 1;
       const { winnerSide, events } = simulateGame(match.teamA, match.teamB, match.scoreA, match.scoreB);
@@ -733,8 +614,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // --- Événements du mode "Draft aux packs" ---
-
   socket.on('open-pack', () => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
@@ -743,6 +622,10 @@ io.on('connection', (socket) => {
 
     const isStarter = !state.starterPackClaimed[id];
     const cards = isStarter ? openStarterPack() : openStandardPack();
+
+    // === TRI PAR RARETÉ (La meilleure en dernier) ===
+    // On se base sur la note globale (overall ou rating selon comment tes cartes sont faites)
+    cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
     if (!state.cardCollections[id]) state.cardCollections[id] = {};
     addCardsToCollection(state.cardCollections[id], cards);
@@ -753,11 +636,9 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // À rajouter juste en dessous de 'open-pack' ou 'set-lineup-card'
   socket.on('close-pack', () => {
     if (state.phase === 'cards') {
       const id = socket.id;
-      // On vide la mémoire du dernier pack ouvert pour ce joueur
       if (state.lastOpenedPack[id]) {
         state.lastOpenedPack[id] = [];
         io.emit('draft-update', state);
@@ -786,7 +667,7 @@ io.on('connection', (socket) => {
     const complete = ORDERED_ROLES.every(role => lineup[role]);
 
     if (!state.readyPlayers.includes(id)) {
-      if (!complete) return; // ne peut se déclarer prêt qu'avec une line-up complète
+      if (!complete) return; 
       state.readyPlayers.push(id);
     } else {
       state.readyPlayers = state.readyPlayers.filter(x => x !== id);
@@ -799,8 +680,7 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // Vote unanime pour enchaîner sur un nouveau tournoi de la saison (garde
-  // les collections de cartes, distribue les packs de récompense).
+  // === C'EST ICI QUE LE TOURNOI SE TERMINE VRAIMENT ===
   socket.on('continue-season', () => {
     if (state.phase !== 'simulation' || !state.champion || state.gameMode !== 'draft_cartes') return;
 
@@ -813,6 +693,25 @@ io.on('connection', (socket) => {
     const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
     if (state.continueSeasonVotes.length === humanCount && humanCount > 0) {
       awardSeasonPacks();
+
+      // --- LA CORRECTION EST ICI : AVANCÉE DE LA FRISE ET DE L'HISTOIRE ---
+      // 1. On archive le gagnant actuel
+      state.history.push({
+        year: state.year,
+        eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`,
+        winnerName: state.champion.name
+      });
+
+      // 2. On passe à l'événement suivant (MSI, EWC, etc...)
+      state.eventIndex += 1;
+      
+      // 3. Si on a fait tous les événements de l'année (FS, MSI, EWC, Worlds), on passe à l'année d'après
+      if (state.eventIndex >= EVENTS.length) {
+        state.eventIndex = 0;
+        state.year += 1;
+      }
+      // ----------------------------------------------------------------------
+
       state.continueSeasonVotes = [];
       state.readyPlayers = [];
       state.champion = null;
@@ -826,13 +725,11 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // --- Événements de la draft aux enchères ---
-
   socket.on('place-bid', (amount) => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced) return;
     if (!auction.activeIds.includes(socket.id)) return;
-    if (isBroke(socket.id)) return; // les fauchés ne peuvent pas enchérir
+    if (isBroke(socket.id)) return; 
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount)) return;
@@ -845,7 +742,7 @@ io.on('connection', (socket) => {
 
     auction.highestBid = numericAmount;
     auction.highestBidderId = socket.id;
-    auction.skipVotes = []; // une nouvelle enchère annule les votes de passage en cours
+    auction.skipVotes = []; 
 
     clearAuctionTimer();
     auction.deadline = Date.now() + BID_TIMER_MS;
@@ -859,7 +756,6 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // Un seul prétendant encore en lice (fauché ou non) : acquisition obligatoire.
   socket.on('acquire-forced', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || !auction.forced) return;
@@ -869,10 +765,6 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // Se retirer de l'enchère en cours pour CE joueur précis (le prix est trop
-  // haut pour soi, en tant que solvable — ou on est le dernier restant et on
-  // décline). En phase de secours à plusieurs fauchés, le passage se fait
-  // uniquement via le vote unanime (toggle-skip-vote), pas ici.
   socket.on('withdraw-from-auction', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced) return;
@@ -881,7 +773,7 @@ io.on('connection', (socket) => {
     if (auction.activeIds.length >= 2) {
       const solventActive = auction.activeIds.filter(id => !isBroke(id));
       const inRescuePhase = solventActive.length === 0;
-      if (inRescuePhase) return; // les fauchés passent tous ensemble ou pas du tout
+      if (inRescuePhase) return; 
     }
 
     auction.activeIds = auction.activeIds.filter(id => id !== socket.id);
@@ -898,9 +790,6 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // Récupération du joueur restant : soit on est le dernier encore en lice
-  // (peu importe qu'on soit fauché ou non, on a le choix), soit on est un
-  // commandant fauché et tous les solvables ont déjà renoncé (course au clic).
   socket.on('claim-player', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced) return;
@@ -910,22 +799,18 @@ io.on('connection', (socket) => {
     if (!isSoleSurvivor) {
       if (!isBroke(socket.id)) return;
       const solventActive = auction.activeIds.filter(id => !isBroke(id));
-      if (solventActive.length > 0) return; // les solvables n'ont pas encore tous renoncé
+      if (solventActive.length > 0) return; 
     }
 
     resolveAuctionWin(socket.id);
     io.emit('draft-update', state);
   });
 
-  // Vote pour passer ce joueur, à l'unanimité du groupe concerné :
-  // - en phase normale, seuls les prétendants solvables votent ;
-  // - une fois que tous les solvables ont renoncé (phase de secours), ce sont
-  //   les fauchés encore en lice qui votent entre eux pour écarter le lot.
   socket.on('toggle-skip-vote', () => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || auction.forced) return;
     if (!auction.activeIds.includes(socket.id)) return;
-    if (auction.activeIds.length <= 1) return; // dernier restant : cf. soleChoice, pas de vote
+    if (auction.activeIds.length <= 1) return; 
 
     const solventActive = auction.activeIds.filter(id => !isBroke(id));
     const inRescuePhase = solventActive.length === 0;
@@ -945,13 +830,11 @@ io.on('connection', (socket) => {
 
     if (votingGroup.length > 0 && auction.skipVotes.length === votingGroup.length) {
       if (inRescuePhase) {
-        // Unanimité des fauchés encore en lice : personne n'en veut, le joueur est écarté.
         clearAuctionTimer();
         discardAuctionPlayer();
         io.emit('draft-update', state);
         return;
       }
-      // Unanimité des solvables : ils sortent tous de la course, place aux fauchés.
       auction.activeIds = auction.activeIds.filter(id => isBroke(id));
       auction.skipVotes = [];
       auction.highestBid = 0;
@@ -1082,7 +965,6 @@ io.on('connection', (socket) => {
       state.participants = state.participants.filter(p => p.id !== socket.id);
       const humansAfter = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
-      // Nettoyage des entrées individuelles du mode cartes (departing id)
       delete state.cardCollections[socket.id];
       delete state.activeLineups[socket.id];
       delete state.pendingPacks[socket.id];
@@ -1113,19 +995,6 @@ io.on('connection', (socket) => {
       io.emit('draft-update', state);
     }
   });
-
-  // --- Événements du mode "Draft aux packs" ---
-  /*
-  // BOUTON DE TRICHE TEMPORAIRE
-  socket.on('give-me-packs', () => {
-    if (state.phase !== 'cards') return;
-    const id = socket.id;
-    // Ajoute 10 packs d'un coup au joueur qui clique
-    state.pendingPacks[id] = (state.pendingPacks[id] || 0) + 10;
-    io.emit('draft-update', state);
-  });
-  */
-
 });
 
 server.listen(3001, () => console.log('Serveur Esport actif sur le port 3001'));

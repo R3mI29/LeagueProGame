@@ -108,6 +108,7 @@ export default function App() {
       {renderMainContent()}
 
       {/* Bouton secret DEV toujours flottant en bas à droite */}
+      {/*
       <button
         onClick={() => setShowDevMode(true)}
         style={{
@@ -133,6 +134,7 @@ export default function App() {
       >
         DEV
       </button>
+      */}
     </>
   );
 }
