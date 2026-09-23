@@ -41,23 +41,29 @@ export function openStandardPack() {
   return cards;
 }
 
-/** Pack de départ : garantit exactement 1 carte de chaque rôle (évite de rester bloqué sans un poste). */
+/** 
+ * Pack de départ : garantit 10 cartes 100% Communes. 
+ * (1 de chaque rôle pour assurer un roster jouable + 5 autres cartes communes).
+ */
 export function openStarterPack() {
-  return ORDERED_ROLES.map(role => {
-    // 1. On tire au sort une rareté en respectant tes pourcentages (ex: 3% Légendaire)
-    const rarity = weightedRarity();
-    
-    // 2. On filtre les joueurs qui ont ce rôle ET cette rareté
-    let pool = CARD_POOL.filter(c => c.role === role && c.rarity === rarity);
-    
-    // Sécurité : si tu n'as pas créé de carte de cette rareté pour ce rôle, on prend n'importe quelle carte du rôle
-    if (pool.length === 0) {
-      pool = CARD_POOL.filter(c => c.role === role);
-    }
-    
-    // 3. On pioche la carte finale
-    return pool[Math.floor(Math.random() * pool.length)];
-  });
+  const pack = [];
+  
+  // 1. On garantit exactement 1 carte Commune par Rôle
+  for (const role of ORDERED_ROLES) {
+    const pool = CARD_POOL.filter(c => c.role === role && c.rarity === 'Commune');
+    // Sécurité au cas où aucune carte commune n'existerait pour un rôle spécifique
+    const safePool = pool.length > 0 ? pool : CARD_POOL.filter(c => c.role === role);
+    pack.push(safePool[Math.floor(Math.random() * safePool.length)]);
+  }
+  
+  // 2. On ajoute 5 autres cartes Communes aléatoires (pour donner 10 cartes au départ)
+  const allCommons = CARD_POOL.filter(c => c.rarity === 'Commune');
+  const safeAllCommons = allCommons.length > 0 ? allCommons : CARD_POOL;
+  for (let i = 0; i < 1; i++) {
+    pack.push(safeAllCommons[Math.floor(Math.random() * safeAllCommons.length)]);
+  }
+  
+  return pack;
 }
 
 export function addCardsToCollection(collection, cards) {
@@ -79,19 +85,49 @@ export function getCardById(id) {
   return CARD_POOL.find(c => c.id === id);
 }
 
-/** Convertit une carte en entrée de roster compatible avec le reste du jeu (bracket, simulation...). */
 /** Convertit une carte en entrée de roster compatible avec le reste du jeu. */
 export function cardToRosterEntry(card) {
-  // On utilise uniquement le champ 'variant' comme nom pour l'équipe
+  if (!card) return null;
   return { 
     id: card.id, 
-    name: card.variant, 
+    name: card.variant || card.baseName || card.name, 
     role: card.role, 
-    rating: card.rating 
+    rating: card.rating || card.overall || 80 
   };
 }
 
-/** Roster de bot généré directement depuis le pool de cartes (1 carte aléatoire par rôle). */
+/** Roster de bot généré directement avec 100% de cartes Communes. */
 export function generateBotRosterFromCards() {
-  return ORDERED_ROLES.map(role => cardToRosterEntry(drawCardOfRole(role)));
+  const roster = [];
+  for (const role of ORDERED_ROLES) {
+    const pool = CARD_POOL.filter(c => c.role === role && c.rarity === 'Commune');
+    const safePool = pool.length > 0 ? pool : CARD_POOL.filter(c => c.role === role);
+    const selectedCard = safePool[Math.floor(Math.random() * safePool.length)];
+    roster.push(cardToRosterEntry(selectedCard));
+  }
+  return roster;
+}
+
+/** Le Bot ouvre virtuellement ses packs de récompense et améliore son roster. */
+export function upgradeBotRoster(currentRoster, packsWon) {
+  const newRoster = [...currentRoster];
+  
+  for (let i = 0; i < packsWon; i++) {
+    const pack = openStandardPack(); 
+    
+    for (const card of pack) {
+      const roleIndex = newRoster.findIndex(p => p.role === card.role);
+      if (roleIndex !== -1) {
+        const currentCard = newRoster[roleIndex];
+        const newRating = card.rating || card.overall || 0;
+        const oldRating = currentCard.rating || currentCard.overall || 0;
+        
+        // Le bot a 75% de chance de s'équiper d'une carte si elle est meilleure
+        if (newRating > oldRating && Math.random() < 0.75) {
+          newRoster[roleIndex] = cardToRosterEntry(card);
+        }
+      }
+    }
+  }
+  return newRoster;
 }

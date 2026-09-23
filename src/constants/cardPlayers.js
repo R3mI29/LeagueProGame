@@ -25,15 +25,15 @@ export const CARD_POOL = [
   // --- TOPLANE ---
   // ==========================================
   {
-    "id": "zeus-t1-academy",
-    "baseName": "Zeus",
-    "variant": "T1 Academy Zeus",
+    "id": "kdf-dudu",
+    "baseName": "DuDu",
+    "variant": "KDF DuDu",
     "role": "Top",
-    "rating": 72,
+    "rating": 68,
     "rarity": "Commune"
   },
   {
-    "id": "zeus-t1-2023",
+    "id": "t1-zeus",
     "baseName": "Zeus",
     "variant": "T1 Zeus",
     "role": "Top",
@@ -66,19 +66,19 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "bin-suning",
-    "baseName": "Bin",
-    "variant": "Suning Bin",
+    "id": "bds-adam",
+    "baseName": "Adam",
+    "variant": "BDS Adam",
     "role": "Top",
-    "rating": 81,
+    "rating": 69,
     "rarity": "Commune"
   },
   {
-    "id": "bin-blg-2024",
+    "id": "blg-bin",
     "baseName": "Bin",
     "variant": "BLG Bin",
     "role": "Top",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Rare"
   },
   {
@@ -99,19 +99,19 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "369-tes-2020",
-    "baseName": "369",
-    "variant": "TES 369",
+    "id": "rge-szygenda",
+    "baseName": "Szygenda",
+    "variant": "RGE Szygenda",
     "role": "Top",
-    "rating": 79,
+    "rating": 64,
     "rarity": "Commune"
   },
   {
-    "id": "369-jdg-2023",
+    "id": "tes-369",
     "baseName": "369",
-    "variant": "JDG 369",
+    "variant": "TES 369",
     "role": "Top",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -123,19 +123,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "kiin-afreeca",
-    "baseName": "Kiin",
-    "variant": "Afreeca Kiin",
+    "id": "bro-morgan",
+    "baseName": "Morgan",
+    "variant": "BRO Morgan",
     "role": "Top",
-    "rating": 82,
+    "rating": 63,
     "rarity": "Commune"
   },
   {
-    "id": "kiin-geng-2024",
+    "id": "gen-kiin",
     "baseName": "Kiin",
     "variant": "Gen.G Kiin",
     "role": "Top",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Rare"
   },
   {
@@ -147,11 +147,11 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "brokenblade-s04",
-    "baseName": "BrokenBlade",
-    "variant": "S04 BrokenBlade",
+    "id": "gx-odoamne",
+    "baseName": "Odoamne",
+    "variant": "GX Odoamne",
     "role": "Top",
-    "rating": 74,
+    "rating": 66,
     "rarity": "Commune"
   },
   {
@@ -164,51 +164,51 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/g2_brokenblade.webp"
   },
   {
-    "id": "adam-kcorp",
-    "baseName": "Adam",
-    "variant": "KCorp Adam",
+    "id": "kcb-maynter",
+    "baseName": "Maynter",
+    "variant": "KCB Maynter",
+    "role": "Top",
+    "rating": 62,
+    "rarity": "Commune"
+  },
+  {
+    "id": "fnc-oscarinin",
+    "baseName": "Oscarinin",
+    "variant": "FNC Oscarinin",
+    "role": "Top",
+    "rating": 78,
+    "rarity": "Rare"
+  },
+  {
+    "id": "tl-impact",
+    "baseName": "Impact",
+    "variant": "TL Impact",
     "role": "Top",
     "rating": 71,
     "rarity": "Commune"
   },
   {
-    "id": "adam-bds",
-    "baseName": "Adam",
-    "variant": "BDS Adam",
+    "id": "fly-bwipo",
+    "baseName": "Bwipo",
+    "variant": "FLY Bwipo",
     "role": "Top",
-    "rating": 76,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
-    "id": "impact-skt",
-    "baseName": "Impact",
-    "variant": "SKT T1 Impact",
+    "id": "ns-dndn",
+    "baseName": "DnDn",
+    "variant": "NS DnDn",
+    "role": "Top",
+    "rating": 61,
+    "rarity": "Commune"
+  },
+  {
+    "id": "hle-doran",
+    "baseName": "Doran",
+    "variant": "HLE Doran",
     "role": "Top",
     "rating": 81,
-    "rarity": "Commune"
-  },
-  {
-    "id": "impact-tl",
-    "baseName": "Impact",
-    "variant": "TL Impact",
-    "role": "Top",
-    "rating": 77,
-    "rarity": "Rare"
-  },
-  {
-    "id": "doran-griffin",
-    "baseName": "Doran",
-    "variant": "Griffin Doran",
-    "role": "Top",
-    "rating": 73,
-    "rarity": "Commune"
-  },
-  {
-    "id": "doran-geng",
-    "baseName": "Doran",
-    "variant": "Gen.G Doran",
-    "role": "Top",
-    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -220,19 +220,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "wunder-splyce",
+    "id": "th-wunder",
     "baseName": "Wunder",
-    "variant": "Splyce Wunder",
+    "variant": "TH Wunder",
     "role": "Top",
-    "rating": 72,
+    "rating": 67,
     "rarity": "Commune"
   },
   {
-    "id": "wunder-g2",
+    "id": "g2-wunder-2019",
     "baseName": "Wunder",
-    "variant": "MSI Champion Wunder",
+    "variant": "G2 Wunder",
     "role": "Top",
-    "rating": 87,
+    "rating": 84,
     "rarity": "Rare"
   },
 
@@ -240,19 +240,19 @@ export const CARD_POOL = [
   // --- JUNGLE ---
   // ==========================================
   {
-    "id": "canyon-dwg-2019",
-    "baseName": "Canyon",
-    "variant": "Damwon Canyon",
+    "id": "ns-sylvie",
+    "baseName": "Sylvie",
+    "variant": "NS Sylvie",
     "role": "Jungle",
-    "rating": 79,
+    "rating": 64,
     "rarity": "Commune"
   },
   {
-    "id": "canyon-geng-2024",
+    "id": "gen-canyon",
     "baseName": "Canyon",
     "variant": "Gen.G Canyon",
     "role": "Jungle",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Rare"
   },
   {
@@ -272,19 +272,19 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "kanavi-griffin",
-    "baseName": "Kanavi",
-    "variant": "Griffin Kanavi",
+    "id": "gx-isma",
+    "baseName": "Isma",
+    "variant": "GX Isma",
     "role": "Jungle",
-    "rating": 70,
+    "rating": 66,
     "rarity": "Commune"
   },
   {
-    "id": "kanavi-jdg-2023",
+    "id": "jdg-kanavi",
     "baseName": "Kanavi",
     "variant": "JDG Kanavi",
     "role": "Jungle",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Rare"
   },
   {
@@ -313,15 +313,15 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/T1_Painter.webp"
   },
   {
-    "id": "oner-t1-academy",
-    "baseName": "Oner",
-    "variant": "T1 Academy Oner",
+    "id": "bro-raptor",
+    "baseName": "Raptor",
+    "variant": "BRO Raptor",
     "role": "Jungle",
-    "rating": 71,
+    "rating": 63,
     "rarity": "Commune"
   },
   {
-    "id": "oner-t1-2022",
+    "id": "t1-oner",
     "baseName": "Oner",
     "variant": "T1 Oner",
     "role": "Jungle",
@@ -337,19 +337,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "peanut-rox",
-    "baseName": "Peanut",
-    "variant": "ROX Peanut",
+    "id": "rge-markoon",
+    "baseName": "Markoon",
+    "variant": "RGE Markoon",
     "role": "Jungle",
-    "rating": 86,
+    "rating": 67,
     "rarity": "Commune"
   },
   {
-    "id": "peanut-hle",
+    "id": "hle-peanut",
     "baseName": "Peanut",
     "variant": "HLE Peanut",
     "role": "Jungle",
-    "rating": 85,
+    "rating": 84,
     "rarity": "Rare"
   },
   {
@@ -361,15 +361,15 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "tian-fpx",
-    "baseName": "Tian",
-    "variant": "FPX Tian",
+    "id": "th-jankos",
+    "baseName": "Jankos",
+    "variant": "TH Jankos",
     "role": "Jungle",
-    "rating": 84,
+    "rating": 70,
     "rarity": "Commune"
   },
   {
-    "id": "tian-tes",
+    "id": "tes-tian",
     "baseName": "Tian",
     "variant": "TES Tian",
     "role": "Jungle",
@@ -385,27 +385,27 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "elyoya-mad",
+    "id": "mdk-elyoya",
     "baseName": "Elyoya",
-    "variant": "MAD Elyoya",
+    "variant": "MAD Lions Elyoya",
     "role": "Jungle",
-    "rating": 81,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
-    "id": "yike-ldlc",
-    "baseName": "Yike",
-    "variant": "LDLC Yike",
+    "id": "bds-sheo",
+    "baseName": "Sheo",
+    "variant": "BDS Sheo",
     "role": "Jungle",
-    "rating": 72,
+    "rating": 68,
     "rarity": "Commune"
   },
   {
-    "id": "yike-g2",
+    "id": "g2-yike",
     "baseName": "Yike",
     "variant": "G2 Yike",
     "role": "Jungle",
-    "rating": 81,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -418,35 +418,35 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/blg_xun.webp"
   },
   {
-    "id": "jankos-h2k",
-    "baseName": "Jankos",
-    "variant": "H2K Jankos",
+    "id": "kcb-lyncas",
+    "baseName": "Lyncas",
+    "variant": "KCB Lyncas",
     "role": "Jungle",
-    "rating": 79,
+    "rating": 65,
     "rarity": "Commune"
   },
   {
-    "id": "jankos-g2",
+    "id": "g2-jankos",
     "baseName": "Jankos",
     "variant": "G2 Jankos",
     "role": "Jungle",
-    "rating": 87,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
-    "id": "razork-misfits",
-    "baseName": "Razork",
-    "variant": "Misfits Razork",
+    "id": "vit-daglas",
+    "baseName": "Daglas",
+    "variant": "VIT Daglas",
     "role": "Jungle",
-    "rating": 74,
+    "rating": 62,
     "rarity": "Commune"
   },
   {
-    "id": "razork-fnc",
+    "id": "fnc-razork",
     "baseName": "Razork",
-    "variant": "Fnatic Razork",
+    "variant": "FNC Razork",
     "role": "Jungle",
-    "rating": 80,
+    "rating": 81,
     "rarity": "Rare"
   },
 
@@ -735,16 +735,16 @@ export const CARD_POOL = [
     "baseName": "Ruler",
     "variant": "SSG Ruler",
     "role": "ADC",
-    "rating": 89,
-    "rarity": "Commune",
+    "rating": 82,
+    "rarity": "Rare",
     "image": "/cardsImg/others/ssg_ruler.png"
   },
   {
-    "id": "ruler-jdg-2023",
+    "id": "jdg-ruler",
     "baseName": "Ruler",
     "variant": "JDG Ruler",
     "role": "ADC",
-    "rating": 90,
+    "rating": 86,
     "rarity": "Rare"
   },
   {
@@ -764,27 +764,27 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "viper-griffin",
-    "baseName": "Viper",
-    "variant": "Griffin Viper",
+    "id": "ns-jiwoo",
+    "baseName": "Jiwoo",
+    "variant": "NS Jiwoo",
     "role": "ADC",
-    "rating": 85,
+    "rating": 69,
     "rarity": "Commune"
   },
   {
-    "id": "viper-hle-2024",
+    "id": "hle-viper",
     "baseName": "Viper",
     "variant": "HLE Viper",
     "role": "ADC",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Rare"
   },
   {
-    "id": "viper-blg-2026",
+    "id": "blg-viper",
     "baseName": "Viper",
     "variant": "BLG Viper",
     "role": "ADC",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Rare"
   },
   {
@@ -804,11 +804,11 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "gumayusi-academy",
-    "baseName": "Gumayusi",
-    "variant": "T1 Academy Gumayusi",
+    "id": "bro-envyy",
+    "baseName": "Envyy",
+    "variant": "BRO Envyy",
     "role": "ADC",
-    "rating": 72,
+    "rating": 62,
     "rarity": "Commune"
   },
   {
@@ -837,19 +837,19 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "elk-we",
-    "baseName": "Elk",
-    "variant": "WE Elk",
+    "id": "gx-patrik",
+    "baseName": "Patrik",
+    "variant": "GX Patrik",
     "role": "ADC",
-    "rating": 77,
+    "rating": 66,
     "rarity": "Commune"
   },
   {
-    "id": "elk-blg-2024",
+    "id": "blg-elk",
     "baseName": "Elk",
     "variant": "BLG Elk",
     "role": "ADC",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -861,19 +861,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "jackeylove-ig",
-    "baseName": "JackeyLove",
-    "variant": "IG JackeyLove",
+    "id": "sk-rahel",
+    "baseName": "Rahel",
+    "variant": "SK Rahel",
     "role": "ADC",
-    "rating": 86,
+    "rating": 68,
     "rarity": "Commune"
   },
   {
-    "id": "jackeylove-tes-2024",
+    "id": "tes-jackeylove",
     "baseName": "JackeyLove",
     "variant": "TES JackeyLove",
     "role": "ADC",
-    "rating": 85,
+    "rating": 84,
     "rarity": "Rare"
   },
   {
@@ -885,19 +885,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "peyz-challengers",
-    "baseName": "Peyz",
-    "variant": "Gen.G Academy Peyz",
+    "id": "kdf-bull",
+    "baseName": "Bull",
+    "variant": "KDF Bull",
     "role": "ADC",
-    "rating": 72,
+    "rating": 67,
     "rarity": "Commune"
   },
   {
-    "id": "peyz-geng-2024",
+    "id": "gen-peyz",
     "baseName": "Peyz",
     "variant": "Gen.G Peyz",
     "role": "ADC",
-    "rating": 86,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -909,11 +909,11 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "caliste-kcb",
-    "baseName": "Caliste",
-    "variant": "KCB Caliste",
+    "id": "rge-comp",
+    "baseName": "Comp",
+    "variant": "RGE Comp",
     "role": "ADC",
-    "rating": 72,
+    "rating": 65,
     "rarity": "Commune"
   },
   {
@@ -926,55 +926,64 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/kc_caliste.webp"
   },
   {
-    "id": "hanssama-misfits",
-    "baseName": "Hans Sama",
-    "variant": "Misfits Hans Sama",
+    "id": "bds-ice",
+    "baseName": "Ice",
+    "variant": "BDS Ice",
     "role": "ADC",
-    "rating": 78,
+    "rating": 71,
     "rarity": "Commune"
   },
   {
-    "id": "hanssama-g2",
+    "id": "g2-hanssama",
     "baseName": "Hans Sama",
-    "variant": "G2 Hans-Sama",
+    "variant": "G2 Hans Sama",
     "role": "ADC",
-    "rating": 82,
+    "rating": 81,
     "rarity": "Rare"
   },
   {
-    "id": "upset-s04",
-    "baseName": "Upset",
-    "variant": "S04 Upset",
-    "role": "ADC",
-    "rating": 76,
-    "rarity": "Commune"
-  },
-  {
-    "id": "upset-kcorp",
+    "id": "kc-upset",
     "baseName": "Upset",
     "variant": "KC Upset",
     "role": "ADC",
-    "rating": 73,
+    "rating": 78,
     "rarity": "Rare"
+  },
+  {
+    "id": "uzi-msi-2018",
+    "baseName": "Uzi",
+    "variant": "MSI Champion Uzi",
+    "role": "ADC",
+    "rating": 90,
+    "rarity": "Épique"
+  },
+  {
+    "id": "uzi-adc-god",
+    "baseName": "Uzi",
+    "variant": "ADC God Uzi",
+    "role": "ADC",
+    "rating": 94,
+    "rarity": "Légendaire"
+    
   },
 
   // ==========================================
   // --- SUPPORT ---
   // ==========================================
   {
-    "id": "keria-drx",
-    "baseName": "Keria",
-    "variant": "DRX Keria",
+    "id": "ns-peter",
+    "baseName": "Peter",
+    "variant": "NS Peter",
     "role": "Support",
-    "rating": 82,
+    "rating": 64,
     "rarity": "Commune"
   },
   {
-    "id": "keria-t1-2022",
+    "id": "t1-keria",
     "baseName": "Keria",
     "variant": "T1 Keria",
     "role": "Support",
-    "rating": 90,
+    "rating": 86,
     "rarity": "Rare"
   },
   {
@@ -994,19 +1003,19 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "missing-we",
-    "baseName": "Missing",
-    "variant": "WE Missing",
+    "id": "bro-effort",
+    "baseName": "Effort",
+    "variant": "BRO Effort",
     "role": "Support",
-    "rating": 76,
+    "rating": 61,
     "rarity": "Commune"
   },
   {
-    "id": "missing-jdg-2023",
+    "id": "jdg-missing",
     "baseName": "Missing",
     "variant": "JDG Missing",
     "role": "Support",
-    "rating": 87,
+    "rating": 84,
     "rarity": "Rare"
   },
   {
@@ -1018,19 +1027,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "delight-brion",
-    "baseName": "Delight",
-    "variant": "BRION Delight",
+    "id": "gx-ignar",
+    "baseName": "IgNar",
+    "variant": "GX IgNar",
     "role": "Support",
-    "rating": 74,
+    "rating": 65,
     "rarity": "Commune"
   },
   {
-    "id": "delight-geng",
+    "id": "gen-delight",
     "baseName": "Delight",
     "variant": "Gen.G Delight",
     "role": "Support",
-    "rating": 84,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -1042,19 +1051,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "lehends-griffin",
-    "baseName": "Lehends",
-    "variant": "Griffin Lehends",
+    "id": "fnc-jun",
+    "baseName": "Jun",
+    "variant": "FNC Jun",
     "role": "Support",
-    "rating": 81,
+    "rating": 72,
     "rarity": "Commune"
   },
   {
-    "id": "lehends-geng-2024",
+    "id": "gen-lehends",
     "baseName": "Lehends",
     "variant": "Gen.G Lehends",
     "role": "Support",
-    "rating": 89,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -1066,19 +1075,19 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "mikyx-splyce",
-    "baseName": "Mikyx",
-    "variant": "Splyce Mikyx",
+    "id": "sk-luon",
+    "baseName": "Luon",
+    "variant": "SK Luon",
     "role": "Support",
-    "rating": 73,
+    "rating": 66,
     "rarity": "Commune"
   },
   {
-    "id": "mikyx-g2-2024",
+    "id": "g2-mikyx",
     "baseName": "Mikyx",
     "variant": "G2 Mikyx",
     "role": "Support",
-    "rating": 81,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -1090,59 +1099,59 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "targamas-giants",
-    "baseName": "Targamas",
-    "variant": "Giants Targamas",
+    "id": "rge-zoelys",
+    "baseName": "Zoelys",
+    "variant": "RGE Zoelys",
     "role": "Support",
-    "rating": 67,
+    "rating": 62,
     "rarity": "Commune"
   },
   {
-    "id": "targamas-kcorp-2024",
+    "id": "kc-targamas",
     "baseName": "Targamas",
     "variant": "KC Targamas",
     "role": "Support",
+    "rating": 76,
+    "rarity": "Rare"
+  },
+  {
+    "id": "bds-labrov",
+    "baseName": "Labrov",
+    "variant": "BDS Labrov",
+    "role": "Support",
     "rating": 70,
-    "rarity": "Rare"
-  },
-  {
-    "id": "hylissang-uol",
-    "baseName": "Hylissang",
-    "variant": "UOL Hylissang",
-    "role": "Support",
-    "rating": 74,
     "rarity": "Commune"
   },
   {
-    "id": "hylissang-fnc",
+    "id": "vit-hylissang",
     "baseName": "Hylissang",
-    "variant": "Fnatic Hylissang",
+    "variant": "VIT Hylissang",
     "role": "Support",
-    "rating": 81,
+    "rating": 78,
     "rarity": "Rare"
   },
   {
-    "id": "corejj-ssg",
-    "baseName": "CoreJJ",
-    "variant": "SSG CoreJJ",
+    "id": "mdk-alvaro",
+    "baseName": "Alvaro",
+    "variant": "MDK Alvaro",
     "role": "Support",
-    "rating": 88,
+    "rating": 69,
     "rarity": "Commune"
   },
   {
-    "id": "corejj-tl",
+    "id": "tl-corejj",
     "baseName": "CoreJJ",
     "variant": "TL CoreJJ",
     "role": "Support",
-    "rating": 80,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
-    "id": "meiko-edg",
-    "baseName": "Meiko",
-    "variant": "EDG Meiko",
+    "id": "th-kaiser",
+    "baseName": "Kaiser",
+    "variant": "TH Kaiser",
     "role": "Support",
-    "rating": 84,
+    "rating": 67,
     "rarity": "Commune"
   },
   {

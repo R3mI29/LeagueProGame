@@ -5,9 +5,12 @@ import cors from 'cors';
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
+// IMPORT DE TON NOUVEAU FICHIER DE CONSTANTES D'ÉVÉNEMENTS
+import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
   openStandardPack, openStarterPack, addCardsToCollection,
-  hasCompleteLineup, getCardById, cardToRosterEntry, generateBotRosterFromCards
+  hasCompleteLineup, getCardById, cardToRosterEntry, 
+  generateBotRosterFromCards, upgradeBotRoster
 } from './cardMode.js';
 
 const app = express();
@@ -36,9 +39,7 @@ function getUniqueBotName(pendingBots = []) {
   const allUsed = [...usedNames, ...pendingNames];
   
   const availableNames = teamNames.filter(name => !allUsed.includes(name.toLowerCase()));
-  
   if (availableNames.length === 0) return `Bot Squad ${Math.floor(Math.random() * 1000)}`;
-  
   return availableNames[Math.floor(Math.random() * availableNames.length)];
 }
 
@@ -50,7 +51,6 @@ let state = {
   currentRound: 0, roundComplete: false, roundReady: [],
   auction: null, budgets: {},
   skippedPlayers: [],
-  // --- Mode "Draft aux packs" (cartes + saison) ---
   cardCollections: {}, 
   activeLineups: {}, 
   pendingPacks: {}, 
@@ -59,8 +59,8 @@ let state = {
   seasonRound: 0,
   continueSeasonVotes: [],
   year: 1,
-  eventIndex: 0, // 0=FS, 1=MSI, 2=EWC, 3=Worlds
-  history: []    // Pour garder une trace des gagnants passés
+  eventIndex: 0, 
+  history: []    
 };
 
 function getOptionsForParticipant(participant, availablePool) {
@@ -93,11 +93,8 @@ const MATCH_EVENTS = [
   {
     id: 'carry-superstar',
     probability: 0.18,
-    apply(teamA, teamB) {
-      const allPlayers = [
-        ...teamA.roster.map(p => ({ p, side: 'A' })),
-        ...teamB.roster.map(p => ({ p, side: 'B' }))
-      ];
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const allPlayers = [...teamA.roster.map(p => ({ p, side: 'A' })), ...teamB.roster.map(p => ({ p, side: 'B' }))];
       const best = allPlayers.reduce((acc, cur) => (cur.p.rating > acc.p.rating ? cur : acc));
       if (best.p.rating < 90) return null;
       return { side: best.side, ratingDelta: 6, label: `${best.p.name} est injouable ce game` };
@@ -106,7 +103,7 @@ const MATCH_EVENTS = [
   {
     id: 'bot-synergy',
     probability: 0.15,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const side = Math.random() < 0.5 ? 'A' : 'B';
       const team = side === 'A' ? teamA : teamB;
       const adc = team.roster.find(p => p.role === 'ADC');
@@ -118,7 +115,7 @@ const MATCH_EVENTS = [
   {
     id: 'mid-jungle-duo',
     probability: 0.15,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const side = Math.random() < 0.5 ? 'A' : 'B';
       const team = side === 'A' ? teamA : teamB;
       const mid = team.roster.find(p => p.role === 'Mid');
@@ -130,7 +127,7 @@ const MATCH_EVENTS = [
   {
     id: 'lane-duel-mid',
     probability: 0.12,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const midA = teamA.roster.find(p => p.role === 'Mid');
       const midB = teamB.roster.find(p => p.role === 'Mid');
       if (!midA || !midB) return null;
@@ -144,7 +141,7 @@ const MATCH_EVENTS = [
   {
     id: 'top-duel',
     probability: 0.12,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const topA = teamA.roster.find(p => p.role === 'Top');
       const topB = teamB.roster.find(p => p.role === 'Top');
       if (!topA || !topB) return null;
@@ -166,7 +163,7 @@ const MATCH_EVENTS = [
   {
     id: 'throw',
     probability: 0.1,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const ratingA = getTeamRating(teamA);
       const ratingB = getTeamRating(teamB);
       if (Math.abs(ratingA - ratingB) < 4) return null;
@@ -179,7 +176,7 @@ const MATCH_EVENTS = [
   {
     id: 'tech-issue',
     probability: 0.08,
-    apply(teamA, teamB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       const affectedSide = Math.random() < 0.5 ? 'A' : 'B';
       const beneficiarySide = affectedSide === 'A' ? 'B' : 'A';
       const affectedName = affectedSide === 'A' ? teamA.name : teamB.name;
@@ -189,7 +186,7 @@ const MATCH_EVENTS = [
   {
     id: 'momentum',
     probability: 0.12,
-    apply(teamA, teamB, scoreA, scoreB) {
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
       if (scoreA === scoreB) return null;
       const trailingSide = scoreA < scoreB ? 'A' : 'B';
       const trailingName = trailingSide === 'A' ? teamA.name : teamB.name;
@@ -198,15 +195,28 @@ const MATCH_EVENTS = [
   }
 ];
 
-function simulateGame(teamA, teamB, scoreA, scoreB) {
+function simulateGame(match, state) {
+  const teamA = match.teamA;
+  const teamB = match.teamB;
   let ratingA = getTeamRating(teamA);
   let ratingB = getTeamRating(teamB);
   const triggeredEvents = [];
 
-  for (const event of MATCH_EVENTS) {
+  // Fusion des événements classiques et de tes événements de cartes
+  const ALL_EVENTS = [...MATCH_EVENTS, ...CUSTOM_CARD_EVENTS];
+
+  for (const event of ALL_EVENTS) {
     if (Math.random() > event.probability) continue;
-    const result = event.apply(teamA, teamB, scoreA, scoreB);
+    
+    // Le serveur bloque automatiquement l'événement s'il est uniquePerBO et a déjà proc
+    if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
+
+    const result = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
     if (!result) continue;
+    
+    // Si le buff passe, on l'enregistre pour qu'il ne se reproduise plus dans le BO (si unique)
+    if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
+
     if (result.side === 'A') ratingA += result.ratingDelta;
     else ratingB += result.ratingDelta;
     triggeredEvents.push({ label: result.label, side: result.side });
@@ -228,6 +238,7 @@ function tryStartMatch(match) {
     match.scoreB = 0;
     match.games = [];
     match.lastGameEvents = [];
+    match.triggeredUniqueEvents = []; // Initialise le compteur d'événements uniques pour le BO
     playNextGame(match);
   }
 }
@@ -242,7 +253,9 @@ function playNextGame(match) {
 
   matchTimeouts[match.id] = setTimeout(() => {
     const gameNumber = match.games.length + 1;
-    const { winnerSide, events } = simulateGame(match.teamA, match.teamB, match.scoreA, match.scoreB);
+    
+    // Appel de la simulation modifiée
+    const { winnerSide, events } = simulateGame(match, state);
 
     if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
     match.games.push({ gameNumber, winnerSide, events });
@@ -278,15 +291,15 @@ function buildBracketAndStartTournament() {
     qf.push({
       id: `qf-${i}`, teamA: shuffled[i], teamB: shuffled[i + 4],
       status: 'pending', ready: [], dismissedBy: [], winner: null,
-      scoreA: 0, scoreB: 0, games: [], lastGameEvents: [],
+      scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [],
       nextId: `sf-${Math.floor(i / 2)}`, nextSlot: i % 2 === 0 ? 'teamA' : 'teamB'
     });
   }
   const sf = [
-    { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], nextId: 'f-0', nextSlot: 'teamA' },
-    { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], nextId: 'f-0', nextSlot: 'teamB' }
+    { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: 'f-0', nextSlot: 'teamA' },
+    { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: 'f-0', nextSlot: 'teamB' }
   ];
-  state.bracket = [qf, sf, [{ id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], nextId: null, nextSlot: null }]];
+  state.bracket = [qf, sf, [{ id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: null, nextSlot: null }]];
 }
 
 function completeDraftAndStartTournament() {
@@ -347,25 +360,33 @@ function awardSeasonPacks() {
     ? (finalMatch.teamA?.id === championId ? finalMatch.teamB?.id : finalMatch.teamA?.id)
     : null;
 
+  const semiFinalists = state.bracket[1]
+    .flatMap(m => [m.teamA?.id, m.teamB?.id])
+    .filter(id => id && id !== championId && id !== runnerUpId);
+
   if (!state.seasonScores) state.seasonScores = {};
   
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
 
+    let packsWon = 1;
+
     if (p.id === championId) {
       state.seasonScores[p.id].points += 5;
       state.seasonScores[p.id].titles += 1;
+      packsWon = 4;
     } else if (p.id === runnerUpId) {
       state.seasonScores[p.id].points += 3;
-    } else if (state.bracket[1].some(m => m.teamA?.id === p.id || m.teamB?.id === p.id)) {
+      packsWon = 3;
+    } else if (semiFinalists.includes(p.id)) {
       state.seasonScores[p.id].points += 1;
+      packsWon = 2;
     }
 
     if (!p.id.startsWith('bot-')) {
-      let packs = 1; 
-      if (p.id === championId) packs = 3;
-      else if (p.id === runnerUpId) packs = 2;
-      state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packs;
+      state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packsWon;
+    } else {
+      p.roster = upgradeBotRoster(p.roster, packsWon);
     }
   });
 }
@@ -536,7 +557,7 @@ io.on('connection', (socket) => {
         state.starterPackClaimed = {};
         state.seasonRound = 1;
         state.continueSeasonVotes = [];
-        state.seasonScores = null; // On réinitialise bien les scores au début
+        state.seasonScores = null; 
         
         state.participants.forEach(p => {
           state.cardCollections[p.id] = {};
@@ -578,7 +599,7 @@ io.on('connection', (socket) => {
 
     while (match.scoreA < GAMES_TO_WIN && match.scoreB < GAMES_TO_WIN) {
       const gameNumber = match.games.length + 1;
-      const { winnerSide, events } = simulateGame(match.teamA, match.teamB, match.scoreA, match.scoreB);
+      const { winnerSide, events } = simulateGame(match, state);
       if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
       match.games.push({ gameNumber, winnerSide, events });
       match.lastGameEvents = events;
@@ -623,8 +644,6 @@ io.on('connection', (socket) => {
     const isStarter = !state.starterPackClaimed[id];
     const cards = isStarter ? openStarterPack() : openStandardPack();
 
-    // === TRI PAR RARETÉ (La meilleure en dernier) ===
-    // On se base sur la note globale (overall ou rating selon comment tes cartes sont faites)
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
     if (!state.cardCollections[id]) state.cardCollections[id] = {};
@@ -680,7 +699,6 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // === C'EST ICI QUE LE TOURNOI SE TERMINE VRAIMENT ===
   socket.on('continue-season', () => {
     if (state.phase !== 'simulation' || !state.champion || state.gameMode !== 'draft_cartes') return;
 
@@ -694,23 +712,18 @@ io.on('connection', (socket) => {
     if (state.continueSeasonVotes.length === humanCount && humanCount > 0) {
       awardSeasonPacks();
 
-      // --- LA CORRECTION EST ICI : AVANCÉE DE LA FRISE ET DE L'HISTOIRE ---
-      // 1. On archive le gagnant actuel
       state.history.push({
         year: state.year,
         eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`,
         winnerName: state.champion.name
       });
 
-      // 2. On passe à l'événement suivant (MSI, EWC, etc...)
       state.eventIndex += 1;
       
-      // 3. Si on a fait tous les événements de l'année (FS, MSI, EWC, Worlds), on passe à l'année d'après
       if (state.eventIndex >= EVENTS.length) {
         state.eventIndex = 0;
         state.year += 1;
       }
-      // ----------------------------------------------------------------------
 
       state.continueSeasonVotes = [];
       state.readyPlayers = [];

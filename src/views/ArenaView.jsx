@@ -1,21 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { socket } from '../api/socket';
 import { ORDERED_ROLES } from '../constants/roles';
 import { CARD_POOL } from '../constants/cardPlayers';
 import CardIllustration from '../components/CardIllustration';
+// NOUVEAU : Import de ton overlay
+import PlayerSkillOverlay from '../components/PlayerSkillOverlay'; 
 
 export default function ArenaView({ match, matchReady, dismissMatch, state }) {
   const isReady = match.ready.includes(socket.id);
   const isFinished = match.status === 'finished';
   const isSimulating = match.status === 'simulating';
   
-  // On vérifie le mode de jeu pour changer l'affichage
+  // NOUVEAU : État pour gérer la compétence affichée à l'écran
+  const [activeSkill, setActiveSkill] = useState(null);
+  
   const isCardMode = state.gameMode === 'draft_cartes';
   const getCardById = (id) => CARD_POOL.find(c => c.id === id);
 
   const handleSkip = () => {
     socket.emit('skip-match', match.id);
   };
+
+  // NOUVEAU : Déclenchement de l'effet visuel pendant la simulation
+  useEffect(() => {
+    let matchInterval;
+    
+    // On ne lance des animations que si le match est en cours de "simulation"
+    if (isSimulating) {
+      matchInterval = setInterval(() => {
+        // Logique fictive : 15% de chance chaque seconde de proc un effet si aucun n'est déjà actif
+        const randomChance = Math.random();
+        
+        if (randomChance > 0.85 && !activeSkill) {
+          
+          // Note : Plus tard, tu pourras relier ça aux vrais événements envoyés par ton serveur via socket
+          setActiveSkill({
+            playerName: "FAKER",
+            traitName: "UNKILLABLE DEMON KING",
+            description: "Esquive les dégâts létaux et restaure 30% des HP de l'équipe !",
+            rarityColor: "#ffffff",
+            portrait: "/cardsImg/others/faker_UDK2.jpg"
+          });
+
+          // Retire l'overlay après 3 secondes (temps que dure l'animation CSS)
+          setTimeout(() => {
+            setActiveSkill(null);
+          }, 3000);
+        }
+      }, 1000);
+    }
+
+    // Nettoyage de l'intervalle si le composant se démonte ou si la simulation s'arrête
+    return () => clearInterval(matchInterval);
+  }, [isSimulating, activeSkill]);
 
   const renderRoster = (team) => {
     // AFFICHAGE MODE CARTES
@@ -53,13 +90,13 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
   };
 
   return (
-    <div className="container">
+    // AJOUT: position relative sur le conteneur principal pour que l'overlay se cale bien au fond
+    <div className="container" style={{ position: 'relative' }}>
       <h1 className="title-font text-cyan" style={{ fontSize: '32px' }}>CONFRONTATION PROTOCOLE</h1>
       <p className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '4px' }}>
         {match.id.includes('qf') ? 'QUART DE FINALE' : match.id.includes('sf') ? 'DEMI-FINALE' : 'GRANDE FINALE'}
       </p>
       
-      {/* On élargit la boîte si on affiche les cartes pour éviter que ça se superpose */}
       <div className="arena-box" style={{ maxWidth: isCardMode ? '1300px' : '1000px', alignItems: 'stretch' }}>
         
         {/* EQUIPE A */}
@@ -92,7 +129,6 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
             {isSimulating && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
                 <div className="title-font text-pink pulse-text" style={{ fontSize: '20px' }}>CALCUL DE L'ISSUE...</div>
-                {/* Le fameux bouton pour skip */}
                 <button className="btn btn-outline" style={{ fontSize: '12px', padding: '8px 16px', borderColor: 'var(--text-muted)', color: 'var(--text-muted)' }} onClick={handleSkip}>
                   PASSER L'ANIMATION ⏭
                 </button>
@@ -120,6 +156,11 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
         </div>
 
       </div>
+
+      {/* NOUVEAU : Appel du composant Overlay */}
+      {/* S'affiche en position absolue par-dessus tout le reste dès qu'une compétence proc */}
+      {activeSkill && <PlayerSkillOverlay skillData={activeSkill} />}
+
     </div>
   );
 }
