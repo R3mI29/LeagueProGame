@@ -35,7 +35,7 @@ export default function WaitingRoom({ state, startDraft }) {
             </li>
           ))}
         </ul>
-        {humanParticipants.length >= 2 && (
+        {humanParticipants.length >= 1 && (
           <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>
             Lancer la séquence
           </button>

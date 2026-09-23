@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { socket } from '../api/socket';
 import { ORDERED_ROLES } from '../constants/roles';
 import { CARD_POOL } from '../constants/cardPlayers';
+import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
-import SeasonRoadmap from '../components/SeasonRoadmap';
 
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
@@ -45,7 +45,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
     return total + (card ? (card.overall || card.rating || 80) : 0);
   }, 0) / 5;
 
-  // CORRECTION : Tri du classement par points (et par titres en cas d'égalité)
+  // Tri du classement par points (et par titres en cas d'égalité)
   const sortedLeaderboard = [...state.participants].sort((a, b) => {
     const ptsA = state.seasonScores?.[a.id]?.points || 0;
     const ptsB = state.seasonScores?.[b.id]?.points || 0;
@@ -55,6 +55,8 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
     const titlesB = state.seasonScores?.[b.id]?.titles || 0;
     return titlesB - titlesA;
   });
+
+  const currentEventIndex = state.eventIndex || 0;
 
   return (
     <div style={{
@@ -73,20 +75,24 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
               CIRCUIT <span style={{ color: THEME.accentGold }}>PRO</span>
             </h1>
             <span style={{ color: THEME.textMuted, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 500 }}>
-              Gestion de Roster Officiel
+              Gestion de Roster Officiel — Année {state.year || 1}
             </span>
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>
-            {['roster', 'circuit', 'halloffame'].map(tab => (
+            {[
+              { id: 'roster', label: 'Gestion Équipe' },
+              { id: 'circuit', label: 'Calendrier & Compétitions' },
+              { id: 'halloffame', label: 'Classement Global' }
+            ].map(tab => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
                 style={{
                   backgroundColor: 'transparent',
-                  color: activeTab === tab ? THEME.accentGold : THEME.textMuted,
+                  color: activeTab === tab.id ? THEME.accentGold : THEME.textMuted,
                   border: 'none',
-                  borderBottom: activeTab === tab ? `2px solid ${THEME.accentGold}` : '2px solid transparent',
+                  borderBottom: activeTab === tab.id ? `2px solid ${THEME.accentGold}` : '2px solid transparent',
                   padding: '12px 24px',
                   fontSize: '14px',
                   fontWeight: 600,
@@ -96,7 +102,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                   letterSpacing: '1px'
                 }}
               >
-                {tab === 'roster' ? 'Gestion Équipe' : tab === 'circuit' ? 'Saison Actuelle' : 'Classement Global'}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -152,7 +158,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                           transform: selected ? 'translateY(-6px)' : 'none',
                           position: 'relative'
                         }}>
-                        {/* PLUS DE FILTRE GRIS : La carte non sélectionnée est normale. La sélectionnée brille et a une bordure. */}
                         <div style={{ 
                           padding: '4px', 
                           borderRadius: '12px', 
@@ -163,7 +168,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                           <CardIllustration card={card} width={155} />
                         </div>
 
-                        {/* Badge de quantité propre */}
                         {quantity > 1 && (
                           <div style={{ 
                             position: 'absolute', top: '-6px', right: '-6px', 
@@ -226,14 +230,93 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           </div>
         )}
 
-        {/* ONGLET 2 : SAISON */}
+        {/* ONGLET 2 : CALENDRIER & COMPÉTITIONS (Le nouveau SeasonRoadmap élégant) */}
         {activeTab === 'circuit' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
-            <SeasonRoadmap year={state.year} currentEventIndex={state.eventIndex} history={state.history} />
+            
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '32px', margin: '0 0 10px 0', color: '#FFF' }}>
+                FEUILLE DE ROUTE OFFICIELLE
+              </h2>
+              <p style={{ color: THEME.textMuted, fontSize: '15px' }}>
+                Le calendrier des tournois majeurs de la saison. Préparez votre roster pour chaque échéance.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+              {EVENTS.map((tourney, index) => {
+                const isActive = index === currentEventIndex;
+                const isCompleted = index < currentEventIndex;
+                const winner = state.history?.find(h => h.year === (state.year || 1) && h.eventId === tourney.id)?.winnerName;
+
+                return (
+                  <div 
+                    key={tourney.id}
+                    style={{
+                      backgroundColor: THEME.bgPanel,
+                      border: `1px solid ${isActive ? tourney.color : THEME.border}`,
+                      borderRadius: '12px',
+                      padding: '24px 20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      position: 'relative',
+                      boxShadow: isActive ? `0 0 25px ${tourney.color}25` : 'none',
+                      transform: isActive ? 'translateY(-4px)' : 'none',
+                      transition: 'all 0.3s ease',
+                      opacity: isCompleted ? 0.6 : (isActive ? 1 : 0.8),
+                    }}
+                  >
+                    {/* Badge de statut */}
+                    {isActive && (
+                      <div style={{ position: 'absolute', top: '-12px', background: tourney.color, color: '#000', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+                        EN COURS
+                      </div>
+                    )}
+                    {isCompleted && (
+                      <div style={{ position: 'absolute', top: '-12px', background: '#4caf50', color: '#000', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+                        TERMINÉ
+                      </div>
+                    )}
+
+                    {/* Logo du tournoi */}
+                    <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', width: '100%' }}>
+                      <img 
+                        src={tourney.logo} 
+                        alt={tourney.shortName} 
+                        style={{ maxHeight: '100%', maxWidth: '80px', objectFit: 'contain', filter: isActive ? `drop-shadow(0 0 8px ${tourney.color}60)` : 'none' }} 
+                      />
+                    </div>
+
+                    <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: tourney.isMajor ? '22px' : '18px', margin: '0 0 8px 0', color: '#FFF', textAlign: 'center' }}>
+                      {tourney.name}
+                    </h3>
+
+                    <div style={{ fontSize: '12px', color: THEME.textMuted, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      {tourney.format === 'gsl_to_single' ? 'Groupes GSL' : tourney.format === 'swiss_to_single' ? 'Ronde Suisse' : 'Double Élimination'}
+                    </div>
+
+                    {/* Vainqueur ou Statut */}
+                    <div style={{ marginTop: 'auto', width: '100%', textAlign: 'center', paddingTop: '16px', borderTop: `1px solid ${THEME.border}` }}>
+                      {winner ? (
+                        <div style={{ fontSize: '12px', color: THEME.accentGold, fontWeight: 600 }}>
+                          🏆 Vainqueur : {winner}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '12px', color: isActive ? tourney.color : THEME.textMuted, fontWeight: 500 }}>
+                          {isActive ? 'Compétition active' : 'À venir'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
           </div>
         )}
 
-        {/* ONGLET 3 : CLASSEMENT (Maintenant parfaitement trié) */}
+        {/* ONGLET 3 : CLASSEMENT */}
         {activeTab === 'halloffame' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', animation: 'fadeIn 0.3s' }}>
             
