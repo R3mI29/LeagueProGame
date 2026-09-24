@@ -37,7 +37,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "T1 Zeus",
     "role": "Top",
-    "rating": 86,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -45,7 +45,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "HLE Zeus",
     "role": "Top",
-    "rating": 87,
+    "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/hle_zeus.webp"
   },
@@ -54,7 +54,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "World Champion Zeus",
     "role": "Top",
-    "rating": 91,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -62,7 +62,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "Worlds MVP Zeus",
     "role": "Top",
-    "rating": 92,
+    "rating": 94,
     "rarity": "Légendaire"
   },
   {
@@ -78,7 +78,7 @@ export const CARD_POOL = [
     "baseName": "Bin",
     "variant": "BLG Bin",
     "role": "Top",
-    "rating": 86,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -86,7 +86,7 @@ export const CARD_POOL = [
     "baseName": "Bin",
     "variant": "First Stand MVP Bin",
     "role": "Top",
-    "rating": 90,
+    "rating": 89,
     "rarity": "Épique",
     "image": "/cardsImg/others/firststand_mvp_bin.png"
   },
@@ -95,7 +95,7 @@ export const CARD_POOL = [
     "baseName": "Bin",
     "variant": "LPL Finals MVP Bin",
     "role": "Top",
-    "rating": 91,
+    "rating": 92,
     "rarity": "Légendaire"
   },
   {
@@ -111,7 +111,7 @@ export const CARD_POOL = [
     "baseName": "369",
     "variant": "TES 369",
     "role": "Top",
-    "rating": 85,
+    "rating": 81,
     "rarity": "Rare"
   },
   {
@@ -135,7 +135,7 @@ export const CARD_POOL = [
     "baseName": "Kiin",
     "variant": "Gen.G Kiin",
     "role": "Top",
-    "rating": 86,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -143,7 +143,7 @@ export const CARD_POOL = [
     "baseName": "Kiin",
     "variant": "LCK Finals MVP Kiin",
     "role": "Top",
-    "rating": 90,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -159,7 +159,7 @@ export const CARD_POOL = [
     "baseName": "BrokenBlade",
     "variant": "G2 BrokenBlade",
     "role": "Top",
-    "rating": 82,
+    "rating": 80,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/g2_brokenblade.webp"
   },
@@ -176,7 +176,7 @@ export const CARD_POOL = [
     "baseName": "Oscarinin",
     "variant": "FNC Oscarinin",
     "role": "Top",
-    "rating": 78,
+    "rating": 75,
     "rarity": "Rare"
   },
   {
@@ -192,7 +192,7 @@ export const CARD_POOL = [
     "baseName": "Bwipo",
     "variant": "FLY Bwipo",
     "role": "Top",
-    "rating": 79,
+    "rating": 76,
     "rarity": "Rare"
   },
   {
@@ -208,7 +208,7 @@ export const CARD_POOL = [
     "baseName": "Doran",
     "variant": "HLE Doran",
     "role": "Top",
-    "rating": 81,
+    "rating": 80,
     "rarity": "Rare"
   },
   {
@@ -232,7 +232,7 @@ export const CARD_POOL = [
     "baseName": "Wunder",
     "variant": "G2 Wunder",
     "role": "Top",
-    "rating": 84,
+    "rating": 79,
     "rarity": "Rare"
   },
 
@@ -252,7 +252,7 @@ export const CARD_POOL = [
     "baseName": "Canyon",
     "variant": "Gen.G Canyon",
     "role": "Jungle",
-    "rating": 87,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -260,7 +260,7 @@ export const CARD_POOL = [
     "baseName": "Canyon",
     "variant": "World Champion Canyon",
     "role": "Jungle",
-    "rating": 92,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -268,7 +268,7 @@ export const CARD_POOL = [
     "baseName": "Canyon",
     "variant": "Worlds MVP Canyon",
     "role": "Jungle",
-    "rating": 93,
+    "rating": 94,
     "rarity": "Légendaire"
   },
   {
@@ -284,7 +284,7 @@ export const CARD_POOL = [
     "baseName": "Kanavi",
     "variant": "JDG Kanavi",
     "role": "Jungle",
-    "rating": 86,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -292,7 +292,7 @@ export const CARD_POOL = [
     "baseName": "Kanavi",
     "variant": "MSI Champion Kanavi",
     "role": "Jungle",
-    "rating": 90,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -325,7 +325,7 @@ export const CARD_POOL = [
     "baseName": "Oner",
     "variant": "T1 Oner",
     "role": "Jungle",
-    "rating": 85,
+    "rating": 81,
     "rarity": "Rare"
   },
   {
@@ -333,7 +333,7 @@ export const CARD_POOL = [
     "baseName": "Oner",
     "variant": "World Champion Oner",
     "role": "Jungle",
-    "rating": 90,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -349,7 +349,7 @@ export const CARD_POOL = [
     "baseName": "Peanut",
     "variant": "HLE Peanut",
     "role": "Jungle",
-    "rating": 84,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
@@ -357,7 +357,7 @@ export const CARD_POOL = [
     "baseName": "Peanut",
     "variant": "LCK MVP Peanut",
     "role": "Jungle",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Épique"
   },
   {
@@ -373,7 +373,7 @@ export const CARD_POOL = [
     "baseName": "Tian",
     "variant": "TES Tian",
     "role": "Jungle",
-    "rating": 82,
+    "rating": 80,
     "rarity": "Rare"
   },
   {
@@ -381,15 +381,15 @@ export const CARD_POOL = [
     "baseName": "Tian",
     "variant": "Worlds MVP Tian",
     "role": "Jungle",
-    "rating": 90,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
-    "id": "mdk-elyoya",
+    "id": "mad-elyoya",
     "baseName": "Elyoya",
     "variant": "MAD Lions Elyoya",
     "role": "Jungle",
-    "rating": 79,
+    "rating": 77,
     "rarity": "Rare"
   },
   {
@@ -405,7 +405,7 @@ export const CARD_POOL = [
     "baseName": "Yike",
     "variant": "G2 Yike",
     "role": "Jungle",
-    "rating": 82,
+    "rating": 78,
     "rarity": "Rare"
   },
   {
@@ -413,7 +413,7 @@ export const CARD_POOL = [
     "baseName": "Xun",
     "variant": "BLG Xun",
     "role": "Jungle",
-    "rating": 85,
+    "rating": 80,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/blg_xun.webp"
   },
@@ -430,7 +430,7 @@ export const CARD_POOL = [
     "baseName": "Jankos",
     "variant": "G2 Jankos",
     "role": "Jungle",
-    "rating": 83,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
@@ -446,7 +446,7 @@ export const CARD_POOL = [
     "baseName": "Razork",
     "variant": "FNC Razork",
     "role": "Jungle",
-    "rating": 81,
+    "rating": 75,
     "rarity": "Rare"
   },
 
@@ -467,7 +467,7 @@ export const CARD_POOL = [
     "baseName": "Faker",
     "variant": "T1 Faker",
     "role": "Mid",
-    "rating": 86,
+    "rating": 85,
     "rarity": "Rare",
     "image": "/cardsImg/others/faker_T1.png"
   },
@@ -503,7 +503,7 @@ export const CARD_POOL = [
     "baseName": "Chovy",
     "variant": "Gen.G Chovy",
     "role": "Mid",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/geng_chovy.webp"
   },
@@ -518,9 +518,9 @@ export const CARD_POOL = [
   {
     "id": "chovy-4peat",
     "baseName": "Chovy",
-    "variant": "LCK Champion Chovy",
+    "variant": "LCK 4x Champion Chovy",
     "role": "Mid",
-    "rating": 90,
+    "rating": 93,
     "rarity": "Légendaire"
   },
   {
@@ -537,7 +537,7 @@ export const CARD_POOL = [
     "baseName": "ShowMaker",
     "variant": "DK ShowMaker",
     "role": "Mid",
-    "rating": 83,
+    "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/dk_showmaker.webp"
   },
@@ -546,7 +546,7 @@ export const CARD_POOL = [
     "baseName": "ShowMaker",
     "variant": "World Champion ShowMaker",
     "role": "Mid",
-    "rating": 91,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -572,7 +572,7 @@ export const CARD_POOL = [
     "baseName": "Knight",
     "variant": "BLG Knight",
     "role": "Mid",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/blg_knight.webp"
   },
@@ -581,7 +581,7 @@ export const CARD_POOL = [
     "baseName": "Kyeahoo",
     "variant": "KC Kyeahoo",
     "role": "Mid",
-    "rating": 77,
+    "rating": 75,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/kc_kyeahoo.webp"
   },
@@ -594,11 +594,11 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "knight-lpl-mvp",
+    "id": "knight-lpl-legend",
     "baseName": "Knight",
-    "variant": "LPL Finals MVP Knight",
+    "variant": "LPL Legend Knight",
     "role": "Mid",
-    "rating": 90,
+    "rating": 93,
     "rarity": "Légendaire"
   },
   {
@@ -615,7 +615,7 @@ export const CARD_POOL = [
     "baseName": "Rookie",
     "variant": "IG Rookie",
     "role": "Mid",
-    "rating": 84,
+    "rating": 81,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/IG_rookie.webp"
   },
@@ -624,7 +624,7 @@ export const CARD_POOL = [
     "baseName": "Rookie",
     "variant": "World Champion Rookie",
     "role": "Mid",
-    "rating": 93,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -641,7 +641,7 @@ export const CARD_POOL = [
     "baseName": "Caps",
     "variant": "G2 Caps",
     "role": "Mid",
-    "rating": 83,
+    "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/g2_caps.webp"
   },
@@ -650,7 +650,7 @@ export const CARD_POOL = [
     "baseName": "Caps",
     "variant": "MSI MVP Caps",
     "role": "Mid",
-    "rating": 90,
+    "rating": 89,
     "rarity": "Épique",
     "image": "/cardsImg/others/msi_mvp_caps.png"
   },
@@ -668,7 +668,7 @@ export const CARD_POOL = [
     "baseName": "Nisqy",
     "variant": "C9 Nisqy",
     "role": "Mid",
-    "rating":80,
+    "rating":78,
     "rarity": "Rare",
     "image": "/cardsImg/others/cloud9_nisqy.png"
 
@@ -687,7 +687,7 @@ export const CARD_POOL = [
     "baseName": "Bdd",
     "variant": "KT Bdd",
     "role": "Mid",
-    "rating": 82,
+    "rating": 80,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/KT_bdd.webp"
   },
@@ -696,7 +696,7 @@ export const CARD_POOL = [
     "baseName": "Bdd",
     "variant": "LCK MVP Bdd",
     "role": "Mid",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Épique"
   },
   {
@@ -735,7 +735,7 @@ export const CARD_POOL = [
     "baseName": "Ruler",
     "variant": "SSG Ruler",
     "role": "ADC",
-    "rating": 82,
+    "rating": 81,
     "rarity": "Rare",
     "image": "/cardsImg/others/ssg_ruler.png"
   },
@@ -744,7 +744,7 @@ export const CARD_POOL = [
     "baseName": "Ruler",
     "variant": "JDG Ruler",
     "role": "ADC",
-    "rating": 86,
+    "rating": 85,
     "rarity": "Rare"
   },
   {
@@ -752,7 +752,7 @@ export const CARD_POOL = [
     "baseName": "Ruler",
     "variant": "MSI Champion Ruler",
     "role": "ADC",
-    "rating": 91,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -760,7 +760,7 @@ export const CARD_POOL = [
     "baseName": "Ruler",
     "variant": "Worlds MVP Ruler",
     "role": "ADC",
-    "rating": 92,
+    "rating": 95,
     "rarity": "Légendaire"
   },
   {
@@ -776,7 +776,7 @@ export const CARD_POOL = [
     "baseName": "Viper",
     "variant": "HLE Viper",
     "role": "ADC",
-    "rating": 87,
+    "rating": 81,
     "rarity": "Rare"
   },
   {
@@ -784,7 +784,7 @@ export const CARD_POOL = [
     "baseName": "Viper",
     "variant": "BLG Viper",
     "role": "ADC",
-    "rating": 87,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -792,7 +792,7 @@ export const CARD_POOL = [
     "baseName": "Viper",
     "variant": "World Champion Viper",
     "role": "ADC",
-    "rating": 92,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -800,7 +800,7 @@ export const CARD_POOL = [
     "baseName": "Viper",
     "variant": "LPL MVP Viper",
     "role": "ADC",
-    "rating": 91,
+    "rating": 90,
     "rarity": "Légendaire"
   },
   {
@@ -816,7 +816,7 @@ export const CARD_POOL = [
     "baseName": "Gumayusi",
     "variant": "T1 Gumayusi",
     "role": "ADC",
-    "rating": 86,
+    "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/webp/t1_gumayusi.webp"
   },
@@ -825,7 +825,7 @@ export const CARD_POOL = [
     "baseName": "Gumayusi",
     "variant": "World Champion Gumayusi",
     "role": "ADC",
-    "rating": 91,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
@@ -833,7 +833,7 @@ export const CARD_POOL = [
     "baseName": "Gumayusi",
     "variant": "Franchise Player Gumayusi",
     "role": "ADC",
-    "rating": 88,
+    "rating": 93,
     "rarity": "Légendaire"
   },
   {
@@ -849,7 +849,7 @@ export const CARD_POOL = [
     "baseName": "Elk",
     "variant": "BLG Elk",
     "role": "ADC",
-    "rating": 85,
+    "rating": 80,
     "rarity": "Rare"
   },
   {
@@ -857,7 +857,7 @@ export const CARD_POOL = [
     "baseName": "Elk",
     "variant": "LPL MVP Elk",
     "role": "ADC",
-    "rating": 88,
+    "rating": 85,
     "rarity": "Épique"
   },
   {
@@ -873,7 +873,7 @@ export const CARD_POOL = [
     "baseName": "JackeyLove",
     "variant": "TES JackeyLove",
     "role": "ADC",
-    "rating": 84,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -881,7 +881,7 @@ export const CARD_POOL = [
     "baseName": "JackeyLove",
     "variant": "World Champion JackeyLove",
     "role": "ADC",
-    "rating": 89,
+    "rating": 87,
     "rarity": "Épique"
   },
   {
@@ -897,7 +897,7 @@ export const CARD_POOL = [
     "baseName": "Peyz",
     "variant": "Gen.G Peyz",
     "role": "ADC",
-    "rating": 85,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -938,7 +938,7 @@ export const CARD_POOL = [
     "baseName": "Hans Sama",
     "variant": "G2 Hans Sama",
     "role": "ADC",
-    "rating": 81,
+    "rating": 79,
     "rarity": "Rare"
   },
   {
@@ -946,7 +946,7 @@ export const CARD_POOL = [
     "baseName": "Upset",
     "variant": "KC Upset",
     "role": "ADC",
-    "rating": 78,
+    "rating": 71,
     "rarity": "Rare"
   },
   {
@@ -954,7 +954,7 @@ export const CARD_POOL = [
     "baseName": "Uzi",
     "variant": "MSI Champion Uzi",
     "role": "ADC",
-    "rating": 90,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -983,7 +983,7 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "T1 Keria",
     "role": "Support",
-    "rating": 86,
+    "rating": 84,
     "rarity": "Rare"
   },
   {
@@ -991,7 +991,7 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "World Champion Keria",
     "role": "Support",
-    "rating": 91,
+    "rating": 89,
     "rarity": "Épique"
   },
   {
@@ -999,7 +999,7 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "LCK MVP Keria",
     "role": "Support",
-    "rating": 91,
+    "rating": 92,
     "rarity": "Légendaire"
   },
   {
@@ -1015,7 +1015,7 @@ export const CARD_POOL = [
     "baseName": "Missing",
     "variant": "JDG Missing",
     "role": "Support",
-    "rating": 84,
+    "rating": 83,
     "rarity": "Rare"
   },
   {
@@ -1023,7 +1023,7 @@ export const CARD_POOL = [
     "baseName": "Missing",
     "variant": "MSI Champion Missing",
     "role": "Support",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Épique"
   },
   {
@@ -1039,7 +1039,7 @@ export const CARD_POOL = [
     "baseName": "Delight",
     "variant": "Gen.G Delight",
     "role": "Support",
-    "rating": 85,
+    "rating": 82,
     "rarity": "Rare"
   },
   {
@@ -1047,7 +1047,7 @@ export const CARD_POOL = [
     "baseName": "Delight",
     "variant": "HLE Delight",
     "role": "Support",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Épique"
   },
   {
@@ -1063,7 +1063,7 @@ export const CARD_POOL = [
     "baseName": "Lehends",
     "variant": "Gen.G Lehends",
     "role": "Support",
-    "rating": 85,
+    "rating": 81,
     "rarity": "Rare"
   },
   {
@@ -1071,7 +1071,7 @@ export const CARD_POOL = [
     "baseName": "Lehends",
     "variant": "LCK MVP Lehends",
     "role": "Support",
-    "rating": 90,
+    "rating": 87,
     "rarity": "Épique"
   },
   {
@@ -1087,7 +1087,7 @@ export const CARD_POOL = [
     "baseName": "Mikyx",
     "variant": "G2 Mikyx",
     "role": "Support",
-    "rating": 82,
+    "rating": 80,
     "rarity": "Rare"
   },
   {
@@ -1095,7 +1095,7 @@ export const CARD_POOL = [
     "baseName": "Mikyx",
     "variant": "MSI Champion Mikyx",
     "role": "Support",
-    "rating": 88,
+    "rating": 86,
     "rarity": "Épique"
   },
   {
@@ -1127,8 +1127,8 @@ export const CARD_POOL = [
     "baseName": "Hylissang",
     "variant": "VIT Hylissang",
     "role": "Support",
-    "rating": 78,
-    "rarity": "Rare"
+    "rating": 55,
+    "rarity": "Commune"
   },
   {
     "id": "mdk-alvaro",
@@ -1143,7 +1143,7 @@ export const CARD_POOL = [
     "baseName": "CoreJJ",
     "variant": "TL CoreJJ",
     "role": "Support",
-    "rating": 79,
+    "rating": 76,
     "rarity": "Rare"
   },
   {
@@ -1159,7 +1159,7 @@ export const CARD_POOL = [
     "baseName": "Meiko",
     "variant": "TES Meiko",
     "role": "Support",
-    "rating": 83,
+    "rating": 81,
     "rarity": "Rare",
     "image": "/cardsImg/others/tes_meiko.png"
   },
@@ -1168,7 +1168,7 @@ export const CARD_POOL = [
     "baseName": "Meiko",
     "variant": "World Champion Meiko",
     "role": "Support",
-    "rating": 90,
+    "rating": 88,
     "rarity": "Épique"
   },
   {
