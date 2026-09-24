@@ -64,7 +64,8 @@ export const CUSTOM_CARD_EVENTS = [
       return {
         side: targetSide,
         ratingDelta: 15,
-        label: `NEVER GIVE UP ! ${targetPlayer.name} refuse la défaite et prend le match en main (+15 OVR) !`
+        persistentBO: true,
+        label: `NEVER GIVE UP ! ${targetPlayer.name} refuse la défaite et prend le match en main !`
       };
     }
   }

@@ -9,14 +9,13 @@ function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
 }
 
-// Palette de couleurs "Pro Esport" enrichie
 const THEME = {
   bgApp: '#080A10',        
   bgPanel: '#11141E',      
   border: '#222838',       
   accentGold: '#D4AF37',   
-  accentSilver: '#C0C0C0', // Argent pour le Top 2
-  accentBronze: '#CD7F32', // Bronze pour le Top 3
+  accentSilver: '#C0C0C0', 
+  accentBronze: '#CD7F32', 
   textMain: '#F0F2F5',     
   textMuted: '#768196',    
 };
@@ -31,16 +30,11 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
   const myPendingPacks = state.pendingPacks?.[myId] || 0;
   
   const myCollection = { ...rawCollection };
-  (state.lastOpenedPack?.[myId] || []).forEach(cardId => {
-    if (myCollection[cardId]) {
-      myCollection[cardId] -= 1;
-      if (myCollection[cardId] <= 0) delete myCollection[cardId];
-    }
-  });
 
   const isReady = state.readyPlayers.includes(myId);
   const lineupComplete = ORDERED_ROLES.every(role => myLineup[role]);
-  const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && (myCollection[c.id] || 0) > 0);
+  
+  const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
 
   const teamPower = ORDERED_ROLES.reduce((total, role) => {
     const card = getCard(myLineup[role]);
@@ -96,7 +90,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           </div>
         </div>
 
-        {/* ONGLET 1 : ROSTER (Inchangé) */}
+        {/* ONGLET 1 : ROSTER */}
         {activeTab === 'roster' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
             
@@ -131,16 +125,41 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                 ) : (
                   ownedCardsForRole(activeRole).map(card => {
                     const selected = myLineup[activeRole] === card.id;
-                    const quantity = myCollection[card.id] || 0;
+                    const contract = myCollection[card.id] || 0;
+                    const isLifetime = contract === 'LIFETIME';
+                    const isExpired = contract === 0;
                     
                     return (
-                      <div key={card.id} onClick={() => setLineupCard(activeRole, card.id)} style={{ cursor: 'pointer', transition: 'transform 0.2s ease, box-shadow 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', position: 'relative' }}>
-                        <div style={{ padding: '4px', borderRadius: '12px', border: selected ? `2px solid ${THEME.accentGold}` : `2px solid transparent`, boxShadow: selected ? `0 12px 24px rgba(212, 175, 55, 0.15)` : 'none', backgroundColor: selected ? 'rgba(212, 175, 55, 0.05)' : 'transparent' }}>
+                      <div key={card.id} 
+                        onClick={() => !isExpired && setLineupCard(activeRole, card.id)} 
+                        // MODIFICATION ICI : On utilise Flexbox pour empiler la carte et le badge proprement
+                        style={{ cursor: isExpired ? 'not-allowed' : 'pointer', transition: 'transform 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
+                      >
+                        <div style={{ 
+                          padding: '4px', borderRadius: '12px', 
+                          border: selected ? `2px solid ${THEME.accentGold}` : `2px solid transparent`, 
+                          boxShadow: selected ? `0 12px 24px rgba(212, 175, 55, 0.15)` : 'none', 
+                          backgroundColor: selected ? 'rgba(212, 175, 55, 0.05)' : 'transparent',
+                          filter: isExpired ? 'grayscale(100%) opacity(50%)' : 'none'
+                        }}>
                           <CardIllustration card={card} width={155} />
                         </div>
-                        {quantity > 1 && (
-                          <div style={{ position: 'absolute', top: '-6px', right: '-6px', backgroundColor: '#2A3042', border: `1px solid ${THEME.border}`, color: '#FFF', borderRadius: '4px', padding: '2px 8px', fontSize: '11px', fontWeight: 600, zIndex: 10, boxShadow: '0 4px 8px rgba(0,0,0,0.5)' }}>x{quantity}</div>
-                        )}
+                        
+                        {/* BADGE DE CONTRAT DÉTACHÉ EN DESSOUS */}
+                        <div style={{ 
+                          background: isLifetime 
+                            ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' 
+                            : (isExpired ? 'linear-gradient(135deg, #ff3366 0%, #88001b 100%)' : 'rgba(8, 10, 16, 0.95)'), 
+                          border: `1px solid ${isLifetime ? '#FFF' : (isExpired ? '#FFB3C6' : THEME.accentGold)}`, 
+                          color: isLifetime || isExpired ? '#FFF' : THEME.accentGold, 
+                          borderRadius: '20px', padding: '4px 12px', 
+                          fontSize: '12px', fontWeight: 800, 
+                          boxShadow: `0 4px 15px ${isLifetime ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0,0,0,0.6)'}`,
+                          display: 'flex', alignItems: 'center', gap: '6px',
+                          letterSpacing: '0.5px'
+                        }}>
+                          {isLifetime ? '♾️ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span style={{fontSize: '11px', opacity: 0.8}}>✍️</span> {contract} TRN</>}
+                        </div>
                       </div>
                     );
                   })
@@ -189,7 +208,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
               {EVENTS.map((tourney, index) => {
                 const isActive = index === currentEventIndex;
                 const isCompleted = index < currentEventIndex;
-                // Historique : On cherche qui a gagné ce tournoi précis pour l'année en cours (ou les années précédentes si on veut étendre)
                 const pastWinners = state.history?.filter(h => h.eventId === tourney.id) || [];
                 const latestWinner = pastWinners[pastWinners.length - 1]?.winnerName;
 
@@ -198,15 +216,13 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                     key={tourney.id}
                     style={{
                       backgroundColor: THEME.bgPanel,
-                      // CORRECTION DU NÉON BLEU : On utilise la couleur du tournoi, mais avec une opacité plus sobre, ou on le supprime si ce n'est pas actif.
                       border: isActive ? `1px solid ${tourney.color}` : `1px solid ${THEME.border}`,
                       borderRadius: '12px', padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative',
-                      boxShadow: isActive ? `0 0 25px ${tourney.color}15` : 'none', // Glow très léger
+                      boxShadow: isActive ? `0 0 25px ${tourney.color}15` : 'none',
                       transform: isActive ? 'translateY(-4px)' : 'none', transition: 'all 0.3s ease',
                       opacity: isCompleted ? 0.7 : (isActive ? 1 : 0.8),
                     }}
                   >
-                    {/* Badge de statut */}
                     {isActive && (
                       <div style={{ position: 'absolute', top: '-12px', background: tourney.color, color: '#000', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
                         EN COURS
@@ -230,7 +246,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                       {tourney.format === 'gsl_to_single' ? 'Groupes GSL' : tourney.format === 'swiss_to_single' ? 'Ronde Suisse' : 'Double Élimination'}
                     </div>
 
-                    {/* Vainqueur(s) affiché(s) */}
                     <div style={{ marginTop: 'auto', width: '100%', textAlign: 'center', paddingTop: '16px', borderTop: `1px solid ${THEME.border}` }}>
                       {latestWinner ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -250,7 +265,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           </div>
         )}
 
-        {/* ONGLET 3 : LE PANTHÉON (Classement Global Amélioré) */}
+        {/* ONGLET 3 : LE PANTHÉON */}
         {activeTab === 'halloffame' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             
@@ -263,9 +278,8 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
               </p>
             </div>
 
-            {/* LE PODIUM MAGNIFIÉ */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '20px', marginBottom: '60px', height: '200px' }}>
-              {/* TOP 2 (Argent) */}
+              {/* TOP 2 */}
               {sortedLeaderboard[1] && (
                 <div style={{ width: '220px', background: 'linear-gradient(180deg, rgba(192, 192, 192, 0.1) 0%, #11141E 100%)', borderTop: `4px solid ${THEME.accentSilver}`, borderRadius: '12px 12px 0 0', padding: '20px', textAlign: 'center', position: 'relative', height: '140px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
                   <div style={{ position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)', background: THEME.accentSilver, color: '#000', width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', border: '4px solid #080A10' }}>2</div>
@@ -274,7 +288,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                 </div>
               )}
 
-              {/* TOP 1 (Or) */}
+              {/* TOP 1 */}
               {sortedLeaderboard[0] && (
                 <div style={{ width: '260px', background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, #11141E 100%)', borderTop: `6px solid ${THEME.accentGold}`, borderRadius: '12px 12px 0 0', padding: '30px 20px', textAlign: 'center', position: 'relative', height: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', boxShadow: '0 -10px 40px rgba(212, 175, 55, 0.15)' }}>
                   <div style={{ position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)', fontSize: '40px', filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.5))' }}>👑</div>
@@ -284,7 +298,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                 </div>
               )}
 
-              {/* TOP 3 (Bronze) */}
+              {/* TOP 3 */}
               {sortedLeaderboard[2] && (
                 <div style={{ width: '220px', background: 'linear-gradient(180deg, rgba(205, 127, 50, 0.1) 0%, #11141E 100%)', borderTop: `4px solid ${THEME.accentBronze}`, borderRadius: '12px 12px 0 0', padding: '20px', textAlign: 'center', position: 'relative', height: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
                   <div style={{ position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)', background: THEME.accentBronze, color: '#000', width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', border: '4px solid #080A10' }}>3</div>
@@ -294,9 +308,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
               )}
             </div>
 
-            {/* LE RESTE DU CLASSEMENT ET LES ARCHIVES */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-              
               <div style={{ backgroundColor: THEME.bgPanel, borderRadius: '8px', padding: '32px', border: `1px solid ${THEME.border}` }}>
                 <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '20px', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '16px' }}>CHALLENGERS (TOP 4 - 10)</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

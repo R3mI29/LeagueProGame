@@ -955,7 +955,8 @@ export const CARD_POOL = [
     "variant": "MSI Champion Uzi",
     "role": "ADC",
     "rating": 89,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/uzi_msi.png"
   },
   {
     "id": "uzi-adc-god",
@@ -963,7 +964,8 @@ export const CARD_POOL = [
     "variant": "ADC God Uzi",
     "role": "ADC",
     "rating": 94,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/uzi_adc_god.png"
     
   },
 

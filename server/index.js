@@ -217,21 +217,41 @@ const MATCH_EVENTS = [
 function simulateGame(match, state) {
   const teamA = match.teamA;
   const teamB = match.teamB;
-  let ratingA = getTeamRating(teamA);
-  let ratingB = getTeamRating(teamB);
+  
+  // On applique les buffs de BO dès le calcul initial !
+  let ratingA = getTeamRating(teamA) + (match.boBuffA || 0);
+  let ratingB = getTeamRating(teamB) + (match.boBuffB || 0);
   const triggeredEvents = [];
 
-  const ALL_EVENTS = [...MATCH_EVENTS, ...CUSTOM_CARD_EVENTS];
+  // SUPPRESSION DE MATCH_EVENTS : On ne charge QUE vos cartes spéciales
+  const ALL_EVENTS = [...CUSTOM_CARD_EVENTS];
 
   for (const event of ALL_EVENTS) {
     if (Math.random() > event.probability) continue;
+    
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
+
     const result = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
     if (!result) continue;
+    
     if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
+
+    // Si la carte exige que le buff dure tout le BO
+    if (result.persistentBO) {
+      if (result.side === 'A') match.boBuffA = (match.boBuffA || 0) + result.ratingDelta;
+      else match.boBuffB = (match.boBuffB || 0) + result.ratingDelta;
+    }
+
     if (result.side === 'A') ratingA += result.ratingDelta;
     else ratingB += result.ratingDelta;
-    triggeredEvents.push({ label: result.label, side: result.side });
+    
+    // On transmet l'info persistentBO au Front-End
+    triggeredEvents.push({ 
+      label: result.label, 
+      side: result.side, 
+      delta: result.ratingDelta,
+      persistentBO: result.persistentBO 
+    });
   }
 
   const probA = 1 / (1 + Math.pow(10, (ratingB - ratingA) / 20));
@@ -246,10 +266,17 @@ function tryStartMatch(match) {
   if (match.teamB.id.startsWith('bot-') && !match.ready.includes(match.teamB.id)) match.ready.push(match.teamB.id);
 
   if (match.ready.length === 2) {
-    match.scoreA = 0; match.scoreB = 0; match.games = []; match.lastGameEvents = []; match.triggeredUniqueEvents = [];
+    match.scoreA = 0;
+    match.scoreB = 0;
+    match.games = [];
+    match.lastGameEvents = [];
+    match.triggeredUniqueEvents = [];
+    match.boBuffA = 0; // NOUVEAU : Stocke les buffs permanents
+    match.boBuffB = 0; // NOUVEAU
     playNextGame(match);
   }
 }
+
 
 function playNextGame(match) {
   match.status = 'simulating';
@@ -646,7 +673,11 @@ io.on('connection', (socket) => {
     if (state.gameMode !== 'draft_cartes') return;
     const id = socket.id;
     if (!state.cardCollections[id]) state.cardCollections[id] = {};
-    state.cardCollections[id][cardId] = (state.cardCollections[id][cardId] || 0) + 1;
+    
+    let currentContract = state.cardCollections[id][cardId] || 0;
+    if (currentContract !== 'LIFETIME') {
+      state.cardCollections[id][cardId] = currentContract + 5; // Ajoute 5 tournois par clic dev
+    }
     io.emit('draft-update', state);
   });
 
@@ -737,6 +768,7 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
+  // 1. L'ÉVÉNEMENT D'OUVERTURE DE PACK
   socket.on('open-pack', () => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
@@ -747,12 +779,57 @@ io.on('connection', (socket) => {
     const cards = isStarter ? openStarterPack() : openStandardPack();
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
-    if (!state.cardCollections[id]) state.cardCollections[id] = {};
-    addCardsToCollection(state.cardCollections[id], cards);
+    const openedCardsWithContracts = [];
+
+    cards.forEach(c => {
+      let contractToAdd = isStarter ? 'LIFETIME' : (Math.random() < 0.02 ? 'LIFETIME' : Math.floor(Math.random() * 9) + 1);
+      openedCardsWithContracts.push({ id: c.id, contractAdded: contractToAdd });
+    });
+
     state.starterPackClaimed[id] = true;
     state.pendingPacks[id] -= 1;
-    state.lastOpenedPack[id] = cards.map(c => c.id);
+    
+    // NOUVEAU : On stocke le résultat temporairement sans toucher à la vraie collection !
+    if (!state.pendingPackResults) state.pendingPackResults = {};
+    state.pendingPackResults[id] = openedCardsWithContracts;
+    
+    // On lance l'animation sur le front-end
+    state.lastOpenedPack[id] = openedCardsWithContracts;
     io.emit('draft-update', state);
+  });
+
+  // 2. L'ÉVÉNEMENT DE FERMETURE DU PACK (Quand on clique sur "Ajouter à la collection")
+  socket.on('close-pack', () => {
+    if (state.phase === 'cards') {
+      const id = socket.id;
+      
+      // C'EST SEULEMENT MAINTENANT QU'ON AJOUTE LES CARTES À L'INVENTAIRE
+      if (state.pendingPackResults && state.pendingPackResults[id]) {
+        if (!state.cardCollections[id]) state.cardCollections[id] = {};
+        
+        state.pendingPackResults[id].forEach(item => {
+          const cardId = item.id;
+          const contractToAdd = item.contractAdded;
+          let currentContract = state.cardCollections[id][cardId] || 0;
+
+          if (currentContract === 'LIFETIME' || contractToAdd === 'LIFETIME') {
+            state.cardCollections[id][cardId] = 'LIFETIME';
+          } else {
+            state.cardCollections[id][cardId] = currentContract + contractToAdd;
+          }
+        });
+        
+        // On nettoie la mémoire temporaire
+        delete state.pendingPackResults[id];
+      }
+
+      // On ferme l'interface du pack
+      if (state.lastOpenedPack[id]) {
+        state.lastOpenedPack[id] = [];
+      }
+      
+      io.emit('draft-update', state);
+    }
   });
 
   socket.on('close-pack', () => {
@@ -767,7 +844,10 @@ io.on('connection', (socket) => {
     const id = socket.id;
     if (!ORDERED_ROLES.includes(role)) return;
     const collection = state.cardCollections[id];
-    if (!collection || !(collection[cardId] > 0)) return;
+    
+    const contract = collection?.[cardId];
+    if (contract === undefined || contract === 0) return; // Bloque si pas possédé ou contrat expiré
+    
     const card = getCardById(cardId);
     if (!card || card.role !== role) return;
 
@@ -800,10 +880,32 @@ io.on('connection', (socket) => {
     if (state.continueSeasonVotes.includes(socket.id)) state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
     else state.continueSeasonVotes.push(socket.id);
 
-    const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
-    if (state.continueSeasonVotes.length === humanCount && humanCount > 0) {
+    const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
+    
+    if (state.continueSeasonVotes.length === humanParticipants.length && humanParticipants.length > 0) {
       awardSeasonPacks();
       state.history.push({ year: state.year, eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`, winnerName: state.champion.name });
+      
+      // --- DÉDUCTION DES CONTRATS (-1) ---
+      humanParticipants.forEach(p => {
+        const lineup = state.activeLineups[p.id];
+        if (lineup) {
+          Object.keys(lineup).forEach(role => {
+            const cardId = lineup[role];
+            let currentContract = state.cardCollections[p.id][cardId];
+            
+            if (currentContract !== 'LIFETIME' && typeof currentContract === 'number') {
+              state.cardCollections[p.id][cardId] = Math.max(0, currentContract - 1);
+              
+              // Si le contrat tombe à 0, on retire le joueur du roster actif
+              if (state.cardCollections[p.id][cardId] === 0) {
+                delete lineup[role];
+              }
+            }
+          });
+        }
+      });
+
       state.eventIndex += 1;
       if (state.eventIndex >= EVENTS.length) { state.eventIndex = 0; state.year += 1; }
 
