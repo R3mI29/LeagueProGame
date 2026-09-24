@@ -1217,7 +1217,7 @@ io.on('connection', (socket) => {
 
 // NOUVEAU : Rediriger toutes les requêtes HTTP classiques vers l'application React
 // Cela permet au "router" du front (s'il y en a un) ou juste au rechargement de la page de fonctionner.
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
