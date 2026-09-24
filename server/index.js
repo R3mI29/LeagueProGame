@@ -2,6 +2,11 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+
+// NOUVEAU : Imports nécessaires pour servir les fichiers statiques avec les modules ES
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
@@ -12,8 +17,16 @@ import {
   generateBotRosterFromCards, upgradeBotRoster
 } from './cardMode.js';
 
+// NOUVEAU : Configuration des variables de chemin pour les modules ES
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 app.use(cors());
+
+// NOUVEAU : Demander à Express de servir les fichiers du front-end (dossier dist)
+app.use(express.static(path.join(__dirname, '../dist')));
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -1202,4 +1215,11 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3001, () => console.log('Serveur Esport actif sur le port 3001'));
+// NOUVEAU : Rediriger toutes les requêtes HTTP classiques vers l'application React
+// Cela permet au "router" du front (s'il y en a un) ou juste au rechargement de la page de fonctionner.
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
+
+// N'oublie pas de lancer "npm run build" dans ton projet avant de lancer "pm2 start server/index.js" !
+server.listen(3001, '0.0.0.0', () => console.log('Serveur Esport actif sur le port 3001'));
