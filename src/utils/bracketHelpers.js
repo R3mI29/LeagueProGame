@@ -10,19 +10,35 @@ export function getHumanCount(state) {
  * Retourne le match en cours dans lequel le joueur courant est impliqué,
  * ou null s'il n'y en a pas / si le round est terminé / si déjà "dismissed".
  */
-export function getMyActiveMatch(state, socketId) {
-  if (state.phase !== 'simulation' || state.roundComplete || !state.bracket[state.currentRound]) {
-    return null;
+// src/utils/bracketHelpers.js
+export function getMyActiveMatch(state, myId) {
+  if (!state) return null;
+
+  const isSimulationPhase = state.phase === 'simulation';
+  if (!isSimulationPhase) return null;
+
+  const isMyActiveMatch = (m) => {
+    if (!m || !m.teamA || !m.teamB) return false;
+    if (!m.waveActive) return false;
+    const involvesMe = m.teamA.id === myId || m.teamB.id === myId;
+    const notDismissed = !m.dismissedBy?.includes(myId);
+    return involvesMe && (m.status === 'pending' || m.status === 'simulating' || (m.status === 'finished' && notDismissed));
+  };
+
+  if (state.tournamentPhase === 'groups' && state.groups) {
+    for (const g of state.groups) {
+      const match = g.matches.find(isMyActiveMatch);
+      if (match) return match;
+    }
   }
-  return (
-    state.bracket[state.currentRound].find(
-      (m) =>
-        m.teamA &&
-        m.teamB &&
-        (m.teamA.id === socketId || m.teamB.id === socketId) &&
-        !m.dismissedBy.includes(socketId)
-    ) || null
-  );
+
+  // CORRECTION : On autorise 'swiss' ET 'bracket' à vous amener dans l'arène
+  if ((state.tournamentPhase === 'bracket' || state.tournamentPhase === 'swiss') && state.bracket && state.bracket[state.currentRound]) {
+    const match = state.bracket[state.currentRound].find(isMyActiveMatch);
+    if (match) return match;
+  }
+
+  return null;
 }
 
 /**

@@ -5,7 +5,6 @@ import cors from 'cors';
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
-// IMPORT DE TON NOUVEAU FICHIER DE CONSTANTES D'ÉVÉNEMENTS
 import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
   openStandardPack, openStarterPack, addCardsToCollection,
@@ -31,7 +30,14 @@ const MIN_INCREMENT = 5;
 const BID_TIMER_MS = 15000; 
 const matchTimeouts = {};
 
-const teamNames = ["JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", "Solary", "Fnatic"];
+const teamNames = [
+  "JD Gaming", "GenG", "T1", "Karmine Corp", "FearX", "Team WE", 
+  "Edward Gaming", "Royal Never Give Up", "Samsung White", "Samsung Blue", 
+  "Griffin", "Royal Club", "Hanwha Life Esport", "Movistar KOI", "GiantX", 
+  "KT Rolster", "SKT T1", "Damwon Gaming", "Bilibili Gaming", "Nongshim Redforce", 
+  "Lyon", "Flyquest", "Top Esport", "Invictus Gaming", "Anyone's Legend", "ZYB", 
+  "Solary", "Fnatic"
+];
 
 function getUniqueBotName(pendingBots = []) {
   const usedNames = state.participants.map(p => p.name.toLowerCase());
@@ -77,6 +83,19 @@ function advanceTeam(team, nextId, nextSlot) {
   if (!nextId) { state.champion = team; return; }
   const nextMatch = state.bracket.flat().find(m => m.id === nextId);
   if (nextMatch) nextMatch[nextSlot] = team;
+}
+
+function findMatchById(matchId) {
+  let match = state.bracket.flat().find(m => m.id === matchId);
+  if (match) return match;
+  
+  if (state.groups) {
+    for (const g of state.groups) {
+      match = g.matches.find(m => m.id === matchId);
+      if (match) return match;
+    }
+  }
+  return null;
 }
 
 function getTeamRating(team) {
@@ -202,21 +221,14 @@ function simulateGame(match, state) {
   let ratingB = getTeamRating(teamB);
   const triggeredEvents = [];
 
-  // Fusion des événements classiques et de tes événements de cartes
   const ALL_EVENTS = [...MATCH_EVENTS, ...CUSTOM_CARD_EVENTS];
 
   for (const event of ALL_EVENTS) {
     if (Math.random() > event.probability) continue;
-    
-    // Le serveur bloque automatiquement l'événement s'il est uniquePerBO et a déjà proc
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
-
     const result = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
     if (!result) continue;
-    
-    // Si le buff passe, on l'enregistre pour qu'il ne se reproduise plus dans le BO (si unique)
     if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
-
     if (result.side === 'A') ratingA += result.ratingDelta;
     else ratingB += result.ratingDelta;
     triggeredEvents.push({ label: result.label, side: result.side });
@@ -234,11 +246,7 @@ function tryStartMatch(match) {
   if (match.teamB.id.startsWith('bot-') && !match.ready.includes(match.teamB.id)) match.ready.push(match.teamB.id);
 
   if (match.ready.length === 2) {
-    match.scoreA = 0;
-    match.scoreB = 0;
-    match.games = [];
-    match.lastGameEvents = [];
-    match.triggeredUniqueEvents = []; // Initialise le compteur d'événements uniques pour le BO
+    match.scoreA = 0; match.scoreB = 0; match.games = []; match.lastGameEvents = []; match.triggeredUniqueEvents = [];
     playNextGame(match);
   }
 }
@@ -253,8 +261,6 @@ function playNextGame(match) {
 
   matchTimeouts[match.id] = setTimeout(() => {
     const gameNumber = match.games.length + 1;
-    
-    // Appel de la simulation modifiée
     const { winnerSide, events } = simulateGame(match, state);
 
     if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
@@ -264,11 +270,41 @@ function playNextGame(match) {
     if (match.scoreA === GAMES_TO_WIN || match.scoreB === GAMES_TO_WIN) {
       match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
       match.status = 'finished';
-      advanceTeam(match.winner, match.nextId, match.nextSlot);
+      
+      // LE ROUTAGE 100% SÉCURISÉ SANS CHAMPION FANTÔME
+      if (state.tournamentPhase === 'swiss') {
+        const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
+        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+        const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
+        if (wTeam) wTeam.wins += 1;
+        if (lTeam) lTeam.losses += 1;
 
-      const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-      if (allFinished && !state.champion) {
-        state.roundComplete = true;
+        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+        if (allFinished) state.roundComplete = true;
+      } 
+      else if (state.tournamentPhase === 'groups') {
+        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+        const groupIndex = match.id.match(/g(\d)/)[1];
+        const group = state.groups[groupIndex];
+
+        if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
+        else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
+        else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
+        else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
+        else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
+
+        const allGroupsDone = state.groups.every(g => g.qualified.length === 2);
+        if (allGroupsDone) state.roundComplete = true;
+      } 
+      else {
+        advanceTeam(match.winner, match.nextId, match.nextSlot);
+        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+        if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
+
+        if (state.bracket && state.bracket[state.currentRound]) {
+          const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+          if (allFinished && !state.champion) state.roundComplete = true;
+        }
       }
 
       io.emit('draft-update', state);
@@ -279,31 +315,53 @@ function playNextGame(match) {
   }, currentSimulateMs); 
 }
 
-function buildBracketAndStartTournament() {
-  state.phase = 'tournament';
-  state.currentOptions = [];
-  state.readyPlayers = [];
-  state.auction = null;
-
-  const shuffled = [...state.participants].sort(() => 0.5 - Math.random());
-  const qf = [];
-  for (let i = 0; i < 4; i++) {
-    qf.push({
-      id: `qf-${i}`, teamA: shuffled[i], teamB: shuffled[i + 4],
-      status: 'pending', ready: [], dismissedBy: [], winner: null,
-      scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [],
-      nextId: `sf-${Math.floor(i / 2)}`, nextSlot: i % 2 === 0 ? 'teamA' : 'teamB'
-    });
-  }
-  const sf = [
-    { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: 'f-0', nextSlot: 'teamA' },
-    { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: 'f-0', nextSlot: 'teamB' }
+function buildPlayoffsFromSwiss() {
+  const qualified = state.swissTeams.filter(t => t.wins === 3).sort((a, b) => a.losses - b.losses).map(t => t.team);
+  
+  const qf = [
+    { id: 'qf-0', teamA: qualified[0], teamB: qualified[7], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamA' },
+    { id: 'qf-1', teamA: qualified[3], teamB: qualified[4], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamB' },
+    { id: 'qf-2', teamA: qualified[2], teamB: qualified[5], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamA' },
+    { id: 'qf-3', teamA: qualified[1], teamB: qualified[6], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamB' }
   ];
-  state.bracket = [qf, sf, [{ id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], winner: null, scoreA: 0, scoreB: 0, games: [], lastGameEvents: [], triggeredUniqueEvents: [], nextId: null, nextSlot: null }]];
+  const sf = [
+    { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamA' },
+    { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamB' }
+  ];
+  const f = [
+    { id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: null, nextSlot: null }
+  ];
+  
+  state.bracket = [qf, sf, f];
+  state.currentRound = 0;
+  state.swissTeams = null; 
+  state.champion = null; // Sécurité
+}
+
+function buildPlayoffsFromGroups() {
+  const qf = [
+    { id: 'qf-0', teamA: state.groups[0].qualified[0], teamB: state.groups[1].qualified[1], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamA' },
+    { id: 'qf-1', teamA: state.groups[2].qualified[0], teamB: state.groups[3].qualified[1], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamB' },
+    { id: 'qf-2', teamA: state.groups[1].qualified[0], teamB: state.groups[0].qualified[1], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamA' },
+    { id: 'qf-3', teamA: state.groups[3].qualified[0], teamB: state.groups[2].qualified[1], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamB' }
+  ];
+  const sf = [
+    { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamA' },
+    { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamB' }
+  ];
+  const f = [
+    { id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: null, nextSlot: null }
+  ];
+
+  state.bracket = [qf, sf, f];
+  state.currentRound = 0;
+  state.groups = null; 
+  state.champion = null; // Sécurité
 }
 
 function completeDraftAndStartTournament() {
-  const numBots = 8 - state.participants.length;
+  const TOTAL_TEAMS = 16;
+  const numBots = TOTAL_TEAMS - state.participants.length;
   for (let i = 1; i <= numBots; i++) {
     const bot = { id: `bot-${i}`, name: getUniqueBotName(), roster: [] };
     ORDERED_ROLES.forEach(role => {
@@ -316,10 +374,13 @@ function completeDraftAndStartTournament() {
     });
     state.participants.push(bot);
   }
-  buildBracketAndStartTournament();
+  state.phase = 'season_hub';
+  state.eventIndex = 0;
+  io.emit('draft-update', state);
 }
 
 function startCardTournament() {
+  const TOTAL_TEAMS = 16;
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
   const existingBots = state.participants.filter(p => p.id.startsWith('bot-'));
 
@@ -329,13 +390,11 @@ function startCardTournament() {
   });
 
   if (existingBots.length === 0) {
-    const numBots = 8 - humanParticipants.length;
+    const numBots = TOTAL_TEAMS - humanParticipants.length;
     const bots = [];
     for (let i = 1; i <= numBots; i++) {
       bots.push({
-        id: `bot-${i}`,
-        name: getUniqueBotName(bots),
-        roster: generateBotRosterFromCards()
+        id: `bot-${i}`, name: getUniqueBotName(bots), roster: generateBotRosterFromCards()
       });
     }
     state.participants = [...humanParticipants, ...bots];
@@ -345,108 +404,155 @@ function startCardTournament() {
 
   if (!state.seasonScores) {
     state.seasonScores = {};
-    state.participants.forEach(p => {
-      state.seasonScores[p.id] = { points: 0, titles: 0 };
-    });
+    state.participants.forEach(p => { state.seasonScores[p.id] = { points: 0, titles: 0 }; });
   }
 
-  buildBracketAndStartTournament();
+  state.phase = 'season_hub';
+  if (state.eventIndex === undefined) state.eventIndex = 0;
+  io.emit('draft-update', state);
+}
+
+function startCurrentEvent() {
+  const currentEvent = EVENTS[state.eventIndex];
+  state.phase = 'tournament';
+  state.champion = null;
+  state.currentRound = 0;
+  state.readyPlayers = []; 
+  state.roundComplete = false; 
+
+  const shuffledTeams = [...state.participants].sort(() => 0.5 - Math.random());
+
+  if (currentEvent.format === 'gsl_to_single') {
+    state.tournamentPhase = 'groups';
+    state.groups = [];
+    for (let i = 0; i < 4; i++) {
+      const groupTeams = shuffledTeams.slice(i * 4, i * 4 + 4);
+      state.groups.push({
+        id: String.fromCharCode(65 + i),
+        teams: groupTeams, qualified: [],
+        matches: [
+          { id: `g${i}-m1`, type: 'open', teamA: groupTeams[0], teamB: groupTeams[3], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false },
+          { id: `g${i}-m2`, type: 'open', teamA: groupTeams[1], teamB: groupTeams[2], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false },
+          { id: `g${i}-winner`, type: 'winner', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false },
+          { id: `g${i}-loser`, type: 'loser', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false },
+          { id: `g${i}-decider`, type: 'decider', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false }
+        ]
+      });
+    }
+    state.bracket = [[]];
+    state.groups.forEach(g => { state.bracket[0].push(g.matches[0], g.matches[1]); });
+  } 
+  else if (currentEvent.format === 'swiss_to_single') {
+    state.tournamentPhase = 'swiss';
+    state.swissTeams = state.participants.map(p => ({ team: p, wins: 0, losses: 0 }));
+    
+    const createMatch = (id, pool) => ({
+      id, pool, teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [],
+      scoreA: 0, scoreB: 0, games: [], waveActive: false
+    });
+
+    const r0 = Array(8).fill(null).map((_, i) => createMatch(`sw1-m${i+1}`, '0-0'));
+    const r1 = [...Array(4).fill(null).map((_, i) => createMatch(`sw2-w${i+1}`, '1-0')), ...Array(4).fill(null).map((_, i) => createMatch(`sw2-l${i+1}`, '0-1'))];
+    const r2 = [...Array(2).fill(null).map((_, i) => createMatch(`sw3-w${i+1}`, '2-0')), ...Array(4).fill(null).map((_, i) => createMatch(`sw3-m${i+1}`, '1-1')), ...Array(2).fill(null).map((_, i) => createMatch(`sw3-l${i+1}`, '0-2'))];
+    const r3 = [...Array(3).fill(null).map((_, i) => createMatch(`sw4-w${i+1}`, '2-1')), ...Array(3).fill(null).map((_, i) => createMatch(`sw4-l${i+1}`, '1-2'))];
+    const r4 = Array(3).fill(null).map((_, i) => createMatch(`sw5-m${i+1}`, '2-2'));
+
+    const shuffled = [...state.participants].sort(() => 0.5 - Math.random());
+    for (let i = 0; i < 8; i++) {
+      r0[i].teamA = shuffled[i*2]; r0[i].teamB = shuffled[i*2+1];
+    }
+    state.bracket = [r0, r1, r2, r3, r4];
+  }
+  else if (currentEvent.format === 'double_elim') {
+    state.tournamentPhase = 'bracket';
+    const shuffledTeams = [...state.participants].sort(() => 0.5 - Math.random());
+    
+    const createMatch = (id, teamA, teamB, nextId, nextSlot, loserNextId = null, loserNextSlot = null) => ({
+      id, teamA, teamB, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId, nextSlot, loserNextId, loserNextSlot
+    });
+
+    const r0 = [], r1 = [], r2 = [], r3 = [], r4 = [], r5 = [], r6 = [], r7 = [];
+
+    for (let i = 0; i < 8; i++) {
+      r0.push(createMatch(`ub1-${i+1}`, shuffledTeams[i*2], shuffledTeams[i*2+1], `ub2-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB', `lb1-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB'));
+    }
+
+    r1.push(createMatch(`ub2-1`, null, null, `ub3-1`, 'teamA', `lb2-4`, 'teamA'));
+    r1.push(createMatch(`ub2-2`, null, null, `ub3-1`, 'teamB', `lb2-3`, 'teamA'));
+    r1.push(createMatch(`ub2-3`, null, null, `ub3-2`, 'teamA', `lb2-2`, 'teamA'));
+    r1.push(createMatch(`ub2-4`, null, null, `ub3-2`, 'teamB', `lb2-1`, 'teamA'));
+    for (let i = 0; i < 4; i++) r1.push(createMatch(`lb1-${i+1}`, null, null, `lb2-${i+1}`, 'teamB'));
+
+    r2.push(createMatch(`ub3-1`, null, null, `ub4-1`, 'teamA', `lb4-2`, 'teamA'));
+    r2.push(createMatch(`ub3-2`, null, null, `ub4-1`, 'teamB', `lb4-1`, 'teamA'));
+    for (let i = 0; i < 4; i++) r2.push(createMatch(`lb2-${i+1}`, null, null, `lb3-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB'));
+
+    r3.push(createMatch(`ub4-1`, null, null, `gf-1`, 'teamA', `lb6-1`, 'teamA'));
+    r3.push(createMatch(`lb3-1`, null, null, `lb4-1`, 'teamB'));
+    r3.push(createMatch(`lb3-2`, null, null, `lb4-2`, 'teamB'));
+
+    r4.push(createMatch(`lb4-1`, null, null, `lb5-1`, 'teamA'));
+    r4.push(createMatch(`lb4-2`, null, null, `lb5-1`, 'teamB'));
+
+    r5.push(createMatch(`lb5-1`, null, null, `lb6-1`, 'teamB'));
+    r6.push(createMatch(`lb6-1`, null, null, `gf-1`, 'teamB'));
+    r7.push(createMatch(`gf-1`, null, null, null, null));
+
+    state.bracket = [r0, r1, r2, r3, r4, r5, r6, r7];
+  }
+
+  io.emit('draft-update', state);
 }
 
 function awardSeasonPacks() {
-  const finalMatch = state.bracket[2] && state.bracket[2][0];
+  const finalMatch = state.bracket[state.bracket.length - 1]?.[0];
   const championId = state.champion?.id;
-  const runnerUpId = finalMatch
-    ? (finalMatch.teamA?.id === championId ? finalMatch.teamB?.id : finalMatch.teamA?.id)
-    : null;
+  const runnerUpId = finalMatch ? (finalMatch.teamA?.id === championId ? finalMatch.teamB?.id : finalMatch.teamA?.id) : null;
 
-  const semiFinalists = state.bracket[1]
-    .flatMap(m => [m.teamA?.id, m.teamB?.id])
-    .filter(id => id && id !== championId && id !== runnerUpId);
+  const sfMatches = state.bracket[state.bracket.length - 2] || [];
+  const semiFinalists = sfMatches.flatMap(m => [m.teamA?.id, m.teamB?.id]).filter(id => id && id !== championId && id !== runnerUpId);
+
+  const qfMatches = state.bracket[state.bracket.length - 3] || [];
+  const quarterFinalists = qfMatches.flatMap(m => [m.teamA?.id, m.teamB?.id]).filter(id => id && id !== championId && id !== runnerUpId && !semiFinalists.includes(id));
 
   if (!state.seasonScores) state.seasonScores = {};
   
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
-
     let packsWon = 1;
 
-    if (p.id === championId) {
-      state.seasonScores[p.id].points += 5;
-      state.seasonScores[p.id].titles += 1;
-      packsWon = 4;
-    } else if (p.id === runnerUpId) {
-      state.seasonScores[p.id].points += 3;
-      packsWon = 3;
-    } else if (semiFinalists.includes(p.id)) {
-      state.seasonScores[p.id].points += 1;
-      packsWon = 2;
-    }
+    if (p.id === championId) { state.seasonScores[p.id].points += 5; state.seasonScores[p.id].titles += 1; packsWon = 4; } 
+    else if (p.id === runnerUpId) { state.seasonScores[p.id].points += 3; packsWon = 3; } 
+    else if (semiFinalists.includes(p.id)) { state.seasonScores[p.id].points += 2; packsWon = 2; } 
+    else if (quarterFinalists.includes(p.id)) { state.seasonScores[p.id].points += 1; packsWon = 1; }
 
-    if (!p.id.startsWith('bot-')) {
-      state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packsWon;
-    } else {
-      p.roster = upgradeBotRoster(p.roster, packsWon);
-    }
+    if (!p.id.startsWith('bot-')) state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packsWon;
+    else p.roster = upgradeBotRoster(p.roster, packsWon);
   });
 }
 
-function clearAuctionTimer() {
-  if (auctionTimer) {
-    clearTimeout(auctionTimer);
-    auctionTimer = null;
-  }
-}
-
-function getRoleNeeders(role) {
-  return state.participants.filter(p => !p.id.startsWith('bot-') && !p.roster.some(pro => pro.role === role));
-}
-
-function isBroke(participantId) {
-  const budget = state.budgets[participantId] ?? STARTING_BUDGET;
-  return budget < MIN_BID;
-}
-
-function getSkipVotingGroup(auction) {
-  const solventActive = auction.activeIds.filter(id => !isBroke(id));
-  return solventActive.length > 0 ? solventActive : auction.activeIds;
-}
-
-function computeSkipEligible(auction) {
-  if (!auction || auction.forced || auction.activeIds.length < 2) return false;
-  return getSkipVotingGroup(auction).length >= 2;
-}
+function clearAuctionTimer() { if (auctionTimer) { clearTimeout(auctionTimer); auctionTimer = null; } }
+function getRoleNeeders(role) { return state.participants.filter(p => !p.id.startsWith('bot-') && !p.roster.some(pro => pro.role === role)); }
+function isBroke(participantId) { return (state.budgets[participantId] ?? STARTING_BUDGET) < MIN_BID; }
+function getSkipVotingGroup(auction) { const solventActive = auction.activeIds.filter(id => !isBroke(id)); return solventActive.length > 0 ? solventActive : auction.activeIds; }
+function computeSkipEligible(auction) { if (!auction || auction.forced || auction.activeIds.length < 2) return false; return getSkipVotingGroup(auction).length >= 2; }
 
 function startAuctionRound() {
   clearAuctionTimer();
-
   const candidateRoles = ORDERED_ROLES.filter(role => getRoleNeeders(role).length > 0);
-  if (candidateRoles.length === 0) {
-    completeDraftAndStartTournament();
-    return;
-  }
+  if (candidateRoles.length === 0) { completeDraftAndStartTournament(); return; }
 
   const shuffledRoles = [...candidateRoles].sort(() => Math.random() - 0.5);
-
   for (const role of shuffledRoles) {
     const needers = getRoleNeeders(role);
     let pool = state.availablePlayers.filter(p => p.role === role);
-    if (pool.length === 0) {
-      pool = state.skippedPlayers.filter(p => p.role === role);
-    }
+    if (pool.length === 0) pool = state.skippedPlayers.filter(p => p.role === role);
     if (pool.length === 0) continue; 
 
     const player = pool[Math.floor(Math.random() * pool.length)];
     const contenders = needers.map(p => p.id);
-    const forced = contenders.length === 1;
 
-    state.auction = {
-      player, role, contenders,
-      activeIds: [...contenders],
-      highestBid: 0, highestBidderId: null,
-      minBid: MIN_BID, increment: MIN_INCREMENT,
-      forced, skipVotes: [], skipEligible: false, deadline: null
-    };
+    state.auction = { player, role, contenders, activeIds: [...contenders], highestBid: 0, highestBidderId: null, minBid: MIN_BID, increment: MIN_INCREMENT, forced: contenders.length === 1, skipVotes: [], skipEligible: false, deadline: null };
     state.auction.skipEligible = computeSkipEligible(state.auction);
     return;
   }
@@ -470,30 +576,15 @@ function assignAuctionPlayer(participantId, price) {
 function resolveAuctionWin(participantId) {
   const auction = state.auction;
   if (!auction) return;
-  const budget = state.budgets[participantId] ?? STARTING_BUDGET;
   const askedPrice = auction.highestBid > 0 ? auction.highestBid : auction.minBid;
-  const price = Math.min(budget, askedPrice);
-  assignAuctionPlayer(participantId, price);
+  assignAuctionPlayer(participantId, Math.min(state.budgets[participantId] ?? STARTING_BUDGET, askedPrice));
 }
 
 function resolveActiveIdsChange() {
   const auction = state.auction;
   if (!auction) return;
-
-  if (auction.activeIds.length === 0) {
-    clearAuctionTimer();
-    discardAuctionPlayer();
-    return;
-  }
-
-  if (auction.activeIds.length === 1) {
-    auction.skipEligible = false;
-    auction.skipVotes = [];
-    clearAuctionTimer();
-    auction.deadline = null;
-    return;
-  }
-
+  if (auction.activeIds.length === 0) { clearAuctionTimer(); discardAuctionPlayer(); return; }
+  if (auction.activeIds.length === 1) { auction.skipEligible = false; auction.skipVotes = []; clearAuctionTimer(); auction.deadline = null; return; }
   auction.forced = false;
   auction.skipEligible = computeSkipEligible(auction);
 }
@@ -502,9 +593,7 @@ function discardAuctionPlayer() {
   const auction = state.auction;
   if (!auction) return;
   state.availablePlayers = state.availablePlayers.filter(p => p.id !== auction.player.id);
-  if (!state.skippedPlayers.some(p => p.id === auction.player.id)) {
-    state.skippedPlayers.push(auction.player);
-  }
+  if (!state.skippedPlayers.some(p => p.id === auction.player.id)) state.skippedPlayers.push(auction.player);
   state.auction = null;
   startAuctionRound();
 }
@@ -513,32 +602,60 @@ function refreshAuctionAfterDisconnect() {
   if (state.phase !== 'auction' || !state.auction) return;
   const auction = state.auction;
   const stillHere = (id) => state.participants.some(p => p.id === id);
-
   auction.contenders = auction.contenders.filter(stillHere);
   auction.activeIds = auction.activeIds.filter(stillHere);
   auction.skipVotes = auction.skipVotes.filter(id => auction.activeIds.includes(id));
 
   if (auction.highestBidderId && !auction.activeIds.includes(auction.highestBidderId)) {
-    auction.highestBid = 0;
-    auction.highestBidderId = null;
-    auction.deadline = null;
-    clearAuctionTimer();
+    auction.highestBid = 0; auction.highestBidderId = null; auction.deadline = null; clearAuctionTimer();
   }
   resolveActiveIdsChange();
 }
 
+function startAllBotMatchesInCurrentRound() {
+  const matchesToStart = [];
+  if (state.tournamentPhase === 'groups') {
+    state.groups.forEach(g => {
+      g.matches.forEach(m => {
+        if (m.waveActive && m.status === 'pending' && m.teamA && m.teamB && m.teamA.id.startsWith('bot-') && m.teamB.id.startsWith('bot-')) matchesToStart.push(m);
+      });
+    });
+  } else if (state.bracket && state.bracket[state.currentRound]) {
+    state.bracket[state.currentRound].forEach(m => {
+      if (m.waveActive && m.status === 'pending' && m.teamA && m.teamB && m.teamA.id.startsWith('bot-') && m.teamB.id.startsWith('bot-')) matchesToStart.push(m);
+    });
+  }
+  matchesToStart.forEach(m => {
+    if (!m.ready.includes(m.teamA.id)) m.ready.push(m.teamA.id);
+    if (!m.ready.includes(m.teamB.id)) m.ready.push(m.teamB.id);
+    tryStartMatch(m);
+  });
+}
+
+// ==========================================
+// DEBUT DES SOCKETS
+// ==========================================
 io.on('connection', (socket) => {
   socket.emit('draft-update', state);
 
   socket.on('select-mode', (modeId) => {
-    if (state.phase === 'lobby' && state.gameMode === null) {
-      state.gameMode = modeId;
-      io.emit('draft-update', state);
-    }
+    if (state.phase === 'lobby' && state.gameMode === null) { state.gameMode = modeId; io.emit('draft-update', state); }
+  });
+
+  socket.on('dev-give-card', (cardId) => {
+    if (state.gameMode !== 'draft_cartes') return;
+    const id = socket.id;
+    if (!state.cardCollections[id]) state.cardCollections[id] = {};
+    state.cardCollections[id][cardId] = (state.cardCollections[id][cardId] || 0) + 1;
+    io.emit('draft-update', state);
+  });
+
+  socket.on('dev-set-event', (eventIndex) => {
+    if (eventIndex >= 0 && eventIndex < EVENTS.length) { state.eventIndex = eventIndex; io.emit('draft-update', state); }
   });
 
   socket.on('join-lobby', (name) => {
-    if (state.phase !== 'lobby' || state.participants.length >= 8) return;
+    if (state.phase !== 'lobby' || state.participants.length >= 16) return;
     const cleanName = name.trim();
     if (state.participants.some(p => p.name.toLowerCase() === cleanName.toLowerCase())) return;
     if (!state.participants.find(p => p.id === socket.id)) {
@@ -548,54 +665,29 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start-draft', () => {
-    if (state.phase === 'lobby' && state.participants.length >= 2) {
+    if (state.phase === 'lobby' && state.participants.length >= 1) { // 1 JOUEUR MINIMUM !
       if (state.gameMode === 'draft_cartes') {
-        state.cardCollections = {};
-        state.activeLineups = {};
-        state.pendingPacks = {};
-        state.lastOpenedPack = {};
-        state.starterPackClaimed = {};
-        state.seasonRound = 1;
-        state.continueSeasonVotes = [];
-        state.seasonScores = null; 
-        
-        state.participants.forEach(p => {
-          state.cardCollections[p.id] = {};
-          state.activeLineups[p.id] = {};
-          state.pendingPacks[p.id] = 1; 
-          state.lastOpenedPack[p.id] = [];
-          state.starterPackClaimed[p.id] = false;
-        });
+        state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; 
+        state.participants.forEach(p => { state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.pendingPacks[p.id] = 1; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; });
         state.phase = 'cards';
         io.emit('draft-update', state);
         return;
       }
-
       state.availablePlayers = [...PRO_PLAYERS];
-
       if (state.gameMode === 'draft_encheres') {
-        state.budgets = {};
-        state.skippedPlayers = [];
-        state.participants.forEach(p => { state.budgets[p.id] = STARTING_BUDGET; });
-        state.phase = 'auction';
-        startAuctionRound();
+        state.budgets = {}; state.skippedPlayers = []; state.participants.forEach(p => { state.budgets[p.id] = STARTING_BUDGET; });
+        state.phase = 'auction'; startAuctionRound();
       } else {
-        state.phase = 'draft';
-        state.turnIndex = 0;
-        state.currentOptions = getOptionsForParticipant(state.participants[0], state.availablePlayers);
+        state.phase = 'draft'; state.turnIndex = 0; state.currentOptions = getOptionsForParticipant(state.participants[0], state.availablePlayers);
       }
       io.emit('draft-update', state);
     }
   });
 
   socket.on('skip-match', (matchId) => {
-    const match = state.bracket.flat().find(m => m.id === matchId);
+    const match = findMatchById(matchId);
     if (!match || match.status !== 'simulating') return;
-
-    if (matchTimeouts[match.id]) {
-      clearTimeout(matchTimeouts[match.id]);
-      delete matchTimeouts[match.id];
-    }
+    if (matchTimeouts[match.id]) { clearTimeout(matchTimeouts[match.id]); delete matchTimeouts[match.id]; }
 
     while (match.scoreA < GAMES_TO_WIN && match.scoreB < GAMES_TO_WIN) {
       const gameNumber = match.games.length + 1;
@@ -607,32 +699,42 @@ io.on('connection', (socket) => {
 
     match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
     match.status = 'finished';
-    advanceTeam(match.winner, match.nextId, match.nextSlot);
+    
+    // LE MÊME ROUTAGE SÉCURISÉ QUE PLAYNEXTGAME
+    if (state.tournamentPhase === 'swiss') {
+        const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
+        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+        const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
+        if (wTeam) wTeam.wins += 1;
+        if (lTeam) lTeam.losses += 1;
 
-    const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-    if (allFinished && !state.champion) {
-      state.roundComplete = true;
+        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+        if (allFinished) state.roundComplete = true;
+    } 
+    else if (state.tournamentPhase === 'groups') {
+      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+      const groupIndex = match.id.match(/g(\d)/)[1];
+      const group = state.groups[groupIndex];
+      if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; }
+      else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; }
+      else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; }
+      else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; }
+      else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
+      
+      const allGroupsDone = state.groups.every(g => g.qualified.length === 2);
+      if (allGroupsDone) state.roundComplete = true;
+    } 
+    else {
+        advanceTeam(match.winner, match.nextId, match.nextSlot);
+        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+        if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
+
+        if (state.bracket && state.bracket[state.currentRound]) {
+          const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+          if (allFinished && !state.champion) state.roundComplete = true;
+        }
     }
-
     io.emit('draft-update', state);
-  });
-
-  socket.on('pick-player', (playerId) => {
-    if (state.phase !== 'draft') return;
-    const activeParticipant = state.participants[state.turnIndex];
-
-    if (activeParticipant.id === socket.id && state.currentOptions.find(p => p.id === playerId)) {
-      activeParticipant.roster.push(state.currentOptions.find(p => p.id === playerId));
-      state.availablePlayers = state.availablePlayers.filter(p => p.id !== playerId);
-
-      if (state.participants.every(p => p.roster.length === 5)) {
-        completeDraftAndStartTournament();
-      } else {
-        state.turnIndex = (state.turnIndex + 1) % state.participants.length;
-        state.currentOptions = getOptionsForParticipant(state.participants[state.turnIndex], state.availablePlayers);
-      }
-      io.emit('draft-update', state);
-    }
   });
 
   socket.on('open-pack', () => {
@@ -643,7 +745,6 @@ io.on('connection', (socket) => {
 
     const isStarter = !state.starterPackClaimed[id];
     const cards = isStarter ? openStarterPack() : openStandardPack();
-
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
     if (!state.cardCollections[id]) state.cardCollections[id] = {};
@@ -651,17 +752,13 @@ io.on('connection', (socket) => {
     state.starterPackClaimed[id] = true;
     state.pendingPacks[id] -= 1;
     state.lastOpenedPack[id] = cards.map(c => c.id);
-
     io.emit('draft-update', state);
   });
 
   socket.on('close-pack', () => {
     if (state.phase === 'cards') {
       const id = socket.id;
-      if (state.lastOpenedPack[id]) {
-        state.lastOpenedPack[id] = [];
-        io.emit('draft-update', state);
-      }
+      if (state.lastOpenedPack[id]) { state.lastOpenedPack[id] = []; io.emit('draft-update', state); }
     }
   });
 
@@ -693,47 +790,24 @@ io.on('connection', (socket) => {
     }
 
     const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
-    if (state.readyPlayers.length === humanCount && humanCount > 0) {
-      startCardTournament();
-    }
+    if (state.readyPlayers.length === humanCount && humanCount > 0) startCardTournament();
     io.emit('draft-update', state);
   });
 
   socket.on('continue-season', () => {
     if (state.phase !== 'simulation' || !state.champion || state.gameMode !== 'draft_cartes') return;
 
-    if (state.continueSeasonVotes.includes(socket.id)) {
-      state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
-    } else {
-      state.continueSeasonVotes.push(socket.id);
-    }
+    if (state.continueSeasonVotes.includes(socket.id)) state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
+    else state.continueSeasonVotes.push(socket.id);
 
     const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
     if (state.continueSeasonVotes.length === humanCount && humanCount > 0) {
       awardSeasonPacks();
-
-      state.history.push({
-        year: state.year,
-        eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`,
-        winnerName: state.champion.name
-      });
-
+      state.history.push({ year: state.year, eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`, winnerName: state.champion.name });
       state.eventIndex += 1;
-      
-      if (state.eventIndex >= EVENTS.length) {
-        state.eventIndex = 0;
-        state.year += 1;
-      }
+      if (state.eventIndex >= EVENTS.length) { state.eventIndex = 0; state.year += 1; }
 
-      state.continueSeasonVotes = [];
-      state.readyPlayers = [];
-      state.champion = null;
-      state.bracket = [];
-      state.currentRound = 0;
-      state.roundComplete = false;
-      state.roundReady = [];
-      state.seasonRound += 1;
-      state.phase = 'cards';
+      state.continueSeasonVotes = []; state.readyPlayers = []; state.champion = null; state.bracket = []; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.seasonRound += 1; state.phase = 'cards';
     }
     io.emit('draft-update', state);
   });
@@ -753,19 +827,15 @@ io.on('connection', (socket) => {
     const budget = state.budgets[socket.id] ?? STARTING_BUDGET;
     if (numericAmount > budget) return;
 
-    auction.highestBid = numericAmount;
-    auction.highestBidderId = socket.id;
-    auction.skipVotes = []; 
+    auction.highestBid = numericAmount; auction.highestBidderId = socket.id; auction.skipVotes = []; 
 
     clearAuctionTimer();
     auction.deadline = Date.now() + BID_TIMER_MS;
     auctionTimer = setTimeout(() => {
       if (state.auction === auction && auction.highestBidderId) {
-        assignAuctionPlayer(auction.highestBidderId, auction.highestBid);
-        io.emit('draft-update', state);
+        assignAuctionPlayer(auction.highestBidderId, auction.highestBid); io.emit('draft-update', state);
       }
     }, BID_TIMER_MS);
-
     io.emit('draft-update', state);
   });
 
@@ -773,9 +843,7 @@ io.on('connection', (socket) => {
     const auction = state.auction;
     if (state.phase !== 'auction' || !auction || !auction.forced) return;
     if (!auction.activeIds.includes(socket.id)) return;
-
-    resolveAuctionWin(socket.id);
-    io.emit('draft-update', state);
+    resolveAuctionWin(socket.id); io.emit('draft-update', state);
   });
 
   socket.on('withdraw-from-auction', () => {
@@ -785,22 +853,16 @@ io.on('connection', (socket) => {
 
     if (auction.activeIds.length >= 2) {
       const solventActive = auction.activeIds.filter(id => !isBroke(id));
-      const inRescuePhase = solventActive.length === 0;
-      if (inRescuePhase) return; 
+      if (solventActive.length === 0) return; 
     }
 
     auction.activeIds = auction.activeIds.filter(id => id !== socket.id);
     auction.skipVotes = auction.skipVotes.filter(id => id !== socket.id);
 
     if (auction.highestBidderId === socket.id) {
-      auction.highestBid = 0;
-      auction.highestBidderId = null;
-      auction.deadline = null;
-      clearAuctionTimer();
+      auction.highestBid = 0; auction.highestBidderId = null; auction.deadline = null; clearAuctionTimer();
     }
-
-    resolveActiveIdsChange();
-    io.emit('draft-update', state);
+    resolveActiveIdsChange(); io.emit('draft-update', state);
   });
 
   socket.on('claim-player', () => {
@@ -811,12 +873,9 @@ io.on('connection', (socket) => {
     const isSoleSurvivor = auction.activeIds.length === 1 && auction.activeIds[0] === socket.id;
     if (!isSoleSurvivor) {
       if (!isBroke(socket.id)) return;
-      const solventActive = auction.activeIds.filter(id => !isBroke(id));
-      if (solventActive.length > 0) return; 
+      if (auction.activeIds.filter(id => !isBroke(id)).length > 0) return; 
     }
-
-    resolveAuctionWin(socket.id);
-    io.emit('draft-update', state);
+    resolveAuctionWin(socket.id); io.emit('draft-update', state);
   });
 
   socket.on('toggle-skip-vote', () => {
@@ -833,105 +892,171 @@ io.on('connection', (socket) => {
     if (!inRescuePhase && amIBroke) return;
     if (!inRescuePhase && !auction.skipEligible) return;
 
-    if (auction.skipVotes.includes(socket.id)) {
-      auction.skipVotes = auction.skipVotes.filter(id => id !== socket.id);
-    } else {
-      auction.skipVotes.push(socket.id);
-    }
+    if (auction.skipVotes.includes(socket.id)) auction.skipVotes = auction.skipVotes.filter(id => id !== socket.id);
+    else auction.skipVotes.push(socket.id);
 
     const votingGroup = inRescuePhase ? auction.activeIds.filter(id => isBroke(id)) : solventActive;
 
     if (votingGroup.length > 0 && auction.skipVotes.length === votingGroup.length) {
-      if (inRescuePhase) {
-        clearAuctionTimer();
-        discardAuctionPlayer();
-        io.emit('draft-update', state);
-        return;
-      }
-      auction.activeIds = auction.activeIds.filter(id => isBroke(id));
-      auction.skipVotes = [];
-      auction.highestBid = 0;
-      auction.highestBidderId = null;
-      auction.deadline = null;
-      clearAuctionTimer();
-      resolveActiveIdsChange();
+      if (inRescuePhase) { clearAuctionTimer(); discardAuctionPlayer(); io.emit('draft-update', state); return; }
+      auction.activeIds = auction.activeIds.filter(id => isBroke(id)); auction.skipVotes = []; auction.highestBid = 0; auction.highestBidderId = null; auction.deadline = null; clearAuctionTimer(); resolveActiveIdsChange();
     }
     io.emit('draft-update', state);
   });
 
+  // ==========================================
+  // BOUTON "LANCER / AVANCER"
+  // ==========================================
   socket.on('toggle-ready', () => {
-    if (state.phase === 'tournament') {
+    if (state.phase === 'tournament' || state.phase === 'simulation') {
       if (state.readyPlayers.includes(socket.id)) state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
       else state.readyPlayers.push(socket.id);
 
       const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
-      if (state.readyPlayers.length === humanCount && humanCount > 0) {
-        state.phase = 'simulation';
-        state.currentRound = 0;
-        state.roundComplete = false;
-        state.roundReady = [];
+      if (state.readyPlayers.length >= humanCount && humanCount > 0) {
+        state.readyPlayers = []; 
+        let hasHumanInWave = false; 
 
-        state.bracket[0].forEach(match => {
-          if (match.teamA && !match.teamB) { match.status = 'finished'; match.winner = match.teamA; match.scoreA = GAMES_TO_WIN; match.scoreB = 0; advanceTeam(match.winner, match.nextId, match.nextSlot); }
-          else if (!match.teamA && !match.teamB) { match.status = 'finished'; match.winner = null; }
-        });
+        if (state.tournamentPhase === 'groups') {
+          if (state.roundComplete) {
+            buildPlayoffsFromGroups();
+            state.tournamentPhase = 'bracket';
+            state.roundComplete = false;
+            state.phase = 'tournament'; 
+          } else {
+            state.phase = 'simulation'; 
+            let allFinished = true;
+            state.groups.forEach(group => {
+              group.matches.forEach(match => {
+                if (match.status === 'pending' && match.teamA && match.teamB) {
+                  match.waveActive = true; 
+                  allFinished = false;
+                  if (!match.teamA.id.startsWith('bot-') || !match.teamB.id.startsWith('bot-')) hasHumanInWave = true;
+                } else if (match.status === 'simulating' || (match.status === 'pending' && match.waveActive)) {
+                  allFinished = false;
+                }
+              });
+            });
+            if (allFinished && !state.champion) state.roundComplete = true;
+            if (!hasHumanInWave && !state.roundComplete) startAllBotMatchesInCurrentRound();
+          }
+        } 
+        else {
+          state.phase = 'simulation'; 
+          state.currentRound = state.currentRound || 0;
+          let allFinished = true;
+          
+          state.bracket[state.currentRound].forEach(match => {
+             if (match.status === 'pending' && match.teamA && match.teamB) {
+              match.waveActive = true; 
+              allFinished = false;
+              if (!match.teamA.id.startsWith('bot-') || !match.teamB.id.startsWith('bot-')) hasHumanInWave = true;
+            } else if (match.status === 'simulating' || (match.status === 'pending' && match.waveActive)) {
+              allFinished = false;
+            }
+          });
 
-        const allFinished = state.bracket[0].every(m => m.status === 'finished');
-        if (allFinished && !state.champion) state.roundComplete = true;
-        else state.bracket[0].forEach(match => tryStartMatch(match));
+          if (allFinished && !state.champion) state.roundComplete = true;
+
+          // BLINDAGE SPECTATEUR : Lance les bots directement si on est éliminé
+          if (!hasHumanInWave && !state.roundComplete) {
+            startAllBotMatchesInCurrentRound();
+          }
+        }
       }
       io.emit('draft-update', state);
     }
   });
 
   socket.on('match-ready', (matchId) => {
-    const match = state.bracket.flat().find(m => m.id === matchId);
+    const match = findMatchById(matchId);
     if (!match || match.status !== 'pending') return;
     if (!match.ready.includes(socket.id)) match.ready.push(socket.id);
+    
     tryStartMatch(match);
+    if (match.status === 'simulating') startAllBotMatchesInCurrentRound();
   });
 
   socket.on('dismiss-match', (matchId) => {
-    const match = state.bracket.flat().find(m => m.id === matchId);
+    const match = findMatchById(matchId);
     if (match && !match.dismissedBy.includes(socket.id)) {
       match.dismissedBy.push(socket.id);
       io.emit('draft-update', state);
     }
   });
 
+  // ==========================================
+  // BOUTON "TOUR SUIVANT"
+  // ==========================================
   socket.on('advance-round', () => {
     if (state.phase === 'simulation' && state.roundComplete) {
-
-      const nextRoundMatches = state.bracket[state.currentRound + 1];
-      const activeHumanIds = [];
-      if (nextRoundMatches) {
-        nextRoundMatches.forEach(match => {
-          if (match.teamA && !match.teamA.id.startsWith('bot-')) activeHumanIds.push(match.teamA.id);
-          if (match.teamB && !match.teamB.id.startsWith('bot-')) activeHumanIds.push(match.teamB.id);
-        });
-      }
-
+      
       const allHumans = state.participants.filter(p => !p.id.startsWith('bot-')).map(p => p.id);
-      const requiredVoters = activeHumanIds.length > 0 ? activeHumanIds : allHumans;
-
-      if (requiredVoters.includes(socket.id)) {
+      
+      if (allHumans.includes(socket.id)) {
         if (!state.roundReady.includes(socket.id)) state.roundReady.push(socket.id);
       }
 
-      if (state.roundReady.length === requiredVoters.length) {
-        state.currentRound++;
+      if (state.roundReady.length >= allHumans.length) {
         state.roundComplete = false;
         state.roundReady = [];
+        state.phase = 'tournament'; 
 
-        state.bracket[state.currentRound].forEach(match => {
-          if (match.teamA && !match.teamB) { match.status = 'finished'; match.winner = match.teamA; match.scoreA = GAMES_TO_WIN; match.scoreB = 0; advanceTeam(match.winner, match.nextId, match.nextSlot); }
-          else if (!match.teamA && !match.teamB) { match.status = 'finished'; match.winner = null; }
-        });
+        if (state.tournamentPhase === 'swiss') {
+          state.currentRound++;
+          
+          if (state.currentRound >= 5) {
+            state.champion = null; // ON ÉLIMINE LE CHAMPION FANTÔME ICI
+            const qualified = state.swissTeams.filter(t => t.wins === 3).sort((a, b) => a.losses - b.losses).map(t => t.team);
+            
+            const qf = [
+              { id: 'qf-0', teamA: qualified[0], teamB: qualified[7], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamA' },
+              { id: 'qf-1', teamA: qualified[3], teamB: qualified[4], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-0', nextSlot: 'teamB' },
+              { id: 'qf-2', teamA: qualified[2], teamB: qualified[5], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamA' },
+              { id: 'qf-3', teamA: qualified[1], teamB: qualified[6], status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'sf-1', nextSlot: 'teamB' }
+            ];
+            const sf = [
+              { id: 'sf-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamA' },
+              { id: 'sf-1', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: 'f-0', nextSlot: 'teamB' }
+            ];
+            const f = [
+              { id: 'f-0', teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false, nextId: null, nextSlot: null }
+            ];
+            
+            state.bracket = [qf, sf, f];
+            state.currentRound = 0;
+            state.tournamentPhase = 'bracket';
+          } else {
+            const nextMatches = state.bracket[state.currentRound];
+            const activeTeams = state.swissTeams.filter(t => t.wins < 3 && t.losses < 3);
 
-        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-        if (allFinished && !state.champion) state.roundComplete = true;
-        else state.bracket[state.currentRound].forEach(match => tryStartMatch(match));
+            const pools = {};
+            activeTeams.forEach(t => {
+              const key = `${t.wins}-${t.losses}`;
+              if (!pools[key]) pools[key] = [];
+              pools[key].push(t);
+            });
+
+            for (const poolKey in pools) {
+              const poolMatches = nextMatches.filter(m => m.pool === poolKey);
+              const teamsInPool = pools[poolKey].sort(() => 0.5 - Math.random());
+              for (let i = 0; i < poolMatches.length; i++) {
+                poolMatches[i].teamA = teamsInPool[i*2].team;
+                poolMatches[i].teamB = teamsInPool[i*2+1].team;
+              }
+            }
+          }
+        } 
+        else {
+          state.currentRound++;
+          state.bracket[state.currentRound].forEach(match => {
+            if (match.teamA && !match.teamB) { match.status = 'finished'; match.winner = match.teamA; match.scoreA = GAMES_TO_WIN; match.scoreB = 0; advanceTeam(match.winner, match.nextId, match.nextSlot); }
+            else if (!match.teamA && !match.teamB) { match.status = 'finished'; match.winner = null; }
+          });
+          const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
+          if (allFinished && !state.champion) state.roundComplete = true;
+        }
       }
       io.emit('draft-update', state);
     }
@@ -947,29 +1072,14 @@ io.on('connection', (socket) => {
       if (state.resetPlayers.length === humanCount && humanCount > 0) {
         state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
         state.participants.forEach(p => p.roster = []);
-        state.phase = 'lobby';
-        state.gameMode = null;
-        state.bracket = [];
-        state.champion = null;
-        state.readyPlayers = [];
-        state.resetPlayers = [];
-        state.turnIndex = 0;
-        state.currentRound = 0;
-        state.roundComplete = false;
-        state.roundReady = [];
-        state.auction = null;
-        state.budgets = {};
-        state.skippedPlayers = [];
-        state.cardCollections = {};
-        state.activeLineups = {};
-        state.pendingPacks = {};
-        state.lastOpenedPack = {};
-        state.starterPackClaimed = {};
-        state.seasonRound = 0;
-        state.continueSeasonVotes = [];
+        state.phase = 'lobby'; state.gameMode = null; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = [];
       }
       io.emit('draft-update', state);
     }
+  });
+
+  socket.on('start-next-event', () => {
+    if (state.phase === 'season_hub') startCurrentEvent();
   });
 
   socket.on('disconnect', () => {
@@ -978,33 +1088,13 @@ io.on('connection', (socket) => {
       state.participants = state.participants.filter(p => p.id !== socket.id);
       const humansAfter = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
-      delete state.cardCollections[socket.id];
-      delete state.activeLineups[socket.id];
-      delete state.pendingPacks[socket.id];
-      delete state.lastOpenedPack[socket.id];
-      delete state.starterPackClaimed[socket.id];
+      delete state.cardCollections[socket.id]; delete state.activeLineups[socket.id]; delete state.pendingPacks[socket.id]; delete state.lastOpenedPack[socket.id]; delete state.starterPackClaimed[socket.id];
       state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
 
       if (humansAfter === 0 && humansBefore > 0) {
-        state.phase = 'lobby';
-        state.gameMode = null;
-        state.champion = null;
-        state.participants = [];
-        state.resetPlayers = [];
-        state.auction = null;
-        state.budgets = {};
-        state.skippedPlayers = [];
-        state.cardCollections = {};
-        state.activeLineups = {};
-        state.pendingPacks = {};
-        state.lastOpenedPack = {};
-        state.starterPackClaimed = {};
-        state.seasonRound = 0;
-        state.continueSeasonVotes = [];
-        clearAuctionTimer();
-      } else {
-        refreshAuctionAfterDisconnect();
-      }
+        state.phase = 'lobby'; state.gameMode = null; state.champion = null; state.participants = []; state.resetPlayers = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; clearAuctionTimer();
+      } else refreshAuctionAfterDisconnect();
+      
       io.emit('draft-update', state);
     }
   });

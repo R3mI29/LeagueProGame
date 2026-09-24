@@ -89,12 +89,44 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
     );
   };
 
+  const getMatchTitle = (id) => {
+    // Phase Double Élimination (MSI)
+    if (id.includes('gf')) return 'GRANDE FINALE';
+    if (id.includes('ub1')) return 'WINNER BRACKET - 1/8 DE FINALE';
+    if (id.includes('ub2')) return 'WINNER BRACKET - QUARTS';
+    if (id.includes('ub3')) return 'WINNER BRACKET - DEMIES';
+    if (id.includes('ub4')) return 'WINNER BRACKET - FINALE';
+    if (id.includes('lb1')) return 'LOSER BRACKET - ROUND 1';
+    if (id.includes('lb2')) return 'LOSER BRACKET - ROUND 2';
+    if (id.includes('lb3')) return 'LOSER BRACKET - ROUND 3';
+    if (id.includes('lb4')) return 'LOSER BRACKET - ROUND 4';
+    if (id.includes('lb5')) return 'LOSER BRACKET - DEMI-FINALE';
+    if (id.includes('lb6')) return 'LOSER BRACKET - FINALE';
+    // Phase Suisse (Worlds)
+    if (id.includes('sw1')) return "SWISS STAGE - MATCHS D'OUVERTURE";
+    if (id.includes('sw2')) return "SWISS STAGE - ROUND 2";
+    if (id.includes('sw3')) return "SWISS STAGE - ROUND 3";
+    if (id.includes('sw4')) return "SWISS STAGE - ROUND 4";
+    if (id.includes('sw5')) return "SWISS STAGE - ROUND 5 (DÉCISIF)";
+    // Phase Classique / Groupes
+    if (id.includes('qf')) return 'QUART DE FINALE';
+    if (id.includes('sf')) return 'DEMI-FINALE';
+    if (id.includes('f-')) return 'GRANDE FINALE';
+    if (id.includes('m1') || id.includes('m2')) return "MATCH D'OUVERTURE";
+    if (id.includes('winner')) return "MATCH DES GAGNANTS";
+    if (id.includes('loser')) return "MATCH ÉLIMINATOIRE";
+    if (id.includes('decider')) return "MATCH DÉCISIF";
+    
+    return "AFFRONTEMENT OFFICIEL";
+  };
+
+
   return (
     // AJOUT: position relative sur le conteneur principal pour que l'overlay se cale bien au fond
     <div className="container" style={{ position: 'relative' }}>
       <h1 className="title-font text-cyan" style={{ fontSize: '32px' }}>CONFRONTATION PROTOCOLE</h1>
       <p className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '4px' }}>
-        {match.id.includes('qf') ? 'QUART DE FINALE' : match.id.includes('sf') ? 'DEMI-FINALE' : 'GRANDE FINALE'}
+        {getMatchTitle(match.id)}
       </p>
       
       <div className="arena-box" style={{ maxWidth: isCardMode ? '1300px' : '1000px', alignItems: 'stretch' }}>

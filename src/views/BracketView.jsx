@@ -1,110 +1,144 @@
+import React from 'react';
 import { socket } from '../api/socket';
-import { getHumanCount, getNextRoundVoting } from '../utils/bracketHelpers';
 
-export default function BracketView({ state, toggleReady, toggleReset, advanceRound, continueSeason }) {
-  const humanCount = getHumanCount(state);
-  const isGlobalReady = state.readyPlayers.includes(socket.id);
-  const isResetReady = state.resetPlayers?.includes(socket.id);
-  const isContinueReady = state.continueSeasonVotes?.includes(socket.id);
-  const isRoundReady = state.roundReady?.includes(socket.id);
-  const { requiredVotersCount, amIRequiredForNextRound } = getNextRoundVoting(state, socket.id);
-  const isCardMode = state.gameMode === 'draft_cartes';
+export default function BracketView({ state, event }) {
+  const { bracket, currentRound, roundComplete, readyPlayers } = state;
+  const isWorlds = event?.isMajor;
+  const tourneyColor = isWorlds ? '#D1B478' : (event?.color || '#00e5ff');
+  const bgColor = isWorlds ? '#0A0A0C' : '#080A10';
+  
+  const myId = socket.id;
+  const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
+  const isGlobalReady = readyPlayers?.includes(myId);
+  const isRoundReady = state.roundReady?.includes(myId);
+  const isContinueReady = state.continueSeasonVotes?.includes(myId);
+
+  const finalMatch = bracket?.[bracket.length - 1]?.[0];
+  const isTournamentOver = finalMatch?.status === 'finished';
+  const actualChampion = isTournamentOver ? finalMatch.winner : null;
+
+  const toggleReady = () => socket.emit('toggle-ready');
+  const advanceRound = () => socket.emit('advance-round');
+
+  const handleMatchClick = (match) => {
+    if (match && match.waveActive && match.status === 'pending' && (match.teamA?.id === myId || match.teamB?.id === myId)) {
+      socket.emit('match-ready', match.id);
+    }
+  };
+
+  const getMatchBox = (match, title) => {
+    if (!match) return null;
+    const isSim = match.status === 'simulating';
+    const isFin = match.status === 'finished';
+    const involvesMe = match.teamA?.id === myId || match.teamB?.id === myId;
+    const isMyTurn = match.waveActive && match.status === 'pending' && involvesMe;
+    const boxBg = isWorlds ? '#111114' : '#11141E';
+    const borderCol = isMyTurn ? tourneyColor : (isWorlds ? '#2A251E' : '#222838');
+
+    return (
+      <div key={match.id} onClick={() => handleMatchClick(match)}
+        style={{ 
+          background: boxBg, border: `1px solid ${borderCol}`, borderRadius: '6px', 
+          padding: '14px', marginBottom: '24px', minWidth: '240px', cursor: isMyTurn ? 'pointer' : 'default',
+          boxShadow: isMyTurn ? `0 0 12px ${tourneyColor}20` : '0 4px 10px rgba(0,0,0,0.4)', transition: 'all 0.2s ease', position: 'relative'
+        }}
+      >
+        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '10px', color: isWorlds ? '#8C7C61' : '#768196', marginBottom: '14px', textAlign: 'center', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 600 }}>
+          {title} {isSim && <span className="pulse-text" style={{ color: tourneyColor, marginLeft: '6px' }}>[EN COURS]</span>}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', borderRadius: '4px', background: isFin && match.winner?.id === match.teamA?.id ? (isWorlds ? 'linear-gradient(90deg, rgba(209, 180, 120, 0.08) 0%, transparent 100%)' : 'rgba(255,255,255,0.05)') : 'transparent' }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: match.teamA?.id === myId ? 700 : 500, color: match.teamA?.id === myId ? tourneyColor : '#EAEAEA' }}>{match.teamA ? match.teamA.name : 'TBD'}</span>
+          {isFin && <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, color: match.winner?.id === match.teamA?.id ? tourneyColor : '#768196' }}>{match.scoreA}</span>}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', borderRadius: '4px', background: isFin && match.winner?.id === match.teamB?.id ? (isWorlds ? 'linear-gradient(90deg, rgba(209, 180, 120, 0.08) 0%, transparent 100%)' : 'rgba(255,255,255,0.05)') : 'transparent', marginTop: '4px' }}>
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', fontWeight: match.teamB?.id === myId ? 700 : 500, color: match.teamB?.id === myId ? tourneyColor : '#EAEAEA' }}>{match.teamB ? match.teamB.name : 'TBD'}</span>
+          {isFin && <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700, color: match.winner?.id === match.teamB?.id ? tourneyColor : '#768196' }}>{match.scoreB}</span>}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="container">
-      {state.phase === 'simulation' && state.champion ? (
-        <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <div className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '4px', marginBottom: '10px' }}>
-            VAINQUEUR ABSOLU
-          </div>
-          <h1
-            className="title-font text-cyan"
-            style={{ fontSize: '48px', margin: 0, textShadow: '0 0 30px rgba(0,229,255,0.4)', marginBottom: '30px' }}
-          >
-            {state.champion.name}
-          </h1>
+    <div style={{ width: '100%', paddingBottom: '40px', position: 'relative' }}>
+      <style>
+        {`
+          .luxury-scroll { overflow-x: auto; padding-bottom: 20px; }
+          .luxury-scroll::-webkit-scrollbar { height: 4px; }
+          .luxury-scroll::-webkit-scrollbar-track { background: ${bgColor}; }
+          .luxury-scroll::-webkit-scrollbar-thumb { background: ${isWorlds ? '#2A251E' : '#222838'}; border-radius: 10px; }
+          .luxury-scroll::-webkit-scrollbar-thumb:hover { background: ${tourneyColor}; }
+        `}
+      </style>
 
-          {isCardMode ? (
-            <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button className={`btn ${isContinueReady ? 'btn-green' : 'btn-cyan'}`} onClick={continueSeason}>
-                {isContinueReady
-                  ? `PRÊT POUR LA SUITE (${state.continueSeasonVotes?.length || 0}/${humanCount})`
-                  : 'CONTINUER LA SAISON'}
-              </button>
-              <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
-                {isResetReady ? `EN ATTENTE (${state.resetPlayers?.length || 0}/${humanCount})` : 'TERMINER LA SAISON'}
-              </button>
+      <div className="luxury-scroll" style={{ width: '100%', position: 'relative', zIndex: 1 }}>
+        <div style={{ minWidth: '900px', margin: '0 auto', padding: '20px 40px' }}>
+          
+          {isWorlds && (
+            <div style={{ textAlign: 'center', marginBottom: '70px' }}>
+              <p style={{ color: '#8C7C61', fontSize: '12px', letterSpacing: '4px', textTransform: 'uppercase', margin: '0 0 10px 0', fontWeight: 600 }}>Phase Finale Officielle</p>
+              <h2 style={{ fontFamily: "'Oswald', sans-serif", color: '#F0F0F2', fontSize: '42px', margin: '0', letterSpacing: '2px' }}>KNOCKOUT STAGE</h2>
+              <div style={{ width: '60px', height: '2px', background: tourneyColor, margin: '20px auto 0' }}></div>
             </div>
-          ) : (
-            <button className={`btn ${isResetReady ? 'btn-outline' : 'btn-pink'}`} onClick={toggleReset}>
-              {isResetReady ? `EN ATTENTE DES COMMANDANTS (${state.resetPlayers?.length || 0}/${humanCount})` : 'NOUVELLE PARTIE'}
-            </button>
           )}
-        </div>
-      ) : (
-        <h1 className="title-font text-cyan" style={{ fontSize: '32px', marginBottom: '50px' }}>RÉSEAU DU TOURNOI</h1>
-      )}
 
-      <div style={{ display: 'flex', gap: '40px', width: '100%', maxWidth: '1200px' }}>
-        {state.bracket.map((round, rIndex) => (
-          <div key={rIndex} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', flex: 1 }}>
-            <h3 className="title-font text-muted" style={{ textAlign: 'center', fontSize: '14px', letterSpacing: '2px', marginBottom: '20px' }}>
-              {rIndex === 0 ? 'QUARTS' : rIndex === 1 ? 'DEMIES' : 'FINALE'}
-            </h3>
-            {round.map(match => {
-              const isSim = match.status === 'simulating';
-              const isFin = match.status === 'finished';
-              return (
-                <div key={match.id} className="bracket-match">
-                  <div className={`bracket-row ${isFin && match.winner?.id === match.teamA?.id ? 'winner' : ''}`}>
-                    <span>{match.teamA ? match.teamA.name : '---'} {isSim && <span className="pulse-text text-pink">⚔️</span>}</span>
-                    {isFin && <span className="title-font text-muted" style={{ fontSize: '12px' }}>{match.scoreA ?? 0}</span>}
+          <div style={{ display: 'flex', gap: '80px', justifyContent: 'center' }}>
+            {bracket[0] && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: 'center' }}>
+                {bracket[0].map(m => getMatchBox(m, "QUART DE FINALE"))}
+              </div>
+            )}
+            {bracket[1] && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '110px', justifyContent: 'center' }}>
+                {bracket[1].map(m => getMatchBox(m, "DEMI-FINALE"))}
+              </div>
+            )}
+            
+            {/* LOGO PRÉCISÉMENT À GAUCHE DE LA FINALE */}
+            {bracket[2] && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '50px', position: 'relative' }}>
+                {isWorlds && event?.logo && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'fadeIn 1s ease-out' }}>
+                    <img src={event.logo} alt="Worlds Logo" style={{ width: '180px', opacity: 0.9, filter: 'drop-shadow(0 0 25px rgba(209, 180, 120, 0.4))' }} />
                   </div>
-                  <div className={`bracket-row ${isFin && match.winner?.id === match.teamB?.id ? 'winner' : ''}`}>
-                    <span>{match.teamB ? match.teamB.name : '---'} {isSim && <span className="pulse-text text-pink">⚔️</span>}</span>
-                    {isFin && <span className="title-font text-muted" style={{ fontSize: '12px' }}>{match.scoreB ?? 0}</span>}
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+                  <div style={{ transform: 'scale(1.15)', zIndex: 2 }}>
+                    {bracket[2].map(m => getMatchBox(m, isWorlds ? "GRANDE FINALE MONDIALE" : "GRANDE FINALE"))}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
-        ))}
+        </div>
       </div>
 
-      {state.phase === 'tournament' && (
-        <div
-          className="panel"
-          style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px' }}
-        >
-          <span className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '2px' }}>
-            SYNCHRONISATION DES COMMANDANTS...
+      <div style={{ marginTop: '40px', background: isWorlds ? '#0D0D10' : '#11141E', borderRadius: '8px', border: `1px solid ${isWorlds ? '#2A251E' : '#222838'}`, padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1100px', margin: '40px auto 0', position: 'relative', zIndex: 1, boxShadow: '0 15px 30px rgba(0,0,0,0.5)' }}>
+        <div>
+          <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#EAEAEA', margin: '0 0 6px 0', fontSize: '22px', letterSpacing: '1px' }}>
+            {isTournamentOver ? "COMPÉTITION TERMINÉE" : `CONTRÔLE - ROUND ${currentRound + 1} / 3`}
+          </h3>
+          <span style={{ color: isWorlds ? '#8C7C61' : '#768196', fontSize: '14px' }}>
+            {isTournamentOver ? `Victoire de ${actualChampion?.name}.` : roundComplete ? "Phase terminée. Préparez le round suivant." : "Validez pour déclencher les matchs."}
           </span>
-          <button className={`btn ${isGlobalReady ? 'btn-green' : 'btn-cyan'}`} onClick={toggleReady}>
-            {isGlobalReady ? `CONNECTÉ (${state.readyPlayers.length}/${humanCount})` : 'INITIALISER LA PHASE'}
+        </div>
+        
+        {isTournamentOver ? (
+          <button onClick={() => socket.emit('continue-season')} disabled={isContinueReady}
+            style={{ backgroundColor: isContinueReady ? '#1A1814' : (actualChampion?.id === myId ? tourneyColor : '#2A251E'), color: isContinueReady ? '#555' : (actualChampion?.id === myId ? '#000' : '#EAEAEA'), border: 'none', padding: '14px 28px', borderRadius: '4px', fontSize: '15px', fontWeight: 600, cursor: isContinueReady ? 'wait' : 'pointer', letterSpacing: '1px', transition: 'all 0.2s' }}>
+            {isContinueReady ? `EN ATTENTE (${state.continueSeasonVotes?.length || 0}/${humanCount})` : (actualChampion?.id === myId ? 'SOULEVER LE TROPHÉE 🏆' : 'TERMINER LA SAISON')}
           </button>
-        </div>
-      )}
-
-      {state.phase === 'simulation' && state.roundComplete && !state.champion && (
-        <div
-          className="panel"
-          style={{ marginTop: '50px', width: '100%', maxWidth: '1200px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', border: '1px solid var(--accent-cyan)' }}
-        >
-          <span className="title-font text-cyan" style={{ fontSize: '18px', letterSpacing: '2px' }}>
-            {state.currentRound === 0 ? 'QUARTS DE FINALE TERMINÉS' : 'DEMI-FINALES TERMINÉES'}
-          </span>
-
-          {amIRequiredForNextRound ? (
-            <button className={`btn ${isRoundReady ? 'btn-green' : 'btn-cyan'}`} onClick={advanceRound}>
-              {isRoundReady ? `PRÊT (${state.roundReady?.length || 0}/${requiredVotersCount})` : 'PASSER AU TOUR SUIVANT'}
-            </button>
-          ) : (
-            <span className="title-font text-muted" style={{ fontSize: '16px', fontStyle: 'italic' }}>
-              EN ATTENTE DES QUALIFIÉS ({state.roundReady?.length || 0}/{requiredVotersCount})...
-            </span>
-          )}
-        </div>
-      )}
+        ) : roundComplete ? (
+          <button onClick={advanceRound} disabled={isRoundReady} 
+            style={{ backgroundColor: isRoundReady ? '#1A1814' : '#EAEAEA', color: isRoundReady ? '#555' : '#000', border: 'none', padding: '14px 28px', borderRadius: '4px', fontSize: '15px', fontWeight: 600, cursor: isRoundReady ? 'wait' : 'pointer', letterSpacing: '1px', transition: 'all 0.2s' }}>
+            {isRoundReady ? `EN ATTENTE (${state.roundReady?.length || 0}/${humanCount})` : "TOUR SUIVANT"}
+          </button>
+        ) : (
+          <button onClick={toggleReady} disabled={isGlobalReady} 
+            style={{ backgroundColor: isGlobalReady ? '#1A1814' : tourneyColor, color: isGlobalReady ? '#555' : '#000', border: 'none', padding: '14px 28px', borderRadius: '4px', fontSize: '15px', fontWeight: 600, cursor: isGlobalReady ? 'wait' : 'pointer', letterSpacing: '1px', transition: 'all 0.2s' }}>
+            {isGlobalReady ? `EN ATTENTE (${readyPlayers?.length || 0}/${humanCount})` : 'LANCER / AVANCER'}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

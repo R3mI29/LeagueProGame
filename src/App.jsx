@@ -9,7 +9,9 @@ import CardsView from './views/CardsView';
 import ArenaView from './views/ArenaView';
 import BracketView from './views/BracketView';
 import DevCardsView from './views/DevCardView'; 
-import PackOpener from './components/PackOpener'; // <-- IMPORT DU NOUVEAU COMPOSANT
+import PackOpener from './components/PackOpener'; 
+import SeasonHub from './components/SeasonHub';
+import TournamentWrapper from './views/TournamentWrapper';
 
 import './styles/theme.css';
 
@@ -19,9 +21,7 @@ export default function App() {
   
   const [showDevMode, setShowDevMode] = useState(false);
 
-  if (showDevMode) {
-    return <DevCardsView onClose={() => setShowDevMode(false)} />;
-  }
+  // SUPPRESSION DE L'ANCIEN BLOC if(showDevMode) QUI FAISAIT PLANTER L'APPLICATION ICI
 
   const renderMainContent = () => {
     if (state.phase === 'lobby') {
@@ -40,6 +40,10 @@ export default function App() {
         />
       );
     }
+    
+    if (state.phase === 'season_hub') {
+      return <SeasonHub state={state} />;
+    }
 
     if (state.phase === 'cards') {
       return (
@@ -52,9 +56,10 @@ export default function App() {
       );
     }
 
-    const tournamentPhase = isTournamentPhase(state);
+    // --- On vérifie l'arène AVANT l'arbre de tournoi ---
     const myActiveMatch = getMyActiveMatch(state, socket.id);
 
+    // Si on a un match qui nous concerne (en attente, en cours ou à valider à la fin)
     if (myActiveMatch) {
       return (
         <ArenaView
@@ -66,6 +71,21 @@ export default function App() {
       );
     }
 
+    // SI nous n'avons pas de match actif, on affiche tranquillement l'arbre ou les groupes
+    if (state.phase === 'tournament' || state.phase === 'simulation') {
+      return (
+        <TournamentWrapper 
+          state={state} 
+          toggleReady={draft.toggleReady}
+          toggleReset={draft.toggleReset}
+          advanceRound={draft.advanceRound}
+          continueSeason={draft.continueSeason}
+        />
+      ); 
+    }
+
+    // (Code de secours au cas où)
+    const tournamentPhase = isTournamentPhase(state);
     if (tournamentPhase && showBracket) {
       return (
         <BracketView
@@ -91,12 +111,12 @@ export default function App() {
   // Récupération sécurisée du dernier pack ouvert par ce joueur
   const myLastOpened = state.lastOpenedPack?.[socket.id] || [];
 
+  // VÉRIFICATION DU PSEUDO POUR AFFICHER LE BOUTON DEV
+  const myPlayerInfo = state.participants?.find(p => p.id === socket.id);
+  const isDevModeUnlocked = myPlayerInfo?.name?.toLowerCase() === 'dev';
+
   return (
     <>
-      {/* 
-        Le PackOpener apparaît uniquement si on a des cartes dans lastOpenedPack.
-        Il se refermera en envoyant l'event 'close-pack' au serveur.
-      */}
       {myLastOpened.length > 0 && (
         <PackOpener 
           cardIds={myLastOpened} 
@@ -107,34 +127,26 @@ export default function App() {
       {/* Affichage du jeu normal en dessous */}
       {renderMainContent()}
 
-      {/* Bouton secret DEV toujours flottant en bas à droite */}
-      {/*
-      <button
-        onClick={() => setShowDevMode(true)}
-        style={{
-          position: 'fixed',
-          bottom: 12,
-          right: 12,
-          opacity: 0.1,
-          background: '#0D1219',
-          border: '1px solid #4CE0D2',
-          color: '#4CE0D2',
-          zIndex: 9999,
-          cursor: 'pointer',
-          padding: '6px 12px',
-          borderRadius: '4px',
-          fontSize: '11px',
-          fontFamily: "'Rajdhani', sans-serif",
-          letterSpacing: '1px',
-          fontWeight: 'bold',
-          transition: 'opacity 0.2s ease-in-out'
-        }}
-        onMouseEnter={(e) => e.target.style.opacity = '1'}
-        onMouseLeave={(e) => e.target.style.opacity = '0.1'}
-      >
-        DEV
-      </button>
-      */}
+      {/* Bouton secret DEV conditionné au pseudo "dev" */}
+      {isDevModeUnlocked && !showDevMode && (
+        <button
+          onClick={() => setShowDevMode(true)}
+          style={{
+            position: 'fixed', bottom: 20, right: 20,
+            background: '#0D1219', border: '2px solid #ff3366', color: '#ff3366',
+            zIndex: 9999, cursor: 'pointer', padding: '10px 20px', borderRadius: '8px',
+            fontSize: '14px', fontFamily: "'Rajdhani', sans-serif", letterSpacing: '2px', fontWeight: 'bold',
+            boxShadow: '0 0 15px rgba(255, 51, 102, 0.4)', transition: 'all 0.2s ease-in-out'
+          }}
+          onMouseEnter={(e) => { e.target.style.background = '#ff3366'; e.target.style.color = '#FFF'; }}
+          onMouseLeave={(e) => { e.target.style.background = '#0D1219'; e.target.style.color = '#ff3366'; }}
+        >
+          ⚙️ MODE DEV
+        </button>
+      )}
+
+      {/* Affichage de la vue DEV si active (Ici state={state} est bien passé !) */}
+      {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
     </>
   );
 }
