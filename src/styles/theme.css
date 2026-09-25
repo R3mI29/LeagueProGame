@@ -75,3 +75,103 @@ body { margin: 0; background: var(--bg-base); color: var(--text-main); font-fami
 
 @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
 .pulse-text { animation: pulse 1s infinite alternate; }
+
+
+/* --- LE THÈME BRUTALISTE MSI 2026 --- */
+.msi-theme-container {
+  background: #EAEAEA; /* Fond clair granuleux comme l'affiche */
+  background-image: radial-gradient(#d3d3d3 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+  min-height: 100vh;
+  padding: 40px;
+  overflow: hidden;
+}
+
+/* L'effet de fissure rouge éclatée en arrière-plan */
+.msi-theme-container::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw; height: 80vw;
+  background: radial-gradient(circle, #E6192B 0%, transparent 60%);
+  opacity: 0.15;
+  pointer-events: none;
+  filter: contrast(200%) blur(10px);
+}
+
+.msi-title-banner {
+  font-family: 'Arial Black', sans-serif;
+  color: #000;
+  font-size: 56px;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  display: inline-block;
+  background: #E6192B;
+  padding: 5px 30px;
+  transform: skew(-5deg);
+  box-shadow: 10px 10px 0px #FFEA00; /* L'accent jaune de l'image */
+}
+
+/* --- LE NOUVEAU LAYOUT MSI --- */
+/* Ceci place les brackets à gauche, la finale à droite */
+.msi-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px; /* 400px pour la colonne de Grande Finale */
+  gap: 60px;
+  align-items: center;
+}
+
+.msi-brackets-col {
+  display: flex;
+  flex-direction: column;
+  gap: 50px; /* Sépare le Winner du Loser bracket */
+}
+
+/* La Grande Finale est centrée dans sa colonne de droite */
+.msi-grand-final-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.05);
+  border: 4px solid #E6192B;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: inset 0 0 50px rgba(230, 25, 43, 0.1);
+}
+
+/* Le bouton de contrôle fixé en bas à droite (comme sur votre dessin) */
+.msi-control-panel {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  background: #000;
+  border: 3px solid #E6192B;
+  padding: 24px;
+  box-shadow: 8px 8px 0px #FFEA00;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.msi-btn {
+  background: #FFEA00;
+  color: #000;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border: none;
+  padding: 16px 32px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.msi-btn:hover {
+  background: #E6192B;
+  color: #FFF;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px #000;
+}

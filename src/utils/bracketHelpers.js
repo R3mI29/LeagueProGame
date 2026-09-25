@@ -14,15 +14,19 @@ export function getHumanCount(state) {
 export function getMyActiveMatch(state, myId) {
   if (!state) return null;
 
-  const isSimulationPhase = state.phase === 'simulation';
-  if (!isSimulationPhase) return null;
-
   const isMyActiveMatch = (m) => {
     if (!m || !m.teamA || !m.teamB) return false;
-    if (!m.waveActive) return false;
     const involvesMe = m.teamA.id === myId || m.teamB.id === myId;
     const notDismissed = !m.dismissedBy?.includes(myId);
-    return involvesMe && (m.status === 'pending' || m.status === 'simulating' || (m.status === 'finished' && notDismissed));
+
+    // CORRECTION : On attend que "waveActive" soit activé par le bouton Lancer
+    return involvesMe && (
+      (m.status === 'pending' && m.waveActive) || 
+      m.status === 'simulating' || 
+      m.status === 'simulating_events' || 
+      m.status === 'simulating_result' || 
+      (m.status === 'finished' && notDismissed)
+    );
   };
 
   if (state.tournamentPhase === 'groups' && state.groups) {
@@ -32,7 +36,6 @@ export function getMyActiveMatch(state, myId) {
     }
   }
 
-  // CORRECTION : On autorise 'swiss' ET 'bracket' à vous amener dans l'arène
   if ((state.tournamentPhase === 'bracket' || state.tournamentPhase === 'swiss') && state.bracket && state.bracket[state.currentRound]) {
     const match = state.bracket[state.currentRound].find(isMyActiveMatch);
     if (match) return match;

@@ -3,7 +3,6 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 
-// NOUVEAU : Imports nécessaires pour servir les fichiers statiques avec les modules ES
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,14 +16,12 @@ import {
   generateBotRosterFromCards, upgradeBotRoster
 } from './cardMode.js';
 
-// NOUVEAU : Configuration des variables de chemin pour les modules ES
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 
-// NOUVEAU : Demander à Express de servir les fichiers du front-end (dossier dist)
 app.use(express.static(path.join(__dirname, '../dist')));
 
 const server = http.createServer(app);
@@ -36,7 +33,6 @@ const io = new Server(server, {
   }
 });
 
-// --- Réglages du mode "Draft aux enchères" ---
 const STARTING_BUDGET = 1000;
 const MIN_BID = 10;
 const MIN_INCREMENT = 5;
@@ -72,7 +68,7 @@ let state = {
   skippedPlayers: [],
   cardCollections: {}, 
   activeLineups: {}, 
-  pendingPacks: {}, 
+  economy: {}, 
   lastOpenedPack: {}, 
   starterPackClaimed: {}, 
   seasonRound: 0,
@@ -116,154 +112,57 @@ function getTeamRating(team) {
   return Math.round(team.roster.reduce((acc, p) => acc + p.rating, 0) / team.roster.length);
 }
 
-// --- Simulation des matchs ---
 const GAMES_TO_WIN = 3;
 const GAME_SIMULATE_MS = 6000; 
-const GAME_GAP_MS = 2500; 
-
-const MATCH_EVENTS = [
-  {
-    id: 'carry-superstar',
-    probability: 0.18,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const allPlayers = [...teamA.roster.map(p => ({ p, side: 'A' })), ...teamB.roster.map(p => ({ p, side: 'B' }))];
-      const best = allPlayers.reduce((acc, cur) => (cur.p.rating > acc.p.rating ? cur : acc));
-      if (best.p.rating < 90) return null;
-      return { side: best.side, ratingDelta: 6, label: `${best.p.name} est injouable ce game` };
-    }
-  },
-  {
-    id: 'bot-synergy',
-    probability: 0.15,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const side = Math.random() < 0.5 ? 'A' : 'B';
-      const team = side === 'A' ? teamA : teamB;
-      const adc = team.roster.find(p => p.role === 'ADC');
-      const sup = team.roster.find(p => p.role === 'Support');
-      if (!adc || !sup || Math.abs(adc.rating - sup.rating) > 6) return null;
-      return { side, ratingDelta: 4, label: `Bot lane ${adc.name} / ${sup.name} totalement synchronisée` };
-    }
-  },
-  {
-    id: 'mid-jungle-duo',
-    probability: 0.15,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const side = Math.random() < 0.5 ? 'A' : 'B';
-      const team = side === 'A' ? teamA : teamB;
-      const mid = team.roster.find(p => p.role === 'Mid');
-      const jgl = team.roster.find(p => p.role === 'Jungle');
-      if (!mid || !jgl || Math.abs(mid.rating - jgl.rating) > 6) return null;
-      return { side, ratingDelta: 4, label: `Duo Mid/Jungle ${mid.name} - ${jgl.name} qui prend le contrôle de la carte` };
-    }
-  },
-  {
-    id: 'lane-duel-mid',
-    probability: 0.12,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const midA = teamA.roster.find(p => p.role === 'Mid');
-      const midB = teamB.roster.find(p => p.role === 'Mid');
-      if (!midA || !midB) return null;
-      const diff = midA.rating - midB.rating;
-      if (Math.abs(diff) < 5) return null;
-      const winner = diff > 0 ? midA : midB;
-      const loser = diff > 0 ? midB : midA;
-      return { side: diff > 0 ? 'A' : 'B', ratingDelta: 5, label: `${winner.name} humilie ${loser.name} en lane mid` };
-    }
-  },
-  {
-    id: 'top-duel',
-    probability: 0.12,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const topA = teamA.roster.find(p => p.role === 'Top');
-      const topB = teamB.roster.find(p => p.role === 'Top');
-      if (!topA || !topB) return null;
-      const diff = topA.rating - topB.rating;
-      if (Math.abs(diff) < 5) return null;
-      const winner = diff > 0 ? topA : topB;
-      const loser = diff > 0 ? topB : topA;
-      return { side: diff > 0 ? 'A' : 'B', ratingDelta: 4, label: `${winner.name} snowball tout seul en top face à ${loser.name}` };
-    }
-  },
-  {
-    id: 'baron-steal',
-    probability: 0.1,
-    apply() {
-      const side = Math.random() < 0.5 ? 'A' : 'B';
-      return { side, ratingDelta: 7, label: 'Baron volé sur un smite désespéré' };
-    }
-  },
-  {
-    id: 'throw',
-    probability: 0.1,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const ratingA = getTeamRating(teamA);
-      const ratingB = getTeamRating(teamB);
-      if (Math.abs(ratingA - ratingB) < 4) return null;
-      const favoriteSide = ratingA >= ratingB ? 'A' : 'B';
-      const underdogSide = favoriteSide === 'A' ? 'B' : 'A';
-      const favoriteName = favoriteSide === 'A' ? teamA.name : teamB.name;
-      return { side: underdogSide, ratingDelta: 8, label: `Throw monumental de ${favoriteName} en fin de partie` };
-    }
-  },
-  {
-    id: 'tech-issue',
-    probability: 0.08,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const affectedSide = Math.random() < 0.5 ? 'A' : 'B';
-      const beneficiarySide = affectedSide === 'A' ? 'B' : 'A';
-      const affectedName = affectedSide === 'A' ? teamA.name : teamB.name;
-      return { side: beneficiarySide, ratingDelta: 5, label: `Problème de connexion chez ${affectedName}` };
-    }
-  },
-  {
-    id: 'momentum',
-    probability: 0.12,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      if (scoreA === scoreB) return null;
-      const trailingSide = scoreA < scoreB ? 'A' : 'B';
-      const trailingName = trailingSide === 'A' ? teamA.name : teamB.name;
-      return { side: trailingSide, ratingDelta: 5, label: `Dos au mur, ${trailingName} hausse enfin le niveau` };
-    }
-  }
-];
+const GAME_GAP_MS = 3500; 
 
 function simulateGame(match, state) {
   const teamA = match.teamA;
   const teamB = match.teamB;
   
-  // On applique les buffs de BO dès le calcul initial !
   let ratingA = getTeamRating(teamA) + (match.boBuffA || 0);
   let ratingB = getTeamRating(teamB) + (match.boBuffB || 0);
   const triggeredEvents = [];
 
-  // SUPPRESSION DE MATCH_EVENTS : On ne charge QUE vos cartes spéciales
   const ALL_EVENTS = [...CUSTOM_CARD_EVENTS];
 
   for (const event of ALL_EVENTS) {
-    if (Math.random() > event.probability) continue;
-    
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
 
-    const result = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
-    if (!result) continue;
+    const results = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
+    if (!results) continue;
     
     if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
 
-    // Si la carte exige que le buff dure tout le BO
-    if (result.persistentBO) {
-      if (result.side === 'A') match.boBuffA = (match.boBuffA || 0) + result.ratingDelta;
-      else match.boBuffB = (match.boBuffB || 0) + result.ratingDelta;
-    }
+    const resultsArray = Array.isArray(results) ? results : [results];
 
-    if (result.side === 'A') ratingA += result.ratingDelta;
-    else ratingB += result.ratingDelta;
-    
-    // On transmet l'info persistentBO au Front-End
-    triggeredEvents.push({ 
-      label: result.label, 
-      side: result.side, 
-      delta: result.ratingDelta,
-      persistentBO: result.persistentBO 
+    for (const result of resultsArray) {
+      if (result.persistentBO) {
+        if (result.side === 'A') match.boBuffA = (match.boBuffA || 0) + result.ratingDelta;
+        else match.boBuffB = (match.boBuffB || 0) + result.ratingDelta;
+      }
+
+      const multiplier = result.targetRoles ? result.targetRoles.length : 5;
+      const trueImpact = (result.ratingDelta * multiplier) / 5;
+
+      if (result.side === 'A') ratingA += trueImpact;
+      else ratingB += trueImpact;
+      
+      triggeredEvents.push({ 
+        label: result.label, 
+        side: result.side, 
+        ratingDelta: result.ratingDelta,
+        targetRoles: result.targetRoles,
+        persistentBO: result.persistentBO 
+      });
+    }
+  }
+
+  if (triggeredEvents.length === 0) {
+    triggeredEvents.push({
+      label: "Phase de lane très tactique, les deux équipes s'observent...",
+      side: null, 
+      ratingDelta: 0
     });
   }
 
@@ -284,75 +183,103 @@ function tryStartMatch(match) {
     match.games = [];
     match.lastGameEvents = [];
     match.triggeredUniqueEvents = [];
-    match.boBuffA = 0; // NOUVEAU : Stocke les buffs permanents
-    match.boBuffB = 0; // NOUVEAU
+    match.boBuffA = 0; 
+    match.boBuffB = 0; 
     playNextGame(match);
   }
 }
 
-
 function playNextGame(match) {
-  match.status = 'simulating';
+  match.status = 'simulating_events'; 
+  match.currentEvents = []; 
+  
+  const { winnerSide, events } = simulateGame(match, state);
+  match.pendingEvents = events; 
+  match.winnerSidePending = winnerSide;
+  
   io.emit('draft-update', state);
 
   const isBotOnly = match.teamA.id.startsWith('bot-') && match.teamB.id.startsWith('bot-');
-  const currentSimulateMs = isBotOnly ? 400 : GAME_SIMULATE_MS;
-  const currentGapMs = isBotOnly ? 100 : GAME_GAP_MS;
+  const EVENT_DELAY = isBotOnly ? 50 : 2500; 
+  const RESULT_DELAY = isBotOnly ? 100 : 4000; 
 
-  matchTimeouts[match.id] = setTimeout(() => {
-    const gameNumber = match.games.length + 1;
-    const { winnerSide, events } = simulateGame(match, state);
-
-    if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
-    match.games.push({ gameNumber, winnerSide, events });
-    match.lastGameEvents = events;
-
-    if (match.scoreA === GAMES_TO_WIN || match.scoreB === GAMES_TO_WIN) {
-      match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
-      match.status = 'finished';
+  const processNextEvent = () => {
+    if (match.pendingEvents && match.pendingEvents.length > 0) {
+      const evsToPush = [];
       
-      // LE ROUTAGE 100% SÉCURISÉ SANS CHAMPION FANTÔME
-      if (state.tournamentPhase === 'swiss') {
-        const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
-        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-        const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
-        if (wTeam) wTeam.wins += 1;
-        if (lTeam) lTeam.losses += 1;
-
-        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-        if (allFinished) state.roundComplete = true;
-      } 
-      else if (state.tournamentPhase === 'groups') {
-        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-        const groupIndex = match.id.match(/g(\d)/)[1];
-        const group = state.groups[groupIndex];
-
-        if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
-        else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
-        else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
-        else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
-        else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
-
-        const allGroupsDone = state.groups.every(g => g.qualified.length === 2);
-        if (allGroupsDone) state.roundComplete = true;
-      } 
-      else {
-        advanceTeam(match.winner, match.nextId, match.nextSlot);
-        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-        if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
-
-        if (state.bracket && state.bracket[state.currentRound]) {
-          const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-          if (allFinished && !state.champion) state.roundComplete = true;
+      // On boucle pour grouper les événements d'une même action
+      while (match.pendingEvents.length > 0) {
+        const ev = match.pendingEvents.shift();
+        evsToPush.push(ev);
+        
+        if (ev.label) {
+          // Si on trouve un texte, on "aspire" tous les événements silencieux qui le suivent immédiatement
+          while (match.pendingEvents.length > 0 && !match.pendingEvents[0].label) {
+            evsToPush.push(match.pendingEvents.shift());
+          }
+          break; // Et on s'arrête là pour laisser le temps de lire
         }
       }
 
+      // On envoie le groupe (Texte + Buffs silencieux) en une seule fois
+      match.currentEvents.push(...evsToPush);
       io.emit('draft-update', state);
+      
+      // S'il n'y avait exceptionnellement aucun texte (que des buffs passifs), on passe super vite (50ms)
+      const delay = evsToPush.some(e => e.label) ? EVENT_DELAY : 50;
+      matchTimeouts[match.id] = setTimeout(processNextEvent, delay);
+      
     } else {
+      match.status = 'simulating_result';
       io.emit('draft-update', state);
-      matchTimeouts[match.id] = setTimeout(() => playNextGame(match), currentGapMs);
+      
+      matchTimeouts[match.id] = setTimeout(() => {
+        if (match.winnerSidePending === 'A') match.scoreA++; else match.scoreB++;
+        match.games.push({ gameNumber: match.games.length + 1, winnerSide: match.winnerSidePending, events: match.currentEvents });
+        match.lastGameEvents = match.currentEvents;
+        
+        match.currentEvents = [];
+        match.pendingEvents = [];
+        
+        if (match.scoreA === GAMES_TO_WIN || match.scoreB === GAMES_TO_WIN) {
+          match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
+          match.status = 'finished';
+          
+          if (state.tournamentPhase === 'swiss') {
+            const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
+            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+            const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
+            if (wTeam) wTeam.wins += 1;
+            if (lTeam) lTeam.losses += 1;
+            if (state.bracket[state.currentRound].every(m => m.status === 'finished')) state.roundComplete = true;
+          } 
+          else if (state.tournamentPhase === 'groups') {
+            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+            const groupIndex = match.id.match(/g(\d)/)[1];
+            const group = state.groups[groupIndex];
+            if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
+            else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
+            else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
+            else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
+            else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
+            if (state.groups.every(g => g.qualified.length === 2)) state.roundComplete = true;
+          } 
+          else {
+            advanceTeam(match.winner, match.nextId, match.nextSlot);
+            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+            if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
+            if (state.bracket[state.currentRound]?.every(m => m.status === 'finished') && !state.champion) state.roundComplete = true;
+          }
+          io.emit('draft-update', state);
+        } else {
+          io.emit('draft-update', state);
+          matchTimeouts[match.id] = setTimeout(() => playNextGame(match), isBotOnly ? 100 : GAME_GAP_MS);
+        }
+      }, RESULT_DELAY);
     }
-  }, currentSimulateMs); 
+  };
+  
+  matchTimeouts[match.id] = setTimeout(processNextEvent, EVENT_DELAY);
 }
 
 function buildPlayoffsFromSwiss() {
@@ -375,7 +302,7 @@ function buildPlayoffsFromSwiss() {
   state.bracket = [qf, sf, f];
   state.currentRound = 0;
   state.swissTeams = null; 
-  state.champion = null; // Sécurité
+  state.champion = null;
 }
 
 function buildPlayoffsFromGroups() {
@@ -396,7 +323,7 @@ function buildPlayoffsFromGroups() {
   state.bracket = [qf, sf, f];
   state.currentRound = 0;
   state.groups = null; 
-  state.champion = null; // Sécurité
+  state.champion = null;
 }
 
 function completeDraftAndStartTournament() {
@@ -433,9 +360,7 @@ function startCardTournament() {
     const numBots = TOTAL_TEAMS - humanParticipants.length;
     const bots = [];
     for (let i = 1; i <= numBots; i++) {
-      bots.push({
-        id: `bot-${i}`, name: getUniqueBotName(bots), roster: generateBotRosterFromCards()
-      });
+      bots.push({ id: `bot-${i}`, name: getUniqueBotName(bots), roster: generateBotRosterFromCards() });
     }
     state.participants = [...humanParticipants, ...bots];
   } else {
@@ -486,10 +411,7 @@ function startCurrentEvent() {
     state.tournamentPhase = 'swiss';
     state.swissTeams = state.participants.map(p => ({ team: p, wins: 0, losses: 0 }));
     
-    const createMatch = (id, pool) => ({
-      id, pool, teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [],
-      scoreA: 0, scoreB: 0, games: [], waveActive: false
-    });
+    const createMatch = (id, pool) => ({ id, pool, teamA: null, teamB: null, status: 'pending', ready: [], dismissedBy: [], scoreA: 0, scoreB: 0, games: [], waveActive: false });
 
     const r0 = Array(8).fill(null).map((_, i) => createMatch(`sw1-m${i+1}`, '0-0'));
     const r1 = [...Array(4).fill(null).map((_, i) => createMatch(`sw2-w${i+1}`, '1-0')), ...Array(4).fill(null).map((_, i) => createMatch(`sw2-l${i+1}`, '0-1'))];
@@ -544,30 +466,134 @@ function startCurrentEvent() {
   io.emit('draft-update', state);
 }
 
-function awardSeasonPacks() {
-  const finalMatch = state.bracket[state.bracket.length - 1]?.[0];
-  const championId = state.champion?.id;
-  const runnerUpId = finalMatch ? (finalMatch.teamA?.id === championId ? finalMatch.teamB?.id : finalMatch.teamA?.id) : null;
-
-  const sfMatches = state.bracket[state.bracket.length - 2] || [];
-  const semiFinalists = sfMatches.flatMap(m => [m.teamA?.id, m.teamB?.id]).filter(id => id && id !== championId && id !== runnerUpId);
-
-  const qfMatches = state.bracket[state.bracket.length - 3] || [];
-  const quarterFinalists = qfMatches.flatMap(m => [m.teamA?.id, m.teamB?.id]).filter(id => id && id !== championId && id !== runnerUpId && !semiFinalists.includes(id));
-
-  if (!state.seasonScores) state.seasonScores = {};
+// --- SYSTÈME ÉCONOMIQUE, RÉCOMPENSES ET CATCH-UP ---
+function awardSeasonRewards() {
+  const eventConfig = EVENTS[state.eventIndex];
+  const getLoser = (match) => match?.winner?.id === match?.teamA?.id ? match?.teamB?.id : match?.teamA?.id;
   
+  let championId = state.champion?.id;
+  let finalistId = null;
+  let top4Ids = [];
+  let top8Ids = []; 
+  
+  // DÉTECTION INTELLIGENTE DES PLACES
+  if (eventConfig.format === 'double_elim') {
+    const gf = state.bracket[7][0]; 
+    finalistId = getLoser(gf);
+    
+    const lbFinal = state.bracket[6][0]; 
+    const thirdPlaceId = getLoser(lbFinal);
+    if (thirdPlaceId) top4Ids.push(thirdPlaceId);
+    
+    const lbSemi = state.bracket[5][0]; 
+    const fourthPlaceId = getLoser(lbSemi);
+    if (fourthPlaceId) top4Ids.push(fourthPlaceId);
+
+    const lb4_1 = state.bracket[4][0];
+    const lb4_2 = state.bracket[4][1];
+    if (lb4_1) top8Ids.push(getLoser(lb4_1)); 
+    if (lb4_2) top8Ids.push(getLoser(lb4_2)); 
+  } 
+  else {
+    const finalMatch = state.bracket[state.bracket.length - 1]?.[0];
+    finalistId = getLoser(finalMatch);
+    
+    const sfMatches = state.bracket[state.bracket.length - 2] || [];
+    top4Ids = sfMatches.map(getLoser).filter(id => id);
+
+    const qfMatches = state.bracket[state.bracket.length - 3] || [];
+    top8Ids = qfMatches.map(getLoser).filter(id => id);
+  }
+
+  if (!state.economy) state.economy = {};
+  if (!state.seasonScores) state.seasonScores = {};
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
-    let packsWon = 1;
+    if (state.economy[p.id] === undefined) state.economy[p.id] = 0;
+  });
 
-    if (p.id === championId) { state.seasonScores[p.id].points += 5; state.seasonScores[p.id].titles += 1; packsWon = 4; } 
-    else if (p.id === runnerUpId) { state.seasonScores[p.id].points += 3; packsWon = 3; } 
-    else if (semiFinalists.includes(p.id)) { state.seasonScores[p.id].points += 2; packsWon = 2; } 
-    else if (quarterFinalists.includes(p.id)) { state.seasonScores[p.id].points += 1; packsWon = 1; }
+  // --- LE SYSTÈME DE CATCH-UP GLOBAL PARFAIT ---
+  const catchupBonuses = {};
+  const totalTournamentsPlayed = state.history.length;
+  
+  if (totalTournamentsPlayed >= 3) {
+    // 1. On crée une signature unique pour chaque joueur "Points-Titres"
+    const getScoreKey = (p) => `${state.seasonScores[p.id].points}-${state.seasonScores[p.id].titles}`;
+    
+    // 2. On isole et on trie toutes les signatures uniques de la pire à la meilleure
+    const uniqueScoreKeys = [...new Set(state.participants.map(getScoreKey))]
+      .sort((a, b) => {
+        const [ptsA, titlesA] = a.split('-').map(Number);
+        const [ptsB, titlesB] = b.split('-').map(Number);
+        if (ptsA !== ptsB) return ptsB - ptsA;
+        return titlesB - titlesA;
+      })
+      .reverse(); // L'index 0 sera le pire score absolu
 
-    if (!p.id.startsWith('bot-')) state.pendingPacks[p.id] = (state.pendingPacks[p.id] || 0) + packsWon;
-    else p.roster = upgradeBotRoster(p.roster, packsWon);
+    // 3. On attribue les bonus selon la tranche (Même récompense pour les égalités !)
+    state.participants.forEach(p => {
+      const scoreKey = getScoreKey(p);
+      const worstIndex = uniqueScoreKeys.indexOf(scoreKey); 
+      
+      if (worstIndex === 0) catchupBonuses[p.id] = 150;      // La pire tranche
+      else if (worstIndex === 1) catchupBonuses[p.id] = 100; // L'avant-dernière tranche
+      else if (worstIndex === 2) catchupBonuses[p.id] = 50;  // La tranche au-dessus
+    });
+  }
+
+  // --- DISTRIBUTION VIA SEASONCONFIG ---
+  const rewards = eventConfig.rewards;
+  state.participants.forEach(p => {
+    let pointsEarned = rewards.points.base || 0;
+    let moneyEarned = rewards.money.base || 0;
+
+    if (p.id === championId) {
+      pointsEarned = rewards.points.champion;
+      moneyEarned = rewards.money.champion;
+      state.seasonScores[p.id].titles += 1;
+    } else if (p.id === finalistId) {
+      pointsEarned = rewards.points.finalist;
+      moneyEarned = rewards.money.finalist;
+    } else if (top4Ids.includes(p.id)) {
+      pointsEarned = rewards.points.top4;
+      moneyEarned = rewards.money.top4;
+    } else if (top8Ids.includes(p.id)) {
+      pointsEarned = rewards.points.top8;
+      moneyEarned = rewards.money.top8;
+    }
+
+    // Ajout du bonus de rattrapage global
+    const catchUpBonus = catchupBonuses[p.id] || 0;
+    moneyEarned += catchUpBonus;
+
+    // Sauvegarde
+    state.seasonScores[p.id].points += pointsEarned;
+
+    if (!p.id.startsWith('bot-')) {
+      state.economy[p.id] += moneyEarned;
+    } else {
+      // Gestion des contrats pour l'IA
+      p.roster = p.roster.map(pro => {
+        if (pro.contract === 'LIFETIME') return pro; 
+        let currentContract = pro.contract !== undefined ? pro.contract : 3;
+        currentContract -= 1;
+        
+        if (currentContract <= 0) {
+          let replacement = null;
+          while(!replacement) {
+            replacement = openStandardPack().find(c => c.role === pro.role);
+          }
+          const newPro = cardToRosterEntry(replacement);
+          newPro.contract = 3; 
+          return newPro;
+        } else {
+          pro.contract = currentContract;
+          return pro;
+        }
+      });
+      // Le bot se renforce instantanément
+      p.roster = upgradeBotRoster(p.roster, Math.floor(moneyEarned / 100));
+    }
   });
 }
 
@@ -689,7 +715,7 @@ io.on('connection', (socket) => {
     
     let currentContract = state.cardCollections[id][cardId] || 0;
     if (currentContract !== 'LIFETIME') {
-      state.cardCollections[id][cardId] = currentContract + 5; // Ajoute 5 tournois par clic dev
+      state.cardCollections[id][cardId] = currentContract + 5; 
     }
     io.emit('draft-update', state);
   });
@@ -709,10 +735,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start-draft', () => {
-    if (state.phase === 'lobby' && state.participants.length >= 1) { // 1 JOUEUR MINIMUM !
+    if (state.phase === 'lobby' && state.participants.length >= 1) { 
       if (state.gameMode === 'draft_cartes') {
-        state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; 
-        state.participants.forEach(p => { state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.pendingPacks[p.id] = 1; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; });
+        state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; 
+        state.participants.forEach(p => { state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.economy[p.id] = 0; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; });
         state.phase = 'cards';
         io.emit('draft-update', state);
         return;
@@ -730,65 +756,73 @@ io.on('connection', (socket) => {
 
   socket.on('skip-match', (matchId) => {
     const match = findMatchById(matchId);
-    if (!match || match.status !== 'simulating') return;
-    if (matchTimeouts[match.id]) { clearTimeout(matchTimeouts[match.id]); delete matchTimeouts[match.id]; }
+    if (!match || (match.status !== 'simulating_events' && match.status !== 'simulating_result')) return;
+
+    if (matchTimeouts[match.id]) {
+      clearTimeout(matchTimeouts[match.id]);
+      delete matchTimeouts[match.id];
+    }
+
+    if (match.winnerSidePending === 'A') match.scoreA++; else match.scoreB++;
+    match.games.push({ gameNumber: match.games.length + 1, winnerSide: match.winnerSidePending, events: (match.currentEvents || []).concat(match.pendingEvents || []) });
 
     while (match.scoreA < GAMES_TO_WIN && match.scoreB < GAMES_TO_WIN) {
-      const gameNumber = match.games.length + 1;
       const { winnerSide, events } = simulateGame(match, state);
       if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
-      match.games.push({ gameNumber, winnerSide, events });
-      match.lastGameEvents = events;
+      match.games.push({ gameNumber: match.games.length + 1, winnerSide, events });
     }
 
     match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
     match.status = 'finished';
+    match.currentEvents = [];
+    match.pendingEvents = [];
     
-    // LE MÊME ROUTAGE SÉCURISÉ QUE PLAYNEXTGAME
+    // Le check de complétion doit ignorer cette partie si les autres simulent encore !
     if (state.tournamentPhase === 'swiss') {
-        const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
-        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-        const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
-        if (wTeam) wTeam.wins += 1;
-        if (lTeam) lTeam.losses += 1;
-
-        const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-        if (allFinished) state.roundComplete = true;
+      const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
+      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+      const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
+      if (wTeam) wTeam.wins += 1;
+      if (lTeam) lTeam.losses += 1;
+      // On vérifie que tous sont "finished" sans se faire piéger par les "simulating_events"
+      if (state.bracket[state.currentRound].every(m => m.status === 'finished')) state.roundComplete = true;
     } 
     else if (state.tournamentPhase === 'groups') {
       const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
       const groupIndex = match.id.match(/g(\d)/)[1];
       const group = state.groups[groupIndex];
-      if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; }
-      else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; }
-      else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; }
-      else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; }
+      if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
+      else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
+      else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
+      else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
       else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
-      
-      const allGroupsDone = state.groups.every(g => g.qualified.length === 2);
-      if (allGroupsDone) state.roundComplete = true;
+      if (state.groups.every(g => g.qualified.length === 2)) state.roundComplete = true;
     } 
     else {
-        advanceTeam(match.winner, match.nextId, match.nextSlot);
-        const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-        if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
-
-        if (state.bracket && state.bracket[state.currentRound]) {
-          const allFinished = state.bracket[state.currentRound].every(m => m.status === 'finished');
-          if (allFinished && !state.champion) state.roundComplete = true;
-        }
+      advanceTeam(match.winner, match.nextId, match.nextSlot);
+      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+      if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
+      if (state.bracket[state.currentRound]?.every(m => m.status === 'finished') && !state.champion) state.roundComplete = true;
     }
     io.emit('draft-update', state);
   });
 
-  // 1. L'ÉVÉNEMENT D'OUVERTURE DE PACK
-  socket.on('open-pack', () => {
+  socket.on('buy-pack', () => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
-    if ((state.pendingPacks[id] || 0) <= 0) return;
+    
+    if (!state.economy) state.economy = {};
+    if (state.economy[id] === undefined) state.economy[id] = 0;
 
+    const PACK_PRICE = 100;
     const isStarter = !state.starterPackClaimed[id];
+
+    if (!isStarter) {
+      if (state.economy[id] < PACK_PRICE) return; 
+      state.economy[id] -= PACK_PRICE;
+    }
+
     const cards = isStarter ? openStarterPack() : openStandardPack();
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
@@ -800,23 +834,18 @@ io.on('connection', (socket) => {
     });
 
     state.starterPackClaimed[id] = true;
-    state.pendingPacks[id] -= 1;
     
-    // NOUVEAU : On stocke le résultat temporairement sans toucher à la vraie collection !
     if (!state.pendingPackResults) state.pendingPackResults = {};
     state.pendingPackResults[id] = openedCardsWithContracts;
     
-    // On lance l'animation sur le front-end
     state.lastOpenedPack[id] = openedCardsWithContracts;
     io.emit('draft-update', state);
   });
 
-  // 2. L'ÉVÉNEMENT DE FERMETURE DU PACK (Quand on clique sur "Ajouter à la collection")
   socket.on('close-pack', () => {
     if (state.phase === 'cards') {
       const id = socket.id;
       
-      // C'EST SEULEMENT MAINTENANT QU'ON AJOUTE LES CARTES À L'INVENTAIRE
       if (state.pendingPackResults && state.pendingPackResults[id]) {
         if (!state.cardCollections[id]) state.cardCollections[id] = {};
         
@@ -832,23 +861,14 @@ io.on('connection', (socket) => {
           }
         });
         
-        // On nettoie la mémoire temporaire
         delete state.pendingPackResults[id];
       }
 
-      // On ferme l'interface du pack
       if (state.lastOpenedPack[id]) {
         state.lastOpenedPack[id] = [];
       }
       
       io.emit('draft-update', state);
-    }
-  });
-
-  socket.on('close-pack', () => {
-    if (state.phase === 'cards') {
-      const id = socket.id;
-      if (state.lastOpenedPack[id]) { state.lastOpenedPack[id] = []; io.emit('draft-update', state); }
     }
   });
 
@@ -859,7 +879,7 @@ io.on('connection', (socket) => {
     const collection = state.cardCollections[id];
     
     const contract = collection?.[cardId];
-    if (contract === undefined || contract === 0) return; // Bloque si pas possédé ou contrat expiré
+    if (contract === undefined || contract === 0) return; 
     
     const card = getCardById(cardId);
     if (!card || card.role !== role) return;
@@ -896,10 +916,11 @@ io.on('connection', (socket) => {
     const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
     
     if (state.continueSeasonVotes.length === humanParticipants.length && humanParticipants.length > 0) {
-      awardSeasonPacks();
+      
+      awardSeasonRewards(); 
+      
       state.history.push({ year: state.year, eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`, winnerName: state.champion.name });
       
-      // --- DÉDUCTION DES CONTRATS (-1) ---
       humanParticipants.forEach(p => {
         const lineup = state.activeLineups[p.id];
         if (lineup) {
@@ -910,7 +931,6 @@ io.on('connection', (socket) => {
             if (currentContract !== 'LIFETIME' && typeof currentContract === 'number') {
               state.cardCollections[p.id][cardId] = Math.max(0, currentContract - 1);
               
-              // Si le contrat tombe à 0, on retire le joueur du roster actif
               if (state.cardCollections[p.id][cardId] === 0) {
                 delete lineup[role];
               }
@@ -1019,9 +1039,6 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  // ==========================================
-  // BOUTON "LANCER / AVANCER"
-  // ==========================================
   socket.on('toggle-ready', () => {
     if (state.phase === 'tournament' || state.phase === 'simulation') {
       if (state.readyPlayers.includes(socket.id)) state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
@@ -1048,7 +1065,7 @@ io.on('connection', (socket) => {
                   match.waveActive = true; 
                   allFinished = false;
                   if (!match.teamA.id.startsWith('bot-') || !match.teamB.id.startsWith('bot-')) hasHumanInWave = true;
-                } else if (match.status === 'simulating' || (match.status === 'pending' && match.waveActive)) {
+                } else if (match.status.startsWith('simulating') || (match.status === 'pending' && match.waveActive)) {
                   allFinished = false;
                 }
               });
@@ -1067,14 +1084,13 @@ io.on('connection', (socket) => {
               match.waveActive = true; 
               allFinished = false;
               if (!match.teamA.id.startsWith('bot-') || !match.teamB.id.startsWith('bot-')) hasHumanInWave = true;
-            } else if (match.status === 'simulating' || (match.status === 'pending' && match.waveActive)) {
+            } else if (match.status.startsWith('simulating') || (match.status === 'pending' && match.waveActive)) {
               allFinished = false;
             }
           });
 
           if (allFinished && !state.champion) state.roundComplete = true;
 
-          // BLINDAGE SPECTATEUR : Lance les bots directement si on est éliminé
           if (!hasHumanInWave && !state.roundComplete) {
             startAllBotMatchesInCurrentRound();
           }
@@ -1090,7 +1106,7 @@ io.on('connection', (socket) => {
     if (!match.ready.includes(socket.id)) match.ready.push(socket.id);
     
     tryStartMatch(match);
-    if (match.status === 'simulating') startAllBotMatchesInCurrentRound();
+    if (match.status.startsWith('simulating')) startAllBotMatchesInCurrentRound();
   });
 
   socket.on('dismiss-match', (matchId) => {
@@ -1101,9 +1117,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ==========================================
-  // BOUTON "TOUR SUIVANT"
-  // ==========================================
   socket.on('advance-round', () => {
     if (state.phase === 'simulation' && state.roundComplete) {
       
@@ -1122,7 +1135,7 @@ io.on('connection', (socket) => {
           state.currentRound++;
           
           if (state.currentRound >= 5) {
-            state.champion = null; // ON ÉLIMINE LE CHAMPION FANTÔME ICI
+            state.champion = null; 
             const qualified = state.swissTeams.filter(t => t.wins === 3).sort((a, b) => a.losses - b.losses).map(t => t.team);
             
             const qf = [
@@ -1187,7 +1200,7 @@ io.on('connection', (socket) => {
       if (state.resetPlayers.length === humanCount && humanCount > 0) {
         state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
         state.participants.forEach(p => p.roster = []);
-        state.phase = 'lobby'; state.gameMode = null; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = [];
+        state.phase = 'lobby'; state.gameMode = null; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = [];
       }
       io.emit('draft-update', state);
     }
@@ -1203,11 +1216,11 @@ io.on('connection', (socket) => {
       state.participants = state.participants.filter(p => p.id !== socket.id);
       const humansAfter = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
-      delete state.cardCollections[socket.id]; delete state.activeLineups[socket.id]; delete state.pendingPacks[socket.id]; delete state.lastOpenedPack[socket.id]; delete state.starterPackClaimed[socket.id];
+      delete state.cardCollections[socket.id]; delete state.activeLineups[socket.id]; delete state.economy[socket.id]; delete state.lastOpenedPack[socket.id]; delete state.starterPackClaimed[socket.id];
       state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
 
       if (humansAfter === 0 && humansBefore > 0) {
-        state.phase = 'lobby'; state.gameMode = null; state.champion = null; state.participants = []; state.resetPlayers = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; clearAuctionTimer();
+        state.phase = 'lobby'; state.gameMode = null; state.champion = null; state.participants = []; state.resetPlayers = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; clearAuctionTimer();
       } else refreshAuctionAfterDisconnect();
       
       io.emit('draft-update', state);
@@ -1215,11 +1228,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// NOUVEAU : Rediriger toutes les requêtes HTTP classiques vers l'application React
-// Cela permet au "router" du front (s'il y en a un) ou juste au rechargement de la page de fonctionner.
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-// N'oublie pas de lancer "npm run build" dans ton projet avant de lancer "pm2 start server/index.js" !
 server.listen(3001, '0.0.0.0', () => console.log('Serveur Esport actif sur le port 3001'));

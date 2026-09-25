@@ -5,11 +5,11 @@ export const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED'];
 
 // Probabilités de tirage par emplacement de carte dans un pack (en %).
 export const RARITY_WEIGHTS = {
-  Commune: 620,
-  Rare: 280,
-  'Épique': 80,
-  'Légendaire': 15,
-  WANTED : 5
+  Commune: 633,
+  Rare: 290,
+  'Épique': 40,
+  'Légendaire': 10,
+  WANTED : 2
 };
 
 export const RARITY_COLORS = {
@@ -25,12 +25,13 @@ export const CARD_POOL = [
   // --- TOPLANE ---
   // ==========================================
   {
-    "id": "kdf-dudu",
-    "baseName": "DuDu",
-    "variant": "KDF DuDu",
+    "id": "edg_zdz",
+    "baseName": "zdz",
+    "variant": "EDG zdz",
     "role": "Top",
     "rating": 68,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/EDG_zdz.webp"
   },
   {
     "id": "t1-zeus",
@@ -38,7 +39,8 @@ export const CARD_POOL = [
     "variant": "T1 Zeus",
     "role": "Top",
     "rating": 83,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/T1_zeus.png"
   },
   {
     "id": "hle-zeus",
@@ -66,12 +68,13 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "bds-adam",
+    "id": "NAVI-adam",
     "baseName": "Adam",
-    "variant": "BDS Adam",
+    "variant": "NAVI Adam",
     "role": "Top",
     "rating": 69,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/NAVI_adam.webp"
   },
   {
     "id": "blg-bin",
@@ -79,7 +82,8 @@ export const CARD_POOL = [
     "variant": "BLG Bin",
     "role": "Top",
     "rating": 83,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/BLG_bin.webp"
   },
   {
     "id": "bin-FirstStand-2026",
@@ -99,12 +103,13 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "rge-szygenda",
+    "id": "szygenda",
     "baseName": "Szygenda",
-    "variant": "RGE Szygenda",
+    "variant": "Szygenda",
     "role": "Top",
-    "rating": 64,
-    "rarity": "Commune"
+    "rating": 51,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/szygenda.webp"
   },
   {
     "id": "tes-369",
@@ -112,7 +117,8 @@ export const CARD_POOL = [
     "variant": "TES 369",
     "role": "Top",
     "rating": 81,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/TES_369.webp"
   },
   {
     "id": "369-lpl-champion",
@@ -128,7 +134,8 @@ export const CARD_POOL = [
     "variant": "BRO Morgan",
     "role": "Top",
     "rating": 63,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/BRO_morgan.webp"
   },
   {
     "id": "gen-kiin",
@@ -136,7 +143,8 @@ export const CARD_POOL = [
     "variant": "Gen.G Kiin",
     "role": "Top",
     "rating": 82,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/GENG_kiin.webp"
   },
   {
     "id": "kiin-lck-mvp",
@@ -152,7 +160,8 @@ export const CARD_POOL = [
     "variant": "GX Odoamne",
     "role": "Top",
     "rating": 66,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/GX_odoamne.webp"
   },
   {
     "id": "brokenblade-g2",
@@ -164,12 +173,13 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/g2_brokenblade.webp"
   },
   {
-    "id": "kcb-maynter",
+    "id": "NAVI-maynter",
     "baseName": "Maynter",
-    "variant": "KCB Maynter",
+    "variant": "NAVI Maynter",
     "role": "Top",
     "rating": 62,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/NAVI_maynter.webp"
   },
   {
     "id": "fnc-oscarinin",
@@ -177,15 +187,17 @@ export const CARD_POOL = [
     "variant": "FNC Oscarinin",
     "role": "Top",
     "rating": 75,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/FNC_oscarinin.webp"
   },
   {
-    "id": "tl-impact",
+    "id": "sen-impact",
     "baseName": "Impact",
-    "variant": "TL Impact",
+    "variant": "SEN Impact",
     "role": "Top",
-    "rating": 71,
-    "rarity": "Commune"
+    "rating": 70,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/SEN_impact.webp"
   },
   {
     "id": "fly-bwipo",
@@ -193,23 +205,26 @@ export const CARD_POOL = [
     "variant": "FLY Bwipo",
     "role": "Top",
     "rating": 76,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/FLY_bwipo.webp"
   },
   {
-    "id": "ns-dndn",
-    "baseName": "DnDn",
-    "variant": "NS DnDn",
+    "id": "dns-dudu",
+    "baseName": "DuDu",
+    "variant": "DNS DuDu",
     "role": "Top",
     "rating": 61,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/DNS_dudu.webp"
   },
   {
-    "id": "hle-doran",
+    "id": "t1-doran",
     "baseName": "Doran",
-    "variant": "HLE Doran",
+    "variant": "T1 Doran",
     "role": "Top",
-    "rating": 80,
-    "rarity": "Rare"
+    "rating": 78,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_doran.webp"
   },
   {
     "id": "doran-lck-champ",
@@ -220,12 +235,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "th-wunder",
+    "id": "sk-wunder",
     "baseName": "Wunder",
-    "variant": "TH Wunder",
+    "variant": "SK Wunder",
     "role": "Top",
     "rating": 67,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/SK_wunder.webp"
   },
   {
     "id": "g2-wunder-2019",
@@ -233,7 +249,17 @@ export const CARD_POOL = [
     "variant": "G2 Wunder",
     "role": "Top",
     "rating": 79,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/G2_wunder.png"
+  },
+  {
+    "id": "theshy-legend",
+    "baseName": "TheShy",
+    "variant": "Legend TheShy",
+    "role": "Top",
+    "rating": 97,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/TheShy_legend.jpg"
   },
 
   // ==========================================

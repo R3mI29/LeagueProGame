@@ -113,7 +113,7 @@ export default function App() {
 
   // VÉRIFICATION DU PSEUDO POUR AFFICHER LE BOUTON DEV
   const myPlayerInfo = state.participants?.find(p => p.id === socket.id);
-  const isDevModeUnlocked = myPlayerInfo?.name?.toLowerCase() === 'dev';
+  const isDevModeUnlocked = /^dev\d*$/i.test(myPlayerInfo?.name?.toLowerCase());
 
   return (
     <>

@@ -3,7 +3,14 @@ import { socket } from '../../api/socket';
 
 export default function DoubleElimView({ state, event }) {
   const { bracket, currentRound, roundComplete, readyPlayers } = state;
-  const tourneyColor = event?.color || '#FFB020';
+  
+  // Palette de couleurs "Brutaliste" inspirée du MSI
+  const msiRed = '#E6192B';
+  const msiYellow = '#FFEA00';
+  const bgDark = '#0B0D14';
+  const boxBg = '#141824';
+  const borderMuted = '#2A3042';
+
   const myId = socket.id;
 
   const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
@@ -30,28 +37,34 @@ export default function DoubleElimView({ state, event }) {
       <div 
         onClick={() => handleMatchClick(match)}
         style={{ 
-          background: '#11141E',
-          border: isMyTurn ? `2px solid ${tourneyColor}` : `1px solid #222838`,
-          borderRadius: '8px', padding: '10px', marginBottom: '16px', minWidth: '220px',
+          background: boxBg,
+          border: isMyTurn ? `2px solid ${msiYellow}` : `1px solid ${borderMuted}`,
+          borderRadius: '2px', // Bords tranchants pour la DA Brutaliste
+          padding: '12px', marginBottom: '16px', minWidth: '200px',
           cursor: isMyTurn ? 'pointer' : 'default',
-          boxShadow: isMyTurn ? `0 0 15px ${tourneyColor}40` : '0 4px 6px rgba(0,0,0,0.3)',
-          transition: 'all 0.2s', position: 'relative'
+          boxShadow: isMyTurn ? `4px 4px 0px ${msiRed}` : '2px 2px 0px rgba(0,0,0,0.5)',
+          transition: 'all 0.1s', position: 'relative',
+          transform: isMyTurn ? 'translate(-2px, -2px)' : 'none'
         }}
       >
-        <div style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '10px', color: '#768196', marginBottom: '8px', textAlign: 'center', letterSpacing: '1px' }}>
-          {title} {isSim && <span className="pulse-text" style={{ color: tourneyColor }}>[EN COURS]</span>}
+        <div style={{ fontFamily: "'Arial Black', sans-serif", fontSize: '10px', color: isMyTurn ? msiYellow : '#768196', marginBottom: '10px', textAlign: 'center', letterSpacing: '1px', textTransform: 'uppercase', fontStyle: 'italic' }}>
+          {title} {isSim && <span className="pulse-text" style={{ color: msiRed }}>[FIGHT]</span>}
         </div>
 
         {/* TEAM A */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px', background: isFin && match.winner?.id === match.teamA?.id ? 'rgba(255,255,255,0.05)' : 'transparent', opacity: !match.teamA ? 0.3 : 1 }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: match.teamA?.id === myId ? tourneyColor : '#F0F2F5' }}>{match.teamA ? match.teamA.name : 'TBD'}</span>
-          {isFin && <span style={{ fontWeight: 700, color: match.winner?.id === match.teamA?.id ? tourneyColor : '#768196' }}>{match.scoreA}</span>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px', background: isFin && match.winner?.id === match.teamA?.id ? `${msiRed}20` : 'transparent', opacity: !match.teamA ? 0.3 : 1 }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: match.teamA?.id === myId ? msiYellow : '#F0F2F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+            {match.teamA ? match.teamA.name : 'TBD'}
+          </span>
+          {isFin && <span style={{ fontWeight: 900, color: match.winner?.id === match.teamA?.id ? msiRed : '#768196' }}>{match.scoreA}</span>}
         </div>
 
         {/* TEAM B */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px', background: isFin && match.winner?.id === match.teamB?.id ? 'rgba(255,255,255,0.05)' : 'transparent', opacity: !match.teamB ? 0.3 : 1, marginTop: '4px' }}>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: match.teamB?.id === myId ? tourneyColor : '#F0F2F5' }}>{match.teamB ? match.teamB.name : 'TBD'}</span>
-          {isFin && <span style={{ fontWeight: 700, color: match.winner?.id === match.teamB?.id ? tourneyColor : '#768196' }}>{match.scoreB}</span>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px', background: isFin && match.winner?.id === match.teamB?.id ? `${msiRed}20` : 'transparent', opacity: !match.teamB ? 0.3 : 1, marginTop: '4px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: match.teamB?.id === myId ? msiYellow : '#F0F2F5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>
+            {match.teamB ? match.teamB.name : 'TBD'}
+          </span>
+          {isFin && <span style={{ fontWeight: 900, color: match.winner?.id === match.teamB?.id ? msiRed : '#768196' }}>{match.scoreB}</span>}
         </div>
       </div>
     );
@@ -62,83 +75,112 @@ export default function DoubleElimView({ state, event }) {
   };
 
   return (
-    <div style={{ width: '100%', overflowX: 'auto', paddingBottom: '40px' }}>
+    <div style={{ width: '100%', position: 'relative', paddingBottom: '120px' }}>
       
-      {/* SECTION WINNER BRACKET */}
-      <div style={{ background: '#080A10', borderRadius: '12px', border: `1px solid #222838`, padding: '24px', marginBottom: '30px' }}>
-        <h2 style={{ fontFamily: "'Oswald', sans-serif", color: tourneyColor, margin: '0 0 20px 0', fontSize: '24px' }}>WINNER BRACKET</h2>
-        <div style={{ display: 'flex', gap: '30px' }}>
-          <div>{getMatchesByPrefix('ub1').map(m => getMatchBox(m, "1/8 FINALE"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub2').map(m => getMatchBox(m, "QUARTS"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub3').map(m => getMatchBox(m, "DEMIES"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub4').map(m => getMatchBox(m, "FINALE WB"))}</div>
+      {/* EFFET DE FOND "SANG / ENCRE" */}
+      <div style={{
+        position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
+        width: '100vw', height: '100vw', background: `radial-gradient(circle, ${msiRed} 0%, transparent 40%)`,
+        opacity: 0.08, pointerEvents: 'none', filter: 'blur(50px)', zIndex: 0
+      }} />
+
+      {/* LE NOUVEAU LAYOUT EN GRILLE (Brackets à gauche, Finale à droite) */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '40px', position: 'relative', zIndex: 1, alignItems: 'center' }}>
+        
+        {/* COLONNE GAUCHE : WINNER & LOSER BRACKETS */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', overflowX: 'auto', paddingBottom: '20px' }}>
+          
+          {/* SECTION WINNER BRACKET */}
+          <div style={{ background: bgDark, border: `2px solid ${borderMuted}`, borderLeft: `8px solid ${msiRed}`, padding: '24px', position: 'relative' }}>
+            <h2 style={{ fontFamily: "'Arial Black', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '22px', fontStyle: 'italic', textTransform: 'uppercase' }}>
+              WINNER BRACKET
+            </h2>
+            <div style={{ display: 'flex', gap: '30px' }}>
+              <div style={{ flexShrink: 0 }}>{getMatchesByPrefix('ub1').map(m => getMatchBox(m, "1/8 FINALE"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub2').map(m => getMatchBox(m, "QUARTS"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub3').map(m => getMatchBox(m, "DEMIES"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('ub4').map(m => getMatchBox(m, "FINALE WB"))}</div>
+            </div>
+          </div>
+
+          {/* SECTION LOSER BRACKET */}
+          <div style={{ background: bgDark, border: `2px solid ${borderMuted}`, borderLeft: `8px solid #555`, padding: '24px', position: 'relative' }}>
+            <h2 style={{ fontFamily: "'Arial Black', sans-serif", color: '#888', margin: '0 0 20px 0', fontSize: '18px', fontStyle: 'italic', textTransform: 'uppercase' }}>
+              LOSER BRACKET (SURVIE)
+            </h2>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <div style={{ flexShrink: 0 }}>{getMatchesByPrefix('lb1').map(m => getMatchBox(m, "ROUND 1"))}</div>
+              <div style={{ flexShrink: 0 }}>{getMatchesByPrefix('lb2').map(m => getMatchBox(m, "ROUND 2"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb3').map(m => getMatchBox(m, "ROUND 3"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb4').map(m => getMatchBox(m, "ROUND 4"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb5').map(m => getMatchBox(m, "DEMI LB"))}</div>
+              <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb6').map(m => getMatchBox(m, "FINALE LB"))}</div>
+            </div>
+          </div>
         </div>
+
+        {/* COLONNE DROITE : GRANDE FINALE */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ background: bgDark, border: `4px solid ${msiRed}`, padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: `inset 0 0 40px ${msiRed}30`, position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-15px', background: msiYellow, color: '#000', padding: '4px 16px', fontFamily: "'Arial Black', sans-serif", fontStyle: 'italic', fontSize: '14px', textTransform: 'uppercase', boxShadow: '2px 2px 0px #000' }}>
+              PHASE ULTIME
+            </div>
+            <h2 style={{ fontFamily: "'Arial Black', sans-serif", color: '#FFF', margin: '20px 0 30px 0', fontSize: '28px', fontStyle: 'italic', textShadow: `3px 3px 0px ${msiRed}`, textAlign: 'center' }}>
+              GRANDE FINALE
+            </h2>
+            <div style={{ width: '100%', transform: 'scale(1.15)', transformOrigin: 'top center' }}>
+              {getMatchesByPrefix('gf').map(m => getMatchBox(m, "LE CHOC ULTIME"))}
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* SECTION LOSER BRACKET */}
-      <div style={{ background: '#080A10', borderRadius: '12px', border: `1px solid #222838`, padding: '24px', marginBottom: '30px' }}>
-        <h2 style={{ fontFamily: "'Oswald', sans-serif", color: '#ff3366', margin: '0 0 20px 0', fontSize: '24px' }}>LOSER BRACKET (SURVIE)</h2>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          <div>{getMatchesByPrefix('lb1').map(m => getMatchBox(m, "ROUND 1"))}</div>
-          <div>{getMatchesByPrefix('lb2').map(m => getMatchBox(m, "ROUND 2"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb3').map(m => getMatchBox(m, "ROUND 3"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb4').map(m => getMatchBox(m, "ROUND 4"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb5').map(m => getMatchBox(m, "DEMI LB"))}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>{getMatchesByPrefix('lb6').map(m => getMatchBox(m, "FINALE LB"))}</div>
-        </div>
-      </div>
-
-      {/* GRANDE FINALE */}
-      <div style={{ background: '#080A10', borderRadius: '12px', border: `2px solid ${tourneyColor}`, padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <h2 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '28px' }}>GRANDE FINALE</h2>
-        <div style={{ transform: 'scale(1.2)' }}>
-          {getMatchesByPrefix('gf').map(m => getMatchBox(m, "LE CHOC ULTIME"))}
-        </div>
-      </div>
-
-      {/* BARRE DE CONTRÔLE (Ronde par ronde) */}
-      {/* BARRE DE CONTRÔLE (Ronde par ronde) */}
-      <div style={{ marginTop: '40px', background: '#11141E', borderRadius: '12px', border: `1px solid #222838`, padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 8px 0', fontSize: '20px' }}>
-            {state.champion ? "TOURNOI TERMINÉ" : `CONTRÔLE - ROUND ${currentRound + 1} / 8`}
-          </h3>
-          <span style={{ color: '#768196', fontSize: '14px' }}>
-            {state.champion ? `Victoire de ${state.champion.name} !` : roundComplete ? "Phase terminée. Passez au round suivant." : "Validez pour déclencher les matchs de ce round."}
-          </span>
-        </div>
+      {/* PANNEAU DE CONTRÔLE FIXÉ EN BAS À DROITE */}
+      <div style={{ 
+        position: 'fixed', bottom: '40px', right: '40px', 
+        background: bgDark, border: `3px solid ${msiRed}`, padding: '24px', 
+        boxShadow: `8px 8px 0px ${msiYellow}`, zIndex: 1000, 
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: '340px' 
+      }}>
+        <h3 style={{ fontFamily: "'Arial Black', sans-serif", color: '#FFF', margin: '0 0 8px 0', fontSize: '20px', fontStyle: 'italic', textTransform: 'uppercase' }}>
+          {state.champion ? "COMPÉTITION TERMINÉE" : `ROUND ${currentRound + 1} / 8`}
+        </h3>
+        <span style={{ color: '#888', fontSize: '12px', marginBottom: '20px', textAlign: 'right', fontFamily: "'Inter', sans-serif" }}>
+          {state.champion ? `Le trophée appartient à ${state.champion.name} !` : roundComplete ? "Tous les matchs sont terminés. Passez au round suivant." : "Validez pour déclencher la simulation."}
+        </span>
         
         {state.champion ? (
           <button 
             onClick={() => socket.emit('continue-season')}
-            style={{ backgroundColor: '#ff3366', color: '#FFF', border: 'none', padding: '16px 32px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 0 20px rgba(255, 51, 102, 0.4)' }}
+            style={{ 
+              width: '100%', backgroundColor: msiYellow, color: '#000', border: 'none', padding: '16px', 
+              fontFamily: "'Arial Black', sans-serif", fontSize: '16px', fontStyle: 'italic', cursor: 'pointer', transition: 'all 0.1s' 
+            }}
+            onMouseDown={(e) => { e.target.style.transform = 'translate(2px, 2px)'; e.target.style.boxShadow = 'none'; }}
+            onMouseUp={(e) => { e.target.style.transform = 'none'; e.target.style.boxShadow = `4px 4px 0px ${msiRed}`; }}
+            onMouseLeave={(e) => { e.target.style.transform = 'none'; e.target.style.boxShadow = 'none'; }}
           >
-            TERMINER LA COMPÉTITION 🏆
+            TERMINER LA COMPÉTITION
           </button>
         ) : roundComplete ? (
           <button 
-            onClick={advanceRound}
-            disabled={isRoundReady}
+            onClick={advanceRound} disabled={isRoundReady}
             style={{ 
-              backgroundColor: isRoundReady ? '#222838' : '#FFF', 
-              color: isRoundReady ? '#768196' : '#000', 
-              border: 'none', padding: '16px 32px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, 
-              cursor: isRoundReady ? 'wait' : 'pointer',
-              transition: 'all 0.2s'
+              width: '100%', backgroundColor: isRoundReady ? borderMuted : '#FFF', color: isRoundReady ? '#888' : '#000', 
+              border: 'none', padding: '16px', fontFamily: "'Arial Black', sans-serif", fontSize: '16px', fontStyle: 'italic', 
+              cursor: isRoundReady ? 'wait' : 'pointer', boxShadow: isRoundReady ? 'none' : `4px 4px 0px ${msiRed}`, transition: 'all 0.1s' 
             }}
           >
             {isRoundReady ? `EN ATTENTE (${state.roundReady.length}/${humanCount})` : "TOUR SUIVANT"}
           </button>
         ) : (
           <button 
-            onClick={toggleReady}
-            disabled={isGlobalReady}
+            onClick={toggleReady} disabled={isGlobalReady}
             style={{ 
-              backgroundColor: isGlobalReady ? '#222838' : tourneyColor, 
-              color: isGlobalReady ? '#768196' : '#000', 
-              border: 'none', padding: '16px 32px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, 
-              cursor: isGlobalReady ? 'wait' : 'pointer',
-              transition: 'all 0.2s'
+              width: '100%', backgroundColor: isGlobalReady ? borderMuted : msiYellow, color: isGlobalReady ? '#888' : '#000', 
+              border: 'none', padding: '16px', fontFamily: "'Arial Black', sans-serif", fontSize: '16px', fontStyle: 'italic', 
+              cursor: isGlobalReady ? 'wait' : 'pointer', boxShadow: isGlobalReady ? 'none' : `4px 4px 0px ${msiRed}`, transition: 'all 0.1s' 
             }}
           >
             {isGlobalReady ? `EN ATTENTE (${readyPlayers?.length || 0}/${humanCount})` : 'LANCER / AVANCER'}

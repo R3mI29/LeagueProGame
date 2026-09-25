@@ -122,9 +122,13 @@ export function upgradeBotRoster(currentRoster, packsWon) {
         const newRating = card.rating || card.overall || 0;
         const oldRating = currentCard.rating || currentCard.overall || 0;
         
-        // Le bot a 75% de chance de s'équiper d'une carte si elle est meilleure
         if (newRating > oldRating && Math.random() < 0.75) {
-          newRoster[roleIndex] = cardToRosterEntry(card);
+          const newEntry = cardToRosterEntry(card);
+          
+          // NOUVEAU : On assigne le contrat au joueur fraîchement recruté par le bot
+          newEntry.contract = card.rarity === 'Légendaire' ? 'LIFETIME' : 3; 
+          
+          newRoster[roleIndex] = newEntry;
         }
       }
     }

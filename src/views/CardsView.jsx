@@ -175,13 +175,29 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
               </div>
 
               <div style={{ backgroundColor: '#131621', border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>CENTRE DE RECRUTEMENT</h3>
-                {myPendingPacks > 0 ? (
-                  <button onClick={openPack} style={{ width: '100%', backgroundColor: '#FFF', color: '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '1px', boxShadow: '0 4px 15px rgba(255, 255, 255, 0.1)' }}>
-                    Ouvrir {myPendingPacks} Pack{myPendingPacks > 1 ? 's' : ''}
+                <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>BOUTIQUE DU CIRCUIT</h3>
+                
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>
+                  💰 {state.economy?.[myId] || 0} CRÉDITS
+                </div>
+
+                {!state.starterPackClaimed?.[myId] ? (
+                  <button onClick={() => socket.emit('buy-pack')} style={{ width: '100%', backgroundColor: THEME.accentGold, color: '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                    OUVRIR PACK DE DÉPART (GRATUIT)
                   </button>
                 ) : (
-                  <p style={{ color: THEME.textMuted, fontSize: '13px', margin: 0, lineHeight: 1.5 }}>Aucun contrat disponible. Terminez la saison actuelle pour obtenir des récompenses.</p>
+                  <button 
+                    onClick={() => socket.emit('buy-pack')} 
+                    disabled={(state.economy?.[myId] || 0) < 100}
+                    style={{ 
+                      width: '100%', 
+                      backgroundColor: (state.economy?.[myId] || 0) >= 100 ? '#FFF' : '#333', 
+                      color: (state.economy?.[myId] || 0) >= 100 ? '#000' : '#888', 
+                      border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, 
+                      cursor: (state.economy?.[myId] || 0) >= 100 ? 'pointer' : 'not-allowed'
+                    }}>
+                    ACHETER UN PACK (100 CRÉDITS)
+                  </button>
                 )}
               </div>
 
