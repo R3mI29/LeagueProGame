@@ -566,6 +566,19 @@ function awardSeasonRewards() {
     state.seasonScores[p.id].points += pointsEarned;
 
     if (!p.id.startsWith('bot-')) {
+      // Détecte le nombre de cartes Full Art dans le 5 majeur aligné
+      const lineup = state.activeLineups[p.id] || {};
+      const fullArtCount = Object.values(lineup).reduce((count, cardId) => {
+        const card = getCardById(cardId);
+        return count + (card?.isFullArt ? 1 : 0);
+      }, 0);
+
+      // +20 % de crédits par carte Full Art (ex: 2 cartes = +40 %)
+      if (fullArtCount > 0) {
+        const bonusMultiplier = 1 + (0.20 * fullArtCount);
+        moneyEarned = Math.round(moneyEarned * bonusMultiplier);
+      }
+
       state.economy[p.id] += moneyEarned;
     } else {
       p.roster = p.roster.map(pro => {
@@ -711,6 +724,19 @@ io.on('connection', (socket) => {
     if (currentContract !== 'LIFETIME') {
       state.cardCollections[id][cardId] = currentContract + 5; 
     }
+    io.emit('draft-update', state);
+  });
+
+  socket.on('dev-give-money', (amount) => {
+    const id = socket.id;
+    // On s'assure que l'économie est bien initialisée
+    if (!state.economy) state.economy = {};
+    if (state.economy[id] === undefined) state.economy[id] = 0;
+    
+    // On ajoute le montant demandé
+    state.economy[id] += amount;
+    
+    // On met à jour tous les clients
     io.emit('draft-update', state);
   });
 

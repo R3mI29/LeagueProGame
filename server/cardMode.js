@@ -40,7 +40,19 @@ function weightedRarity(weights) {
 
 function drawCardOfRarity(rarity) {
   const pool = CARD_POOL.filter(c => c.rarity === rarity);
-  return pool[Math.floor(Math.random() * pool.length)];
+  if (pool.length === 0) return null;
+
+  // Calcul du poids total : les cartes Full Art sont 10 fois plus rares
+  const totalWeight = pool.reduce((sum, c) => sum + (c.isFullArt ? 1 : 10), 0);
+  let roll = Math.random() * totalWeight;
+
+  for (const card of pool) {
+    const weight = card.isFullArt ? 1 : 10;
+    if (roll < weight) return card;
+    roll -= weight;
+  }
+
+  return pool[0];
 }
 
 export function openPack(packTypeId = 'standard') {
@@ -91,7 +103,8 @@ export function cardToRosterEntry(card) {
     id: card.id, 
     name: card.variant || card.baseName || card.name, 
     role: card.role, 
-    rating: card.rating || card.overall || 80 
+    rating: card.rating || card.overall || 80,
+    isFullArt: Boolean(card.isFullArt)
   };
 }
 

@@ -788,6 +788,16 @@ export const CARD_POOL = [
     "rarity": "Rare"
   },
   {
+    "id": "jdg-ruler-fa",
+    "baseName": "Ruler",
+    "variant": "JDG Ruler",
+    "role": "ADC",
+    "rating": 88,
+    "rarity": "Épique",
+    "isFullArt": true,
+    "image": "/cardsImg/fullart/JDG_ruler.png"
+  },
+  {
     "id": "ruler-msi-2023",
     "baseName": "Ruler",
     "variant": "MSI Champion Ruler",
