@@ -20,17 +20,15 @@ const THEME = {
   textMuted: '#768196',    
 };
 
-export default function CardsView({ state, openPack, setLineupCard, toggleLineupReady }) {
+export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const myId = socket.id;
   const [activeTab, setActiveTab] = useState('roster'); 
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
 
   const rawCollection = state.cardCollections?.[myId] || {};
   const myLineup = state.activeLineups?.[myId] || {};
-  const myPendingPacks = state.pendingPacks?.[myId] || 0;
   
   const myCollection = { ...rawCollection };
-
   const isReady = state.readyPlayers.includes(myId);
   const lineupComplete = ORDERED_ROLES.every(role => myLineup[role]);
   
@@ -51,6 +49,8 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
   });
 
   const currentEventIndex = state.eventIndex || 0;
+  const myEconomy = state.economy?.[myId] || 0;
+  const hasStarter = state.starterPackClaimed?.[myId];
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: THEME.bgApp, color: THEME.textMain, fontFamily: "'Inter', sans-serif", padding: '40px 20px' }}>
@@ -70,8 +70,9 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           <div style={{ display: 'flex', gap: '8px' }}>
             {[
               { id: 'roster', label: 'Gestion Équipe' },
-              { id: 'circuit', label: 'Calendrier & Compétitions' },
-              { id: 'halloffame', label: 'Classement Global' }
+              { id: 'shop', label: 'Boutique' },
+              { id: 'circuit', label: 'Compétitions' },
+              { id: 'halloffame', label: 'Classement' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -92,7 +93,7 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
 
         {/* ONGLET 1 : ROSTER */}
         {activeTab === 'roster' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px', animation: 'fadeIn 0.3s' }}>
             
             <div style={{ backgroundColor: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '32px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -132,7 +133,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                     return (
                       <div key={card.id} 
                         onClick={() => !isExpired && setLineupCard(activeRole, card.id)} 
-                        // MODIFICATION ICI : On utilise Flexbox pour empiler la carte et le badge proprement
                         style={{ cursor: isExpired ? 'not-allowed' : 'pointer', transition: 'transform 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
                       >
                         <div style={{ 
@@ -145,7 +145,6 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                           <CardIllustration card={card} width={155} />
                         </div>
                         
-                        {/* BADGE DE CONTRAT DÉTACHÉ EN DESSOUS */}
                         <div style={{ 
                           background: isLifetime 
                             ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' 
@@ -174,31 +173,15 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
                 <div style={{ fontSize: '56px', fontFamily: "'Oswald', sans-serif", fontWeight: 600, color: teamPower > 0 ? THEME.accentGold : THEME.textMuted }}>{teamPower > 0 ? Math.round(teamPower) : '-'}</div>
               </div>
 
+              {/* Raccourci vers la boutique */}
               <div style={{ backgroundColor: '#131621', border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>BOUTIQUE DU CIRCUIT</h3>
-                
+                <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>TRÉSORERIE</h3>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>
-                  💰 {state.economy?.[myId] || 0} CRÉDITS
+                  {myEconomy} 💲 CRÉDITS
                 </div>
-
-                {!state.starterPackClaimed?.[myId] ? (
-                  <button onClick={() => socket.emit('buy-pack')} style={{ width: '100%', backgroundColor: THEME.accentGold, color: '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
-                    OUVRIR PACK DE DÉPART (GRATUIT)
-                  </button>
-                ) : (
-                  <button 
-                    onClick={() => socket.emit('buy-pack')} 
-                    disabled={(state.economy?.[myId] || 0) < 100}
-                    style={{ 
-                      width: '100%', 
-                      backgroundColor: (state.economy?.[myId] || 0) >= 100 ? '#FFF' : '#333', 
-                      color: (state.economy?.[myId] || 0) >= 100 ? '#000' : '#888', 
-                      border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, 
-                      cursor: (state.economy?.[myId] || 0) >= 100 ? 'pointer' : 'not-allowed'
-                    }}>
-                    ACHETER UN PACK (100 CRÉDITS)
-                  </button>
-                )}
+                <button onClick={() => setActiveTab('shop')} style={{ width: '100%', backgroundColor: THEME.accentGold, color: '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                  ALLER À LA BOUTIQUE
+                </button>
               </div>
 
               <button onClick={toggleLineupReady} disabled={!lineupComplete && !isReady} style={{ backgroundColor: isReady ? THEME.accentGold : lineupComplete ? '#FFFFFF' : '#1F2433', color: isReady ? '#000' : lineupComplete ? '#000' : THEME.textMuted, border: 'none', padding: '20px', borderRadius: '8px', fontSize: '15px', fontWeight: 700, cursor: (!lineupComplete && !isReady) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px' }}>
@@ -208,7 +191,82 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           </div>
         )}
 
-        {/* ONGLET 2 : CALENDRIER & COMPÉTITIONS */}
+        {/* ONGLET 2 : NOUVELLE BOUTIQUE */}
+        {activeTab === 'shop' && (
+          <div style={{ animation: 'fadeIn 0.3s' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '36px', margin: '0 0 10px 0', color: '#FFF' }}>
+                BOUTIQUE DU CIRCUIT
+              </h2>
+              <p style={{ color: THEME.textMuted, fontSize: '16px' }}>
+                Recrutez de nouveaux talents. Les packs supérieurs offrent de meilleures chances d'obtenir des joueurs d'élite.
+              </p>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginTop: '20px' }}>
+                SOLDE : 💲 {myEconomy} CRÉDITS
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '30px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              
+              {!hasStarter && (
+                <div style={{ background: THEME.bgPanel, border: `2px solid #00e676`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 0 30px rgba(0,230,118,0.2)' }}>
+                  <div style={{ fontSize: '50px', marginBottom: '10px' }}>🎁</div>
+                  <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e676', fontSize: '24px', margin: '0 0 10px 0' }}>PACK DE DÉPART</h3>
+                  <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Une base solide pour débuter votre saison. Contient 10 cartes de contrat À VIE.</p>
+                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#FFF', marginBottom: '20px' }}>GRATUIT</div>
+                  <button onClick={() => socket.emit('buy-pack', 'standard')} style={{ width: '100%', backgroundColor: '#00e676', color: '#000', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }}>
+                    OUVRIR
+                  </button>
+                </div>
+              )}
+
+              {hasStarter && (
+                <>
+                  {/* PACK STANDARD */}
+                  <div style={{ background: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', transition: 'transform 0.2s', cursor: 'default' }}>
+                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>📦</div>
+                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '24px', margin: '0 0 10px 0' }}>PACK STANDARD</h3>
+                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Idéal pour commencer, Probabilités classiques (5 cartes).</p>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>100 💲</div>
+                    <button 
+                      onClick={() => socket.emit('buy-pack', 'standard')} 
+                      disabled={myEconomy < 100}
+                      style={{ width: '100%', backgroundColor: myEconomy >= 100 ? '#FFF' : '#333', color: myEconomy >= 100 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 100 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                    >ACHETER</button>
+                  </div>
+
+                  {/* PACK ELITE */}
+                  <div style={{ background: 'linear-gradient(180deg, rgba(0, 229, 255, 0.1) 0%, #11141E 100%)', border: `1px solid #00e5ff`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0, 229, 255, 0.1)' }}>
+                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>💎</div>
+                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e5ff', fontSize: '24px', margin: '0 0 10px 0' }}>PACK ÉLITE</h3>
+                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances doublées d'obtenir des cartes Épiques, Légendaire et WANTED.</p>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>200 💲</div>
+                    <button 
+                      onClick={() => socket.emit('buy-pack', 'elite')} 
+                      disabled={myEconomy < 200}
+                      style={{ width: '100%', backgroundColor: myEconomy >= 200 ? '#00e5ff' : '#333', color: myEconomy >= 200 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 200 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                    >ACHETER</button>
+                  </div>
+
+                  {/* PACK LEGENDE */}
+                  <div style={{ background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, #11141E 100%)', border: `1px solid ${THEME.accentGold}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(212, 175, 55, 0.15)' }}>
+                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>👑</div>
+                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: THEME.accentGold, fontSize: '24px', margin: '0 0 10px 0' }}>PACK LÉGENDE</h3>
+                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances multipliées par 5 pour les cartes de niveau Épique, Légendaire et WANTED.</p>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>450 💲</div>
+                    <button 
+                      onClick={() => socket.emit('buy-pack', 'legendary')} 
+                      disabled={myEconomy < 400}
+                      style={{ width: '100%', backgroundColor: myEconomy >= 400 ? THEME.accentGold : '#333', color: myEconomy >= 400 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 400 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                    >ACHETER</button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ONGLET 3 : CALENDRIER & COMPÉTITIONS */}
         {activeTab === 'circuit' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -281,13 +339,13 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
           </div>
         )}
 
-        {/* ONGLET 3 : LE PANTHÉON */}
+        {/* ONGLET 4 : LE PANTHÉON */}
         {activeTab === 'halloffame' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             
             <div style={{ textAlign: 'center', marginBottom: '50px' }}>
               <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '32px', margin: '0 0 10px 0', color: '#FFF' }}>
-                CLASSEMENT
+                CLASSEMENT GLOBAL
               </h2>
               <p style={{ color: THEME.textMuted, fontSize: '15px', maxWidth: '600px', margin: '0 auto' }}>
                 Le classement mondial officiel basé sur les performances accumulées lors des compétitions du Circuit Pro. Seuls les plus grands laissent leur empreinte.

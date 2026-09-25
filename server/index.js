@@ -11,11 +11,9 @@ import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
 import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
-  openStandardPack, openStarterPack, addCardsToCollection,
-  hasCompleteLineup, getCardById, cardToRosterEntry, 
-  generateBotRosterFromCards, upgradeBotRoster
+  openPack, openStarterPack, getCardById, cardToRosterEntry, 
+  generateBotRosterFromCards, upgradeBotRoster, PACK_TYPES
 } from './cardMode.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -577,7 +575,8 @@ function awardSeasonRewards() {
         if (currentContract <= 0) {
           let replacement = null;
           while(!replacement) {
-            replacement = openStandardPack().find(c => c.role === pro.role);
+            // CORRECTION : On utilise la nouvelle fonction avec le type 'standard'
+            replacement = openPack('standard').find(c => c.role === pro.role);
           }
           const newPro = cardToRosterEntry(replacement);
           newPro.contract = 3; 
@@ -822,7 +821,7 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  socket.on('buy-pack', () => {
+socket.on('buy-pack', (packTypeId = 'standard') => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
@@ -830,15 +829,19 @@ io.on('connection', (socket) => {
     if (!state.economy) state.economy = {};
     if (state.economy[id] === undefined) state.economy[id] = 0;
 
-    const PACK_PRICE = 100;
     const isStarter = !state.starterPackClaimed[id];
+    
+    // NOUVEAU : On récupère la config du pack pour déterminer le prix
+    const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
+    const PACK_PRICE = packConfig.price;
 
     if (!isStarter) {
       if (state.economy[id] < PACK_PRICE) return; 
       state.economy[id] -= PACK_PRICE;
     }
 
-    const cards = isStarter ? openStarterPack() : openStandardPack();
+    // NOUVEAU : On ouvre le bon type de pack
+    const cards = isStarter ? openStarterPack() : openPack(packTypeId);
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
     const openedCardsWithContracts = [];
