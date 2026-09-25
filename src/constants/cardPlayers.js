@@ -1299,5 +1299,20 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire"
-  }
+  },
+
+
+  /////// SPECIAL ///////
+
+  {
+    "id": "ruler-missing-redemption",
+    "baseName": "Ruler & Missing",
+    "variant": "La Rédemption",
+    "role": "Support", 
+    "rating": 98,
+    themeColor: '#E5142E',
+    "rarity": "SECRET", 
+    "isFullArt": true,
+    "image": "/cardsImg/others/ruler_missing_DUO.jpg"
+  },
 ];

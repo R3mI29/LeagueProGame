@@ -3,40 +3,53 @@ import { RARITY_COLORS } from '../constants/cardPlayers';
 export default function CardIllustration({ card, width = 140 }) {
   const height = width * 1.4; 
   
-  // On récupère la couleur de base de la rareté
   const rarityColor = RARITY_COLORS[card.rarity] || (card.rarity === 'WANTED' ? '#00e5ff' : '#8b9bb4');
+  const isSecret = card.rarity === 'SECRET';
 
   const bgGradients = {
     'Commune': ['#2a3546', '#141b27'],
     'Rare': ['#007a8c', '#003344'],
     'Épique': ['#99143a', '#3d0817'],
     'Légendaire': ['#b89400', '#4a3b00'],
-    'WANTED': ['#0a0a0a', '#1a1a2e']
+    'WANTED': ['#0a0a0a', '#1a1a2e'],
+    'SECRET': ['#080C16', '#141824'] // Fond sombre et neutre
   };
 
   const [bgTop, bgBot] = bgGradients[card.rarity] || bgGradients['Commune'];
-  const hasFullIllustration = card.rarity === 'WANTED' || card.rarity === 'Légendaire' || Boolean(card.isFullArt);
+  const hasFullIllustration = card.rarity === 'WANTED' || card.rarity === 'Légendaire' || isSecret || Boolean(card.isFullArt);
 
-  // Par défaut, la bordure prend la couleur de la rareté
+  // RÉCUPÉRATION DYNAMIQUE : On lit la couleur depuis les données de la carte (fallback Or)
+  const themeColor = card.themeColor || '#D4AF37';
+
   let borderColor = rarityColor;
-  
-  // On applique les exceptions classiques si ce n'est PAS une Full Art
+  let nameFont = "Rajdhani, sans-serif"; 
+  let customBoxShadow = '';
+
   if (!card.isFullArt) {
     if (card.rarity === 'WANTED') borderColor = '#ffffff';
     else if (card.rarity === 'Légendaire') borderColor = '#ffd700';
   }
 
-  // On génère dynamiquement l'ombre (glow) avec la couleur de bordure
-  let customBoxShadow = `0 8px 20px ${borderColor}66`;
-
-  if (card.isFullArt) {
-    // Halo lumineux intense basé sur la vraie couleur de la carte
-    customBoxShadow = `0 0 15px ${borderColor}99, 0 0 30px ${borderColor}66`;
-  } else if (card.rarity === 'WANTED') {
-    customBoxShadow = '0 8px 25px rgba(255, 255, 255, 0.4)';
-  } else if (card.rarity === 'Légendaire') {
-    customBoxShadow = '0 8px 25px rgba(255, 215, 0, 0.5)';
+  // --- DA GÉNÉRIQUE SECRET (ÉVOLUTIF) ---
+  if (isSecret) {
+    borderColor = themeColor; 
+    nameFont = "'Oswald', sans-serif"; 
+    // L'ombre portée prend automatiquement la couleur de thème
+    customBoxShadow = `0 0 25px ${themeColor}66, 0 0 45px rgba(8, 12, 22, 0.9)`; 
   }
+
+  if (!customBoxShadow) {
+      customBoxShadow = `0 8px 20px ${borderColor}66`;
+      if (card.isFullArt) customBoxShadow = `0 0 15px ${borderColor}99, 0 0 30px ${borderColor}66`;
+      else if (card.rarity === 'WANTED') customBoxShadow = '0 8px 25px rgba(255, 255, 255, 0.4)';
+      else if (card.rarity === 'Légendaire') customBoxShadow = '0 8px 25px rgba(255, 215, 0, 0.5)';
+  }
+
+  // Taille dynamique pour que le texte rentre toujours
+  const nameLength = card.baseName.length;
+  let dynamicFontSize = "26";
+  if (nameLength > 14) dynamicFontSize = "18"; 
+  else if (nameLength > 10) dynamicFontSize = "22";
 
   return (
     <div 
@@ -65,13 +78,13 @@ export default function CardIllustration({ card, width = 140 }) {
           </linearGradient>
 
           <radialGradient id={`glow-${card.id}`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={rarityColor} stopOpacity="0.8" />
-            <stop offset="100%" stopColor={rarityColor} stopOpacity="0" />
+            <stop offset="0%" stopColor={isSecret ? themeColor : rarityColor} stopOpacity="0.8" />
+            <stop offset="100%" stopColor={isSecret ? themeColor : rarityColor} stopOpacity="0" />
           </radialGradient>
 
-          {card.rarity === 'Légendaire' && (
+          {(card.rarity === 'Légendaire' || isSecret) && (
             <pattern id="rays" width="200" height="280" patternUnits="userSpaceOnUse">
-              <g stroke="#ffd700" strokeWidth="2" strokeOpacity="0.3">
+              <g stroke={isSecret ? themeColor : "#ffd700"} strokeWidth="2" strokeOpacity={isSecret ? "0.2" : "0.3"}>
                 {[...Array(12)].map((_, i) => (
                   <line key={i} x1="100" y1="140" x2={100 + Math.cos(i * 30 * Math.PI / 180) * 200} y2={140 + Math.sin(i * 30 * Math.PI / 180) * 200} />
                 ))}
@@ -79,12 +92,7 @@ export default function CardIllustration({ card, width = 140 }) {
             </pattern>
           )}
 
-          {card.rarity === 'Épique' && !card.isFullArt && (
-            <pattern id="triangles" width="40" height="40" patternUnits="userSpaceOnUse">
-              <polygon points="20,0 40,40 0,40" fill="rgba(255, 255, 255, 0.05)" />
-            </pattern>
-          )}
-
+          {/* Fondu Classique Épuré */}
           <linearGradient id="bottomFade" x1="0" y1="0" x2="0" y2="1">
             <stop offset="15%" stopColor="rgba(10, 14, 20, 0)" />
             <stop offset="85%" stopColor="rgba(10, 14, 20, 0.95)" />
@@ -95,10 +103,9 @@ export default function CardIllustration({ card, width = 140 }) {
         <rect x="-2" y="-2" width="204" height="284" fill={`url(#bg-${card.id})`} />
         <rect x="-2" y="-2" width="204" height="284" fill={`url(#glow-${card.id})`} />
         
-        {card.rarity === 'Légendaire' && <rect x="-2" y="-2" width="204" height="284" fill="url(#rays)" />}
-        {card.rarity === 'Épique' && !card.isFullArt && <rect x="-2" y="-2" width="204" height="284" fill="url(#triangles)" />}
-        {card.rarity === 'Rare' && <circle cx="100" cy="140" r="80" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="10" />}
+        {(card.rarity === 'Légendaire' || isSecret) && <rect x="-2" y="-2" width="204" height="284" fill="url(#rays)" />}
 
+        {/* L'IMAGE DU JOUEUR */}
         {card.image && (
           <image 
             href={card.image} 
@@ -110,6 +117,7 @@ export default function CardIllustration({ card, width = 140 }) {
           />
         )}
 
+        {/* LE FONDU DU BAS NORMAL */}
         {card.image ? (
           <g>
             <rect x="0" y="130" width="200" height="150" fill="url(#bottomFade)" />
@@ -122,31 +130,44 @@ export default function CardIllustration({ card, width = 140 }) {
           </g>
         )}
 
-        {/* Note - La couleur prend désormais la rareté, même en Full Art */}
-        <rect x="10" y="10" width="45" height="40" rx="8" fill="rgba(0,0,0,0.6)" />
-        <text x="32" y="38" textAnchor="middle" fontSize="24" fontWeight="800" fill={rarityColor} fontFamily="Rajdhani, sans-serif">
+        {/* INTERFACE : NOTE */}
+        {isSecret ? (
+          <rect x="10" y="10" width="45" height="40" rx="4" fill="rgba(0,0,0,0.8)" stroke={themeColor} strokeWidth="2" />
+        ) : (
+          <rect x="10" y="10" width="45" height="40" rx="8" fill="rgba(0,0,0,0.6)" />
+        )}
+        <text x="32" y="38" textAnchor="middle" fontSize="24" fontWeight="800" fill={isSecret ? themeColor : rarityColor} fontFamily="Rajdhani, sans-serif">
           {card.rating}
         </text>
 
-        {/* Rôle */}
-        <rect x="110" y="10" width="80" height="30" rx="8" fill="rgba(0,0,0,0.6)" />
-        <text x="150" y="31" textAnchor="middle" fontSize="16" fontWeight="700" fill="#fff" fontFamily="Rajdhani, sans-serif" letterSpacing="1">
+        {/* INTERFACE : RÔLE */}
+        {isSecret ? (
+          <rect x="115" y="10" width="75" height="30" rx="4" fill="rgba(0,0,0,0.8)" stroke={themeColor} strokeWidth="2" />
+        ) : (
+          <rect x="110" y="10" width="80" height="30" rx="8" fill="rgba(0,0,0,0.6)" />
+        )}
+        <text x={isSecret ? "152.5" : "150"} y="31" textAnchor="middle" fontSize={isSecret ? "14" : "16"} fontWeight="700" fill="#fff" fontFamily="Rajdhani, sans-serif" letterSpacing="1">
           {card.role.toUpperCase()}
         </text>
 
-        {/* Nom & Variante */}
-        <text x="100" y="235" textAnchor="middle" fontSize="26" fontWeight="800" fill="white" fontFamily="Rajdhani, sans-serif" letterSpacing="1">
+        {/* INTERFACE : NOM */}
+        {isSecret && (
+          <text x="102" y="237" textAnchor="middle" fontSize={dynamicFontSize} fontWeight="900" fill={`${themeColor}99`} fontFamily={nameFont} letterSpacing="1">
+            {card.baseName.toUpperCase()}
+          </text>
+        )}
+        <text x="100" y="235" textAnchor="middle" fontSize={dynamicFontSize} fontWeight="800" fill="white" fontFamily={nameFont} letterSpacing="1">
           {card.baseName.toUpperCase()}
         </text>
         
-        {/* Couleur de la variante dynamique selon la rareté */}
-        <text x="100" y="258" textAnchor="middle" fontSize="14" fontWeight="600" fill={rarityColor} fontFamily="Inter, sans-serif">
-          {card.variant}
+        {/* INTERFACE : VARIANTE */}
+        <text x="100" y="258" textAnchor="middle" fontSize="14" fontWeight="600" fill={isSecret ? themeColor : rarityColor} fontFamily="Inter, sans-serif" letterSpacing={isSecret ? "1" : "0"}>
+          {card.variant.toUpperCase()}
         </text>
       </svg>
 
       {/* EFFET HOLOGRAPHIQUE UNIQUE */}
-      {card.isFullArt && <div className="card-foil-overlay" />}
+      {(card.isFullArt || isSecret) && <div className="card-foil-overlay" />}
 
       <style>{`
         .card-foil-overlay {

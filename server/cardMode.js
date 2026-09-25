@@ -42,17 +42,23 @@ function drawCardOfRarity(rarity) {
   const pool = CARD_POOL.filter(c => c.rarity === rarity);
   if (pool.length === 0) return null;
 
-  // Calcul du poids total : les cartes Full Art sont 10 fois plus rares
-  const totalWeight = pool.reduce((sum, c) => sum + (c.isFullArt ? 1 : 10), 0);
+  // RATIO 1/7 : Une carte normale pèse "7", une Full Art pèse "1"
+  // Les Full Arts sont donc 7 fois plus rares à tirage équivalent
+  const getCardWeight = (c) => c.isFullArt ? 1 : 7;
+
+  // On calcule la taille totale de la pile virtuelle
+  const totalWeight = pool.reduce((sum, c) => sum + getCardWeight(c), 0);
   let roll = Math.random() * totalWeight;
 
+  // On pioche en soustrayant le VRAI poids de la carte
   for (const card of pool) {
-    const weight = card.isFullArt ? 1 : 5;
+    const weight = getCardWeight(card); 
     if (roll < weight) return card;
     roll -= weight;
   }
 
-  return pool[0];
+  // Sécurité ultime pour ne jamais avoir d'erreur
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export function openPack(packTypeId = 'standard') {

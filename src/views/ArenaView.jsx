@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { socket } from '../api/socket';
 import { ORDERED_ROLES } from '../constants/roles';
 import { CARD_POOL } from '../constants/cardPlayers';
 import CardIllustration from '../components/CardIllustration';
 
 export default function ArenaView({ match, matchReady, dismissMatch, state }) {
+  
+
+  const [secretUnlock, setSecretUnlock] = useState(null);
+
+  useEffect(() => {
+    socket.on('secret-unlocked', (data) => {
+      setSecretUnlock(data);
+      setTimeout(() => setSecretUnlock(null), 10000); 
+    });
+    return () => socket.off('secret-unlocked');
+  }, []);
+
+
   const isReady = match.ready.includes(socket.id);
   const isFinished = match.status === 'finished';
   const isSimulating = match.status === 'simulating_events' || match.status === 'simulating_result';
@@ -193,20 +206,61 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
             <div style={{ width: '100%' }}>
               {match.currentEvents?.filter(ev => ev.label).length > 0 ? (
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {match.currentEvents.filter(ev => ev.label).map((ev, index) => (
-                    <div key={`${match.currentEvents.length}-${index}`} style={{ animation: 'skillPopIn 0.3s forwards' }}>
-                      <div style={{ 
-                        fontFamily: "'Rajdhani', sans-serif", fontSize: '15px', fontWeight: 600, 
-                        color: ev.side === 'A' ? '#00e5ff' : ev.side === 'B' ? '#ff3366' : '#8b9bb4',
-                        background: 'rgba(0,0,0,0.6)', padding: '12px 16px', borderRadius: '6px',
-                        borderTop: `2px solid ${ev.side === 'A' ? '#00e5ff' : ev.side === 'B' ? '#ff3366' : '#8b9bb4'}`,
-                        textAlign: 'center', lineHeight: '1.4'
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {match.currentEvents.filter(ev => ev.label).map((ev, index) => {
+                    const eventColor = ev.side === 'A' ? '#00e5ff' : ev.side === 'B' ? '#ff3366' : '#8b9bb4';
+                    
+                    // Une couleur sobre pour la bordure de l'image (gris très foncé)
+                    const soberBorder = '#2A2C36';
+
+                    return (
+                      <div key={`${match.currentEvents.length}-${index}`} style={{ 
+                        animation: 'skillPopIn 0.4s forwards', 
+                        width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px' // Petit espace entre le texte et l'image
                       }}>
-                        {ev.label}
+                        
+                        {/* 1. LE TEXTE CLASSIQUE EXACTEMENT COMME AVANT */}
+                        <div style={{ 
+                          fontFamily: "'Rajdhani', sans-serif", fontSize: '15px', fontWeight: 600, 
+                          color: eventColor,
+                          background: 'rgba(0,0,0,0.6)', padding: '12px 16px', borderRadius: '6px',
+                          borderTop: `2px solid ${eventColor}`,
+                          textAlign: 'center', lineHeight: '1.4'
+                        }}>
+                          {ev.label}
+                        </div>
+
+                        {/* 2. L'IMAGE EN DESSOUS (Sobre, sans néon) */}
+                        {ev.image && (
+                          <div style={{ 
+                            width: '100%', 
+                            borderRadius: '4px', 
+                            overflow: 'hidden',
+                            border: `1px solid ${soberBorder}`,
+                            backgroundColor: '#0A0A0C', // Fond très sombre
+                            display: 'flex',
+                            justifyContent: 'center',
+                            opacity: 0.95 // Adoucit légèrement l'image
+                          }}>
+                            <img 
+                              src={ev.image} 
+                              alt="Illustration de l'événement" 
+                              style={{ 
+                                width: '100%', 
+                                height: 'auto', 
+                                maxHeight: '160px', // Garde une taille raisonnable
+                                objectFit: 'cover' // Remplit le cadre proprement
+                              }} 
+                            />
+                          </div>
+                        )}
+
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
               ) : (
@@ -251,6 +305,53 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
           </h2>
           {renderRoster(match.teamB, 'B')}
         </div>
+
+        {secretUnlock && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: '#050508', zIndex: 9999, display: 'flex', flexDirection: 'column',
+          justifyContent: 'center', alignItems: 'center',
+          animation: 'fadeIn 2s forwards', overflow: 'hidden'
+        }}>
+          
+          {/* Les bandes noires façon cinéma */}
+          <div style={{ position: 'absolute', top: 0, width: '100%', height: '12%', backgroundColor: 'black', zIndex: 1, animation: 'slideDown 1.5s forwards' }}></div>
+          <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '12%', backgroundColor: 'black', zIndex: 1, animation: 'slideUp 1.5s forwards' }}></div>
+
+          {/* L'image dramatique */}
+          <div style={{ 
+            position: 'relative', zIndex: 2, 
+            boxShadow: '0 0 50px rgba(255, 61, 129, 0.3)', border: '1px solid #332918',
+            animation: 'scaleUpSlow 10s forwards' // Lent zoom sur l'image
+          }}>
+            <img 
+              src={secretUnlock.image} 
+              alt="Ruler x Missing" 
+              style={{ maxHeight: '60vh', width: 'auto', display: 'block', borderRadius: '4px' }} 
+            />
+          </div>
+
+          {/* Le texte */}
+          <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', marginTop: '40px', animation: 'fadeInDelay 3s forwards', opacity: 0 }}>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '48px', color: '#ff3366', margin: '0 0 10px 0', textShadow: '0 0 20px rgba(255,51,102,0.8)' }}>
+              {secretUnlock.title}
+            </h1>
+            <p style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '24px', color: '#F0F2F5', letterSpacing: '2px', maxWidth: '800px' }}>
+              {secretUnlock.description} <br/>
+              <span style={{ color: '#D4AF37' }}>CARTE SECRÈTE DÉBLOQUÉE DANS VOTRE COLLECTION.</span>
+            </p>
+          </div>
+
+          {/* CLÉ CSS ANIMATIONS EN LIGNE POUR CET OVERLAY */}
+          <style>{`
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes fadeInDelay { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+            @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            @keyframes scaleUpSlow { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+          `}</style>
+        </div>
+      )}
       </div>
     </div>
   );

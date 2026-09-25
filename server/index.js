@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { PRO_PLAYERS } from '../src/constants/players.js';
 import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
+import { SECRET_UNLOCKS } from '../src/constants/secretUnlocks.js';
 import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
   openPack, openStarterPack, getCardById, cardToRosterEntry, 
@@ -153,7 +154,8 @@ function simulateGame(match, state) {
         side: result.side, 
         ratingDelta: result.ratingDelta,
         targetRoles: result.targetRoles,
-        persistentBO: result.persistentBO 
+        persistentBO: result.persistentBO,
+        image: result.image
       });
     }
   }
@@ -241,6 +243,10 @@ function playNextGame(match) {
         if (match.scoreA === GAMES_TO_WIN || match.scoreB === GAMES_TO_WIN) {
           match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
           match.status = 'finished';
+          
+          SECRET_UNLOCKS.forEach(secret => {
+            secret.checkAndApply(match, state, io);
+          });
           
           if (state.tournamentPhase === 'swiss') {
             const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
@@ -820,6 +826,10 @@ io.on('connection', (socket) => {
 
     match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
     match.status = 'finished';
+    SECRET_UNLOCKS.forEach(secret => {
+      secret.checkAndApply(match, state, io);
+    });
+
     match.currentEvents = [];
     match.pendingEvents = [];
     

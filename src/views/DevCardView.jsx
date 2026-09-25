@@ -5,7 +5,7 @@ import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
 
-const RARITY_ORDER = { 'Commune': 1, 'Rare': 2, 'Épique': 3, 'Légendaire': 4, 'WANTED': 5 };
+const RARITY_ORDER = { 'Commune': 1, 'Rare': 2, 'Épique': 3, 'Légendaire': 4, 'WANTED': 5, "SECRET" : 6 };
 
 export default function DevCardsView({ onClose, state }) {
   const [filterRole, setFilterRole] = useState('Tous');

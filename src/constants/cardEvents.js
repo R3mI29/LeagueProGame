@@ -149,7 +149,8 @@ export const CUSTOM_CARD_EVENTS = [
           ratingDelta:20,
           persistentBO: false,
           targetRoles: ['Top'], 
-          label: `🗡️ THE SHY DESCEND DU CIEL ! Son Aatrox se jette en 1v4 avec un Flash-Q3 et annihile l'équipe de ${teamB.name} !`
+          label: `🗡️ THE SHY DESCEND DU CIEL ! Son Aatrox se jette en 1v4 avec un Flash-Q3 et annihile l'équipe de ${teamB.name} !`,
+          image: "/cardsImg/webp/aatrox.webp" 
         });
       }
 
@@ -161,7 +162,8 @@ export const CUSTOM_CARD_EVENTS = [
           ratingDelta: 20,
           persistentBO: false,
           targetRoles: ['Top'], 
-          label: `🗡️ THE SHY DESCEND DU CIEL ! Son Aatrox se jette en 1v4 avec un Flash-Q3 et annihile l'équipe de ${teamA.name} !`
+          label: `🗡️ THE SHY DESCEND DU CIEL ! Son Aatrox se jette en 1v4 avec un Flash-Q3 et annihile l'équipe de ${teamA.name} !`,
+          image: "/cardsImg/webp/aatrox.webp" 
         });
       }
 
@@ -215,6 +217,39 @@ export const CUSTOM_CARD_EVENTS = [
       }
 
       return results.length > 0 ? results : null;
+    }
+  },
+  {
+    id: 'synergy-jdg-botlane',
+    uniquePerBO: true, 
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      
+      // 30% de chance que la synergie s'active pendant une game
+      if (Math.random() > 0.30) return null;
+
+      // Fonction pour vérifier la présence des 2 joueurs
+      const checkSynergy = (team) => {
+        const hasRuler = team.roster.some(p => p.id.toLowerCase().includes('ruler'));
+        const hasMissing = team.roster.some(p => p.id.toLowerCase().includes('missing'));
+        return hasRuler && hasMissing;
+      };
+
+      if (checkSynergy(teamA)) {
+        return { 
+          side: 'A', ratingDelta: 12, targetRoles: ['ADC', 'Support'], persistentBO: true, 
+          label: "SYNERGIE : RULER ET MISSING ÉCRASENT LA BOTLANE !", 
+          image: "/cardsImg/others/ruler_missing_DUO.jpg" // Image à créer dans public/cardsImg/synergies/
+        };
+      }
+      
+      if (checkSynergy(teamB)) {
+        return { 
+          side: 'B', ratingDelta: 12, targetRoles: ['ADC', 'Support'], persistentBO: true, 
+          label: "SYNERGIE : RULER ET MISSING ÉCRASENT LA BOTLANE !", 
+          image: "/cardsImg/others/ruler_missing_DUO.jpg" 
+        };
+      }
+      return null;
     }
   }
 ];
