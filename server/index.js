@@ -11,9 +11,8 @@ import { ORDERED_ROLES } from '../src/constants/roles.js';
 import { EVENTS } from '../src/constants/seasonConfig.js';
 import { CUSTOM_CARD_EVENTS } from '../src/constants/cardEvents.js'; 
 import {
-  openStandardPack, openStarterPack, addCardsToCollection,
-  hasCompleteLineup, getCardById, cardToRosterEntry, 
-  generateBotRosterFromCards, upgradeBotRoster
+  openPack, openStarterPack, getCardById, cardToRosterEntry, 
+  generateBotRosterFromCards, upgradeBotRoster, PACK_TYPES
 } from './cardMode.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -192,7 +191,7 @@ function tryStartMatch(match) {
 function playNextGame(match) {
   match.status = 'simulating_events'; 
   match.currentEvents = []; 
-  match.lastGameEvents = []; // Nettoyage de l'événement fantôme
+  match.lastGameEvents = []; 
   
   const { winnerSide, events } = simulateGame(match, state);
   match.pendingEvents = events; 
@@ -577,7 +576,7 @@ function awardSeasonRewards() {
         if (currentContract <= 0) {
           let replacement = null;
           while(!replacement) {
-            replacement = openStandardPack().find(c => c.role === pro.role);
+            replacement = openPack('standard').find(c => c.role === pro.role);
           }
           const newPro = cardToRosterEntry(replacement);
           newPro.contract = 3; 
@@ -730,7 +729,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start-draft', () => {
-    // CORRECTION : >= 1 permet de lancer la partie tout seul
     if (state.phase === 'lobby' && state.participants.length >= 1) {
       if (state.gameMode === 'draft_cartes') {
         state.cardCollections = {};
@@ -742,7 +740,7 @@ io.on('connection', (socket) => {
         state.continueSeasonVotes = [];
         state.seasonScores = null; 
         
-        state.economy = {}; // Reset de l'économie
+        state.economy = {}; 
         state.readyPlayers = []; 
         state.history = [];
         state.eventIndex = 0;
@@ -754,7 +752,7 @@ io.on('connection', (socket) => {
           state.pendingPacks[p.id] = 1; 
           state.lastOpenedPack[p.id] = [];
           state.starterPackClaimed[p.id] = false;
-          state.economy[p.id] = 0; // Initialise l'argent à 0
+          state.economy[p.id] = 0; 
         });
         state.phase = 'cards';
         io.emit('draft-update', state);
@@ -822,7 +820,7 @@ io.on('connection', (socket) => {
     io.emit('draft-update', state);
   });
 
-  socket.on('buy-pack', () => {
+  socket.on('buy-pack', (packTypeId = 'standard') => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
@@ -830,15 +828,17 @@ io.on('connection', (socket) => {
     if (!state.economy) state.economy = {};
     if (state.economy[id] === undefined) state.economy[id] = 0;
 
-    const PACK_PRICE = 100;
     const isStarter = !state.starterPackClaimed[id];
+    
+    const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
+    const PACK_PRICE = packConfig.price;
 
     if (!isStarter) {
       if (state.economy[id] < PACK_PRICE) return; 
       state.economy[id] -= PACK_PRICE;
     }
 
-    const cards = isStarter ? openStarterPack() : openStandardPack();
+    const cards = isStarter ? openStarterPack() : openPack(packTypeId);
     cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
 
     const openedCardsWithContracts = [];
@@ -885,6 +885,38 @@ io.on('connection', (socket) => {
       
       io.emit('draft-update', state);
     }
+  });
+
+  // VENTE TOTALE DE LA CARTE AVEC VERROUILLAGE LIFETIME
+  socket.on('sell-card', (cardId) => {
+    if (state.phase !== 'cards') return;
+    const id = socket.id;
+    if (!state.participants.some(p => p.id === id)) return;
+
+    const collection = state.cardCollections[id];
+    if (!collection || collection[cardId] === undefined || collection[cardId] === 0) return;
+
+    // INTERDIRE LA VENTE SI CONTRAT A VIE
+    if (collection[cardId] === 'LIFETIME') return;
+
+    const lineup = state.activeLineups[id] || {};
+    if (Object.values(lineup).includes(cardId)) return;
+
+    const card = getCardById(cardId);
+    if (!card) return;
+
+    let price = 10; 
+    if (card.rarity === 'Rare') price = 25;
+    else if (card.rarity === 'Épique') price = 50;
+    else if (card.rarity === 'Légendaire' || card.rarity === 'WANTED') price = 100;
+
+    // Suppression immédiate de la carte de la collection (vente totale)
+    delete collection[cardId];
+
+    if (state.economy[id] === undefined) state.economy[id] = 0;
+    state.economy[id] += price;
+
+    io.emit('draft-update', state);
   });
 
   socket.on('set-lineup-card', ({ role, cardId }) => {
