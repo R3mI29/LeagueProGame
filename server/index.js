@@ -192,6 +192,7 @@ function tryStartMatch(match) {
 function playNextGame(match) {
   match.status = 'simulating_events'; 
   match.currentEvents = []; 
+  match.lastGameEvents = []; // Nettoyage de l'événement fantôme
   
   const { winnerSide, events } = simulateGame(match, state);
   match.pendingEvents = events; 
@@ -207,25 +208,21 @@ function playNextGame(match) {
     if (match.pendingEvents && match.pendingEvents.length > 0) {
       const evsToPush = [];
       
-      // On boucle pour grouper les événements d'une même action
       while (match.pendingEvents.length > 0) {
         const ev = match.pendingEvents.shift();
         evsToPush.push(ev);
         
         if (ev.label) {
-          // Si on trouve un texte, on "aspire" tous les événements silencieux qui le suivent immédiatement
           while (match.pendingEvents.length > 0 && !match.pendingEvents[0].label) {
             evsToPush.push(match.pendingEvents.shift());
           }
-          break; // Et on s'arrête là pour laisser le temps de lire
+          break; 
         }
       }
 
-      // On envoie le groupe (Texte + Buffs silencieux) en une seule fois
       match.currentEvents.push(...evsToPush);
       io.emit('draft-update', state);
       
-      // S'il n'y avait exceptionnellement aucun texte (que des buffs passifs), on passe super vite (50ms)
       const delay = evsToPush.some(e => e.label) ? EVENT_DELAY : 50;
       matchTimeouts[match.id] = setTimeout(processNextEvent, delay);
       
@@ -476,7 +473,6 @@ function awardSeasonRewards() {
   let top4Ids = [];
   let top8Ids = []; 
   
-  // DÉTECTION INTELLIGENTE DES PLACES
   if (eventConfig.format === 'double_elim') {
     const gf = state.bracket[7][0]; 
     finalistId = getLoser(gf);
@@ -512,15 +508,12 @@ function awardSeasonRewards() {
     if (state.economy[p.id] === undefined) state.economy[p.id] = 0;
   });
 
-  // --- LE SYSTÈME DE CATCH-UP GLOBAL PARFAIT ---
   const catchupBonuses = {};
   const totalTournamentsPlayed = state.history.length;
   
   if (totalTournamentsPlayed >= 3) {
-    // 1. On crée une signature unique pour chaque joueur "Points-Titres"
     const getScoreKey = (p) => `${state.seasonScores[p.id].points}-${state.seasonScores[p.id].titles}`;
     
-    // 2. On isole et on trie toutes les signatures uniques de la pire à la meilleure
     const uniqueScoreKeys = [...new Set(state.participants.map(getScoreKey))]
       .sort((a, b) => {
         const [ptsA, titlesA] = a.split('-').map(Number);
@@ -528,20 +521,18 @@ function awardSeasonRewards() {
         if (ptsA !== ptsB) return ptsB - ptsA;
         return titlesB - titlesA;
       })
-      .reverse(); // L'index 0 sera le pire score absolu
+      .reverse(); 
 
-    // 3. On attribue les bonus selon la tranche (Même récompense pour les égalités !)
     state.participants.forEach(p => {
       const scoreKey = getScoreKey(p);
       const worstIndex = uniqueScoreKeys.indexOf(scoreKey); 
       
-      if (worstIndex === 0) catchupBonuses[p.id] = 150;      // La pire tranche
-      else if (worstIndex === 1) catchupBonuses[p.id] = 100; // L'avant-dernière tranche
-      else if (worstIndex === 2) catchupBonuses[p.id] = 50;  // La tranche au-dessus
+      if (worstIndex === 0) catchupBonuses[p.id] = 150;      
+      else if (worstIndex === 1) catchupBonuses[p.id] = 100; 
+      else if (worstIndex === 2) catchupBonuses[p.id] = 50;  
     });
   }
 
-  // --- DISTRIBUTION VIA SEASONCONFIG ---
   const rewards = eventConfig.rewards;
   state.participants.forEach(p => {
     let pointsEarned = rewards.points.base || 0;
@@ -562,17 +553,14 @@ function awardSeasonRewards() {
       moneyEarned = rewards.money.top8;
     }
 
-    // Ajout du bonus de rattrapage global
     const catchUpBonus = catchupBonuses[p.id] || 0;
     moneyEarned += catchUpBonus;
 
-    // Sauvegarde
     state.seasonScores[p.id].points += pointsEarned;
 
     if (!p.id.startsWith('bot-')) {
       state.economy[p.id] += moneyEarned;
     } else {
-      // Gestion des contrats pour l'IA
       p.roster = p.roster.map(pro => {
         if (pro.contract === 'LIFETIME') return pro; 
         let currentContract = pro.contract !== undefined ? pro.contract : 3;
@@ -591,7 +579,6 @@ function awardSeasonRewards() {
           return pro;
         }
       });
-      // Le bot se renforce instantanément
       p.roster = upgradeBotRoster(p.roster, Math.floor(moneyEarned / 100));
     }
   });
@@ -735,10 +722,32 @@ io.on('connection', (socket) => {
   });
 
   socket.on('start-draft', () => {
-    if (state.phase === 'lobby' && state.participants.length >= 1) { 
+    // CORRECTION : >= 1 permet de lancer la partie tout seul
+    if (state.phase === 'lobby' && state.participants.length >= 1) {
       if (state.gameMode === 'draft_cartes') {
-        state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; 
-        state.participants.forEach(p => { state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.economy[p.id] = 0; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; });
+        state.cardCollections = {};
+        state.activeLineups = {};
+        state.pendingPacks = {};
+        state.lastOpenedPack = {};
+        state.starterPackClaimed = {};
+        state.seasonRound = 1;
+        state.continueSeasonVotes = [];
+        state.seasonScores = null; 
+        
+        state.economy = {}; // Reset de l'économie
+        state.readyPlayers = []; 
+        state.history = [];
+        state.eventIndex = 0;
+        state.year = 1;
+        
+        state.participants.forEach(p => {
+          state.cardCollections[p.id] = {};
+          state.activeLineups[p.id] = {};
+          state.pendingPacks[p.id] = 1; 
+          state.lastOpenedPack[p.id] = [];
+          state.starterPackClaimed[p.id] = false;
+          state.economy[p.id] = 0; // Initialise l'argent à 0
+        });
         state.phase = 'cards';
         io.emit('draft-update', state);
         return;
@@ -777,14 +786,12 @@ io.on('connection', (socket) => {
     match.currentEvents = [];
     match.pendingEvents = [];
     
-    // Le check de complétion doit ignorer cette partie si les autres simulent encore !
     if (state.tournamentPhase === 'swiss') {
       const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
       const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
       const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
       if (wTeam) wTeam.wins += 1;
       if (lTeam) lTeam.losses += 1;
-      // On vérifie que tous sont "finished" sans se faire piéger par les "simulating_events"
       if (state.bracket[state.currentRound].every(m => m.status === 'finished')) state.roundComplete = true;
     } 
     else if (state.tournamentPhase === 'groups') {
@@ -1191,19 +1198,47 @@ io.on('connection', (socket) => {
   });
 
   socket.on('toggle-reset', () => {
-    if (state.phase === 'simulation' && state.champion) {
-      if (state.resetPlayers.includes(socket.id)) state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
-      else state.resetPlayers.push(socket.id);
-
-      const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
-
-      if (state.resetPlayers.length === humanCount && humanCount > 0) {
-        state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
-        state.participants.forEach(p => p.roster = []);
-        state.phase = 'lobby'; state.gameMode = null; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = [];
-      }
-      io.emit('draft-update', state);
+    if (state.resetPlayers.includes(socket.id)) {
+      state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
+    } else {
+      state.resetPlayers.push(socket.id);
     }
+
+    const humanCount = state.participants.filter(p => !p.id.startsWith('bot-')).length;
+
+    if (humanCount === 0 || state.resetPlayers.length >= humanCount) {
+      state.participants = state.participants.filter(p => !p.id.startsWith('bot-'));
+      state.participants.forEach(p => p.roster = []);
+      state.phase = 'lobby';
+      state.gameMode = null;
+      state.bracket = [];
+      state.champion = null;
+      state.readyPlayers = [];
+      state.resetPlayers = [];
+      state.turnIndex = 0;
+      state.currentRound = 0;
+      state.roundComplete = false;
+      state.roundReady = [];
+      state.auction = null;
+      state.budgets = {};
+      state.skippedPlayers = [];
+      state.cardCollections = {};
+      state.activeLineups = {};
+      state.economy = {};
+      state.pendingPacks = {};
+      state.lastOpenedPack = {};
+      state.starterPackClaimed = {};
+      state.seasonRound = 0;
+      state.continueSeasonVotes = [];
+      
+      state.history = [];
+      state.eventIndex = 0;
+      state.year = 1;
+      state.seasonScores = null;
+      state.groups = null;
+      state.swissTeams = null;
+    }
+    io.emit('draft-update', state);
   });
 
   socket.on('start-next-event', () => {
@@ -1216,12 +1251,49 @@ io.on('connection', (socket) => {
       state.participants = state.participants.filter(p => p.id !== socket.id);
       const humansAfter = state.participants.filter(p => !p.id.startsWith('bot-')).length;
 
-      delete state.cardCollections[socket.id]; delete state.activeLineups[socket.id]; delete state.economy[socket.id]; delete state.lastOpenedPack[socket.id]; delete state.starterPackClaimed[socket.id];
+      delete state.cardCollections[socket.id]; 
+      delete state.activeLineups[socket.id]; 
+      delete state.economy[socket.id]; 
+      delete state.lastOpenedPack[socket.id]; 
+      delete state.starterPackClaimed[socket.id];
+      
       state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
+      state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
+      state.roundReady = state.roundReady.filter(id => id !== socket.id);
+      state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
 
       if (humansAfter === 0 && humansBefore > 0) {
-        state.phase = 'lobby'; state.gameMode = null; state.champion = null; state.participants = []; state.resetPlayers = []; state.auction = null; state.budgets = {}; state.skippedPlayers = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; clearAuctionTimer();
-      } else refreshAuctionAfterDisconnect();
+        state.phase = 'lobby';
+        state.gameMode = null;
+        state.champion = null;
+        state.participants = [];
+        state.resetPlayers = [];
+        state.readyPlayers = []; 
+        state.roundReady = [];   
+        state.auction = null;
+        state.budgets = {};
+        state.skippedPlayers = [];
+        state.cardCollections = {};
+        state.activeLineups = {};
+        state.economy = {}; 
+        state.pendingPacks = {};
+        state.lastOpenedPack = {};
+        state.starterPackClaimed = {};
+        state.seasonRound = 0;
+        state.continueSeasonVotes = [];
+        
+        state.history = [];
+        state.eventIndex = 0;
+        state.year = 1;
+        state.seasonScores = null;
+        state.bracket = [];
+        state.groups = null;
+        state.swissTeams = null;
+        
+        clearAuctionTimer();
+      } else {
+        refreshAuctionAfterDisconnect();
+      }
       
       io.emit('draft-update', state);
     }
