@@ -68,6 +68,7 @@ let state = {
   cardCollections: {}, 
   activeLineups: {}, 
   economy: {}, 
+  cardStats: {}, // <-- NOUVEAU : Tracker d'XP des cartes
   lastOpenedPack: {}, 
   starterPackClaimed: {}, 
   seasonRound: 0,
@@ -349,7 +350,18 @@ function startCardTournament() {
 
   humanParticipants.forEach(p => {
     const lineup = state.activeLineups[p.id] || {};
-    p.roster = ORDERED_ROLES.map(role => cardToRosterEntry(getCardById(lineup[role])));
+    p.roster = ORDERED_ROLES.map(role => {
+      const cardId = lineup[role];
+      const baseCard = getCardById(cardId);
+      const rosterEntry = cardToRosterEntry(baseCard);
+
+      // --- PASSIF CALISTE (WANTED) : LA NOTE AUGMENTE PHYSIQUEMENT ! ---
+      if (baseCard && baseCard.id.toLowerCase().includes('caliste') && baseCard.rarity === 'WANTED') {
+        const played = state.cardStats?.[p.id]?.[cardId] || 0;
+        rosterEntry.rating += played;
+      }
+      return rosterEntry;
+    });
   });
 
   if (existingBots.length === 0) {
@@ -462,7 +474,6 @@ function startCurrentEvent() {
   io.emit('draft-update', state);
 }
 
-// --- SYSTÈME ÉCONOMIQUE, RÉCOMPENSES ET CATCH-UP ---
 function awardSeasonRewards() {
   const eventConfig = EVENTS[state.eventIndex];
   const getLoser = (match) => match?.winner?.id === match?.teamA?.id ? match?.teamB?.id : match?.teamA?.id;
@@ -566,14 +577,12 @@ function awardSeasonRewards() {
     state.seasonScores[p.id].points += pointsEarned;
 
     if (!p.id.startsWith('bot-')) {
-      // Détecte le nombre de cartes Full Art dans le 5 majeur aligné
       const lineup = state.activeLineups[p.id] || {};
       const fullArtCount = Object.values(lineup).reduce((count, cardId) => {
         const card = getCardById(cardId);
         return count + (card?.isFullArt ? 1 : 0);
       }, 0);
 
-      // +20 % de crédits par carte Full Art (ex: 2 cartes = +40 %)
       if (fullArtCount > 0) {
         const bonusMultiplier = 1 + (0.20 * fullArtCount);
         moneyEarned = Math.round(moneyEarned * bonusMultiplier);
@@ -729,14 +738,9 @@ io.on('connection', (socket) => {
 
   socket.on('dev-give-money', (amount) => {
     const id = socket.id;
-    // On s'assure que l'économie est bien initialisée
     if (!state.economy) state.economy = {};
     if (state.economy[id] === undefined) state.economy[id] = 0;
-    
-    // On ajoute le montant demandé
     state.economy[id] += amount;
-    
-    // On met à jour tous les clients
     io.emit('draft-update', state);
   });
 
@@ -767,6 +771,7 @@ io.on('connection', (socket) => {
         state.seasonScores = null; 
         
         state.economy = {}; 
+        state.cardStats = {}; // <-- RESET EXPERIENCES
         state.readyPlayers = []; 
         state.history = [];
         state.eventIndex = 0;
@@ -913,7 +918,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // VENTE TOTALE DE LA CARTE AVEC VERROUILLAGE LIFETIME
   socket.on('sell-card', (cardId) => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
@@ -921,8 +925,6 @@ io.on('connection', (socket) => {
 
     const collection = state.cardCollections[id];
     if (!collection || collection[cardId] === undefined || collection[cardId] === 0) return;
-
-    // INTERDIRE LA VENTE SI CONTRAT A VIE
     if (collection[cardId] === 'LIFETIME') return;
 
     const lineup = state.activeLineups[id] || {};
@@ -936,9 +938,7 @@ io.on('connection', (socket) => {
     else if (card.rarity === 'Épique') price = 50;
     else if (card.rarity === 'Légendaire' || card.rarity === 'WANTED') price = 100;
 
-    // Suppression immédiate de la carte de la collection (vente totale)
     delete collection[cardId];
-
     if (state.economy[id] === undefined) state.economy[id] = 0;
     state.economy[id] += price;
 
@@ -990,6 +990,20 @@ io.on('connection', (socket) => {
     
     if (state.continueSeasonVotes.length === humanParticipants.length && humanParticipants.length > 0) {
       
+      // --- INCÉMENTATION DU TRACKER DE FIDÉLITÉ (PRODIGE) ---
+      if (!state.cardStats) state.cardStats = {};
+      humanParticipants.forEach(p => {
+        if (!state.cardStats[p.id]) state.cardStats[p.id] = {};
+        const lineup = state.activeLineups[p.id];
+        if (lineup) {
+          Object.values(lineup).forEach(cardId => {
+            if (cardId) {
+              state.cardStats[p.id][cardId] = (state.cardStats[p.id][cardId] || 0) + 1;
+            }
+          });
+        }
+      });
+
       awardSeasonRewards(); 
       
       state.history.push({ year: state.year, eventId: EVENTS[state.eventIndex]?.id || `Event ${state.eventIndex}`, winnerName: state.champion.name });
@@ -1291,6 +1305,7 @@ io.on('connection', (socket) => {
       state.cardCollections = {};
       state.activeLineups = {};
       state.economy = {};
+      state.cardStats = {}; // <-- RESET EXP
       state.pendingPacks = {};
       state.lastOpenedPack = {};
       state.starterPackClaimed = {};
@@ -1320,6 +1335,7 @@ io.on('connection', (socket) => {
       delete state.cardCollections[socket.id]; 
       delete state.activeLineups[socket.id]; 
       delete state.economy[socket.id]; 
+      delete state.cardStats?.[socket.id]; // <-- SUPPRESSION EXP
       delete state.lastOpenedPack[socket.id]; 
       delete state.starterPackClaimed[socket.id];
       
@@ -1342,6 +1358,7 @@ io.on('connection', (socket) => {
         state.cardCollections = {};
         state.activeLineups = {};
         state.economy = {}; 
+        state.cardStats = {}; // <-- RESET EXP
         state.pendingPacks = {};
         state.lastOpenedPack = {};
         state.starterPackClaimed = {};

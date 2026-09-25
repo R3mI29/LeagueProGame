@@ -25,6 +25,20 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const [activeTab, setActiveTab] = useState('roster'); 
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
 
+  // --- NOUVEAU : Fonction utilitaire pour injecter dynamiquement le buff Caliste ---
+  const getDynamicCard = (cardId) => {
+    const card = getCard(cardId);
+    if (!card) return null;
+    const dynamicCard = { ...card };
+    
+    if (dynamicCard.id.toLowerCase().includes('caliste') && dynamicCard.rarity === 'WANTED') {
+      const played = state.cardStats?.[myId]?.[dynamicCard.id] || 0;
+      if (dynamicCard.overall !== undefined) dynamicCard.overall += played;
+      if (dynamicCard.rating !== undefined) dynamicCard.rating += played;
+    }
+    return dynamicCard;
+  };
+
   const rawCollection = state.cardCollections?.[myId] || {};
   const myLineup = state.activeLineups?.[myId] || {};
   
@@ -34,8 +48,9 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   
   const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
 
+  // Utilisation de la carte dynamique pour calculer la vraie moyenne boostée
   const teamPower = ORDERED_ROLES.reduce((total, role) => {
-    const card = getCard(myLineup[role]);
+    const card = getDynamicCard(myLineup[role]);
     return total + (card ? (card.overall || card.rating || 80) : 0);
   }, 0) / 5;
 
@@ -104,7 +119,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
               
               <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', backgroundColor: '#0C0E14', padding: '6px', borderRadius: '6px' }}>
                 {ORDERED_ROLES.map(role => {
-                  const selectedCard = getCard(myLineup[role]);
+                  const selectedCard = getDynamicCard(myLineup[role]);
                   return (
                     <button key={role} onClick={() => setActiveRole(role)}
                       style={{
@@ -125,7 +140,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                 {ownedCardsForRole(activeRole).length === 0 ? (
                   <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: THEME.textMuted, fontStyle: 'italic' }}>Aucun joueur disponible pour le poste de {activeRole}.</div>
                 ) : (
-                  ownedCardsForRole(activeRole).map(card => {
+                  ownedCardsForRole(activeRole).map(baseCard => {
+                    const card = getDynamicCard(baseCard.id); // On récupère la carte dynamiquement boostée
                     const selected = myLineup[activeRole] === card.id;
                     const contract = myCollection[card.id] || 0;
                     const isLifetime = contract === 'LIFETIME';

@@ -15,7 +15,6 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
   const handleSkip = () => socket.emit('skip-match', match.id);
 
   // Calcule les buffs persistants des manches précédentes (ex: Uzi)
-  // Calcule les buffs persistants des manches précédentes (ex: Uzi)
   const getPersistentBuffs = (teamSide, role = null) => {
     let total = 0;
     if (match.games) {
@@ -73,14 +72,18 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
           {ORDERED_ROLES.map(role => {
             const p = team.roster.find(pro => pro.role === role);
             if (!p) return null;
-            const card = getCardById(p.id);
+            
+            // MAGIE : On remplace la note de la carte statique par la note calculée par le backend (avec l'XP Prodige !)
+            const baseCard = getCardById(p.id);
+            const dynamicCard = baseCard ? { ...baseCard, rating: p.rating, overall: p.rating } : null;
+            
             const buff = getPlayerBuff(teamSide, role);
             
             return (
               <div key={role} style={{ textAlign: 'center', position: 'relative' }}>
-                {card ? <CardIllustration card={card} width={90} /> : <div className="player-slot">{p.name}</div>}
+                {dynamicCard ? <CardIllustration card={dynamicCard} width={90} /> : <div className="player-slot">{p.name}</div>}
                 
-                {/* Pastille dynamique de Buff sur la carte */}
+                {/* Pastille dynamique de Buff de GAME sur la carte */}
                 {buff > 0 && (
                   <div style={{
                     position: 'absolute', top: '-10px', right: '-10px',
@@ -186,11 +189,8 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
               </button>
             )}
 
-            {/* Affichage du dernier événement seulement, pour lisibilité */}
-            {/* Affichage des événements ou de l'animation d'attente stylée */}
            {match.status === 'simulating_events' && (
             <div style={{ width: '100%' }}>
-              {/* On vérifie s'il y a AU MOINS UN événement avec du texte à afficher */}
               {match.currentEvents?.filter(ev => ev.label).length > 0 ? (
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -210,7 +210,6 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
                 </div>
 
               ) : (
-                /* ANIMATION D'ATTENTE (S'affiche si 0 événement, OU si seulement des événements silencieux) */
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                   <div className="title-font text-cyan pulse-text" style={{ fontSize: '16px', letterSpacing: '2px' }}>
                     LANCEMENT DE LA PARTIE...
@@ -222,7 +221,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
               )}
             </div>
           )}
-            {/* Suspense final */}
+            
             {match.status === 'simulating_result' && (
                <div className="title-font text-pink pulse-text" style={{ fontSize: '20px', letterSpacing: '2px' }}>CALCUL DE L'ISSUE...</div>
             )}

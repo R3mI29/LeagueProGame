@@ -3,6 +3,7 @@ import { RARITY_COLORS } from '../constants/cardPlayers';
 export default function CardIllustration({ card, width = 140 }) {
   const height = width * 1.4; 
   
+  // On récupère la couleur de base de la rareté
   const rarityColor = RARITY_COLORS[card.rarity] || (card.rarity === 'WANTED' ? '#00e5ff' : '#8b9bb4');
 
   const bgGradients = {
@@ -16,17 +17,24 @@ export default function CardIllustration({ card, width = 140 }) {
   const [bgTop, bgBot] = bgGradients[card.rarity] || bgGradients['Commune'];
   const hasFullIllustration = card.rarity === 'WANTED' || card.rarity === 'Légendaire' || Boolean(card.isFullArt);
 
+  // Par défaut, la bordure prend la couleur de la rareté
   let borderColor = rarityColor;
+  
+  // On applique les exceptions classiques si ce n'est PAS une Full Art
+  if (!card.isFullArt) {
+    if (card.rarity === 'WANTED') borderColor = '#ffffff';
+    else if (card.rarity === 'Légendaire') borderColor = '#ffd700';
+  }
+
+  // On génère dynamiquement l'ombre (glow) avec la couleur de bordure
   let customBoxShadow = `0 8px 20px ${borderColor}66`;
 
   if (card.isFullArt) {
-    borderColor = '#ff3399';
-    customBoxShadow = '0 0 15px rgba(255, 51, 153, 0.6), 0 0 30px rgba(0, 229, 255, 0.4)';
+    // Halo lumineux intense basé sur la vraie couleur de la carte
+    customBoxShadow = `0 0 15px ${borderColor}99, 0 0 30px ${borderColor}66`;
   } else if (card.rarity === 'WANTED') {
-    borderColor = '#ffffff';
     customBoxShadow = '0 8px 25px rgba(255, 255, 255, 0.4)';
   } else if (card.rarity === 'Légendaire') {
-    borderColor = '#ffd700';
     customBoxShadow = '0 8px 25px rgba(255, 215, 0, 0.5)';
   }
 
@@ -114,9 +122,9 @@ export default function CardIllustration({ card, width = 140 }) {
           </g>
         )}
 
-        {/* Note */}
+        {/* Note - La couleur prend désormais la rareté, même en Full Art */}
         <rect x="10" y="10" width="45" height="40" rx="8" fill="rgba(0,0,0,0.6)" />
-        <text x="32" y="38" textAnchor="middle" fontSize="24" fontWeight="800" fill={card.isFullArt ? '#ff3399' : rarityColor} fontFamily="Rajdhani, sans-serif">
+        <text x="32" y="38" textAnchor="middle" fontSize="24" fontWeight="800" fill={rarityColor} fontFamily="Rajdhani, sans-serif">
           {card.rating}
         </text>
 
@@ -131,7 +139,8 @@ export default function CardIllustration({ card, width = 140 }) {
           {card.baseName.toUpperCase()}
         </text>
         
-        <text x="100" y="258" textAnchor="middle" fontSize="14" fontWeight="600" fill={card.isFullArt ? '#ff99cc' : rarityColor} fontFamily="Inter, sans-serif">
+        {/* Couleur de la variante dynamique selon la rareté */}
+        <text x="100" y="258" textAnchor="middle" fontSize="14" fontWeight="600" fill={rarityColor} fontFamily="Inter, sans-serif">
           {card.variant}
         </text>
       </svg>

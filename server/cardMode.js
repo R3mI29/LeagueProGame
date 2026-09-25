@@ -47,7 +47,7 @@ function drawCardOfRarity(rarity) {
   let roll = Math.random() * totalWeight;
 
   for (const card of pool) {
-    const weight = card.isFullArt ? 1 : 10;
+    const weight = card.isFullArt ? 1 : 5;
     if (roll < weight) return card;
     roll -= weight;
   }

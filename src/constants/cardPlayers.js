@@ -335,7 +335,7 @@ export const CARD_POOL = [
     "baseName": "Painter",
     "variant": "T1 Painter",
     "role": "Jungle",
-    "rating": 62,
+    "rating": 56,
     "rarity": "Commune",
     "image": "/cardsImg/2026-players/T1_Painter.webp"
   },
@@ -590,6 +590,15 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
+    "id": "Shwomaker-Prime",
+    "baseName": "Showmaker",
+    "variant": "THE MAGICIAN",
+    "role": "Mid",
+    "rating": 97,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/showmaker_prime.jpg"
+  },
+  {
     "id": "showmaker-DK-mentor",
     "baseName": "ShowMaker",
     "variant": "Mentor ShowMaker",
@@ -767,9 +776,7 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/DNS_clozer.webp"
   },
 
-  // ==========================================
-  // --- ADC ---
-  // ==========================================
+ // ADC
   {
     "id": "ruler-ssg",
     "baseName": "Ruler",
@@ -780,12 +787,13 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/ssg_ruler.png"
   },
   {
-    "id": "jdg-ruler",
-    "baseName": "Ruler",
-    "variant": "JDG Ruler",
+    "id": "FLY-massu",
+    "baseName": "Massu",
+    "variant": "FLY Massu",
     "role": "ADC",
-    "rating": 85,
-    "rarity": "Rare"
+    "rating": 76,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/FLY_massu.webp"
   },
   {
     "id": "jdg-ruler-fa",
@@ -814,12 +822,13 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "ns-jiwoo",
+    "id": "drx-jiwoo",
     "baseName": "Jiwoo",
-    "variant": "NS Jiwoo",
+    "variant": "DRX Jiwoo",
     "role": "ADC",
     "rating": 69,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/DRX_jiwoo.webp"
   },
   {
     "id": "hle-viper",
@@ -827,7 +836,8 @@ export const CARD_POOL = [
     "variant": "HLE Viper",
     "role": "ADC",
     "rating": 81,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/HLE_viper.png"
   },
   {
     "id": "blg-viper",
@@ -835,7 +845,8 @@ export const CARD_POOL = [
     "variant": "BLG Viper",
     "role": "ADC",
     "rating": 83,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/BLG_viper.webp"
   },
   {
     "id": "viper-worlds-2021",
@@ -854,12 +865,13 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "bro-envyy",
-    "baseName": "Envyy",
-    "variant": "BRO Envyy",
+    "id": "bro-teddy",
+    "baseName": "Teddy",
+    "variant": "BRO Teddy",
     "role": "ADC",
-    "rating": 62,
-    "rarity": "Commune"
+    "rating": 70,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/BRO_teddy.webp"
   },
   {
     "id": "gumayusi-t1-2022",
@@ -887,12 +899,13 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "gx-patrik",
-    "baseName": "Patrik",
-    "variant": "GX Patrik",
+    "id": "th-flakked",
+    "baseName": "Flakked",
+    "variant": "TH Flakked",
     "role": "ADC",
-    "rating": 66,
-    "rarity": "Commune"
+    "rating": 65,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_flakked.webp"
   },
   {
     "id": "blg-elk",
@@ -900,7 +913,8 @@ export const CARD_POOL = [
     "variant": "BLG Elk",
     "role": "ADC",
     "rating": 80,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/BLG_elk.png"
   },
   {
     "id": "elk-lpl-mvp",
@@ -911,12 +925,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "sk-rahel",
+    "id": "sen-rahel",
     "baseName": "Rahel",
-    "variant": "SK Rahel",
+    "variant": "EN Rahel",
     "role": "ADC",
-    "rating": 68,
-    "rarity": "Commune"
+    "rating": 61,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/SEN_rahel.webp"
   },
   {
     "id": "tes-jackeylove",
@@ -924,7 +939,8 @@ export const CARD_POOL = [
     "variant": "TES JackeyLove",
     "role": "ADC",
     "rating": 82,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/TES_jackeylove.webp"
   },
   {
     "id": "jackeylove-worlds",
@@ -935,20 +951,22 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "kdf-bull",
-    "baseName": "Bull",
-    "variant": "KDF Bull",
+    "id": "DNS-deokdam",
+    "baseName": "Deokdam",
+    "variant": "DNS Deokdam",
     "role": "ADC",
     "rating": 67,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/DNS_deokdam.webp"
   },
   {
-    "id": "gen-peyz",
+    "id": "T1-peyz",
     "baseName": "Peyz",
-    "variant": "Gen.G Peyz",
+    "variant": "T1 Peyz",
     "role": "ADC",
-    "rating": 82,
-    "rarity": "Rare"
+    "rating": 84,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_peyz.webp"
   },
   {
     "id": "peyz-finals-mvp",
@@ -959,12 +977,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "rge-comp",
-    "baseName": "Comp",
-    "variant": "RGE Comp",
+    "id": "GenG-ruler",
+    "baseName": "Ruler",
+    "variant": "Gen.G Ruler",
     "role": "ADC",
-    "rating": 65,
-    "rarity": "Commune"
+    "rating": 82,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/GENG_ruler.webp"
   },
   {
     "id": "caliste-kcorp-2024",
@@ -976,12 +995,42 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/kc_caliste.webp"
   },
   {
-    "id": "bds-ice",
+    "id": "caliste-firststand-2025",
+    "baseName": "Caliste",
+    "variant": "FST 2025 Caliste",
+    "role": "ADC",
+    "rating": 83,
+    "rarity": "Rare",
+    "isFullArt": true,
+    "image": "/cardsImg/fullart/caliste_firststand.jpg"
+  },
+  {
+    "id": "caliste-2026",
+    "baseName": "Caliste",
+    "variant": "EWC 2026 Caliste",
+    "role": "ADC",
+    "rating": 87,
+    "rarity": "Épique",
+    "isFullArt": true,
+    "image": "/cardsImg/fullart/caliste_star.jpg"
+  },
+  {
+    "id": "caliste-prodige",
+    "baseName": "Caliste",
+    "variant": "Le Prodige",
+    "role": "ADC",
+    "rating": 89,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/caliste_prodigy.jpg"
+  },
+  {
+    "id": "th-ice",
     "baseName": "Ice",
-    "variant": "BDS Ice",
+    "variant": "TH Ice",
     "role": "ADC",
     "rating": 71,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_ice.webp"
   },
   {
     "id": "g2-hanssama",
@@ -989,15 +1038,17 @@ export const CARD_POOL = [
     "variant": "G2 Hans Sama",
     "role": "ADC",
     "rating": 79,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/G2_hans-sama.webp"
   },
   {
     "id": "kc-upset",
     "baseName": "Upset",
     "variant": "KC Upset",
     "role": "ADC",
-    "rating": 71,
-    "rarity": "Rare"
+    "rating": 61,
+    "rarity": "Commune",
+    "image": "/cardsImg/others/KC_upset.png"
   },
   {
     "id": "uzi-msi-2018",
@@ -1016,19 +1067,21 @@ export const CARD_POOL = [
     "rating": 95,
     "rarity": "WANTED",
     "image": "/cardsImg/others/uzi_adc_god.png"
-    
   },
+
+
 
   // ==========================================
   // --- SUPPORT ---
   // ==========================================
   {
-    "id": "ns-peter",
+    "id": "dns-peter",
     "baseName": "Peter",
-    "variant": "NS Peter",
+    "variant": "DNS Peter",
     "role": "Support",
-    "rating": 64,
-    "rarity": "Commune"
+    "rating": 66,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/DNS_peter.webp"
   },
   {
     "id": "t1-keria",
@@ -1036,7 +1089,8 @@ export const CARD_POOL = [
     "variant": "T1 Keria",
     "role": "Support",
     "rating": 84,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_keria.webp"
   },
   {
     "id": "keria-worlds-2023",
@@ -1055,20 +1109,22 @@ export const CARD_POOL = [
     "rarity": "Légendaire"
   },
   {
-    "id": "bro-effort",
+    "id": "kt-effort",
     "baseName": "Effort",
-    "variant": "BRO Effort",
+    "variant": "KT Effort",
     "role": "Support",
-    "rating": 61,
-    "rarity": "Commune"
+    "rating": 71,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/KT_effort.webp"
   },
   {
     "id": "jdg-missing",
-    "baseName": "Missing",
-    "variant": "JDG Missing",
+    "baseName": "MISSING",
+    "variant": "JDG MISSING",
     "role": "Support",
     "rating": 83,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/JDG_missing.png"
   },
   {
     "id": "missing-msi-2023",
@@ -1079,20 +1135,22 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "gx-ignar",
-    "baseName": "IgNar",
-    "variant": "GX IgNar",
+    "id": "gx-jun",
+    "baseName": "Jun",
+    "variant": "GX Jun",
     "role": "Support",
     "rating": 65,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/GX_jun.webp"
   },
   {
-    "id": "gen-delight",
+    "id": "hle-delight",
     "baseName": "Delight",
-    "variant": "Gen.G Delight",
+    "variant": "HLE Delight",
     "role": "Support",
-    "rating": 82,
-    "rarity": "Rare"
+    "rating": 81,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/HLE_delight.webp"
   },
   {
     "id": "delight-hle-2024",
@@ -1103,20 +1161,22 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "fnc-jun",
-    "baseName": "Jun",
-    "variant": "FNC Jun",
+    "id": "th-way",
+    "baseName": "Way",
+    "variant": "TH Way",
     "role": "Support",
-    "rating": 72,
-    "rarity": "Commune"
+    "rating": 60,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_way.webp"
   },
   {
-    "id": "gen-lehends",
+    "id": "ns-lehends",
     "baseName": "Lehends",
-    "variant": "Gen.G Lehends",
+    "variant": "NS Lehends",
     "role": "Support",
-    "rating": 81,
-    "rarity": "Rare"
+    "rating": 74,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/NS_lehends.webp"
   },
   {
     "id": "lehends-lck-mvp",
@@ -1127,20 +1187,22 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "sk-luon",
-    "baseName": "Luon",
-    "variant": "SK Luon",
+    "id": "sk-mikyx",
+    "baseName": "Mikyx",
+    "variant": "SK Mikyx",
     "role": "Support",
-    "rating": 66,
-    "rarity": "Commune"
+    "rating": 63,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/SK_mikyx.webp"
   },
   {
-    "id": "g2-mikyx",
-    "baseName": "Mikyx",
-    "variant": "G2 Mikyx",
+    "id": "geng-duro",
+    "baseName": "Duro",
+    "variant": "Gen.G Duro",
     "role": "Support",
-    "rating": 80,
-    "rarity": "Rare"
+    "rating": 84,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/GENG_duro.webp"
   },
   {
     "id": "mikyx-msi-2019",
@@ -1151,12 +1213,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "rge-zoelys",
-    "baseName": "Zoelys",
-    "variant": "RGE Zoelys",
+    "id": "th-stend",
+    "baseName": "Stend",
+    "variant": "TH Stend",
     "role": "Support",
-    "rating": 62,
-    "rarity": "Commune"
+    "rating": 58,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_stend.webp"
   },
   {
     "id": "kc-targamas",
@@ -1164,15 +1227,17 @@ export const CARD_POOL = [
     "variant": "KC Targamas",
     "role": "Support",
     "rating": 76,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/KC_targamas.webp"
   },
   {
-    "id": "bds-labrov",
+    "id": "g2-labrov",
     "baseName": "Labrov",
-    "variant": "BDS Labrov",
+    "variant": "G2 Labrov",
     "role": "Support",
-    "rating": 70,
-    "rarity": "Commune"
+    "rating": 80,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/G2_labrov.webp"
   },
   {
     "id": "vit-hylissang",
@@ -1180,7 +1245,8 @@ export const CARD_POOL = [
     "variant": "VIT Hylissang",
     "role": "Support",
     "rating": 55,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/VIT_hylissang.webp"
   },
   {
     "id": "mdk-alvaro",
@@ -1188,7 +1254,8 @@ export const CARD_POOL = [
     "variant": "MDK Alvaro",
     "role": "Support",
     "rating": 69,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/MDK_alvaro.webp"
   },
   {
     "id": "tl-corejj",
@@ -1196,15 +1263,17 @@ export const CARD_POOL = [
     "variant": "TL CoreJJ",
     "role": "Support",
     "rating": 76,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/TL_corejj.webp"
   },
   {
-    "id": "th-kaiser",
-    "baseName": "Kaiser",
-    "variant": "TH Kaiser",
+    "id": "frx-kellin",
+    "baseName": "Kellin",
+    "variant": "FRX Kellin",
     "role": "Support",
     "rating": 67,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/FRX_kellin.webp"
   },
   {
     "id": "meiko-tes",
@@ -1230,14 +1299,5 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire"
-  },
-  {
-    "id": "Shwomaker-Prime",
-    "baseName": "Showmaker",
-    "variant": "THE MAGICIAN",
-    "role": "Mid",
-    "rating": 97,
-    "rarity": "WANTED",
-    "image": "/cardsImg/others/showmaker_prime.jpg"
-  },
+  }
 ];
