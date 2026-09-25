@@ -326,9 +326,9 @@ export default function CardsView({ state, openPack, setLineupCard, toggleLineup
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
               <div style={{ backgroundColor: THEME.bgPanel, borderRadius: '8px', padding: '32px', border: `1px solid ${THEME.border}` }}>
-                <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '20px', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '16px' }}>CHALLENGERS (TOP 4 - 10)</h3>
+                <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '20px', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '16px' }}>CHALLENGERS (TOP 4 - 16)</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {sortedLeaderboard.slice(3, 10).map((p, i) => (
+                  {sortedLeaderboard.slice(3, 16).map((p, i) => (
                     <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#0C0E14', borderRadius: '6px' }}>
                       <span style={{ color: '#EAEAEA' }}>
                         <span style={{ color: THEME.textMuted, marginRight: '16px', display: 'inline-block', width: '20px' }}>#{i + 4}</span> 

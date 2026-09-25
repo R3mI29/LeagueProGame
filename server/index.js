@@ -527,9 +527,17 @@ function awardSeasonRewards() {
       const scoreKey = getScoreKey(p);
       const worstIndex = uniqueScoreKeys.indexOf(scoreKey); 
       
-      if (worstIndex === 0) catchupBonuses[p.id] = 150;      
-      else if (worstIndex === 1) catchupBonuses[p.id] = 100; 
-      else if (worstIndex === 2) catchupBonuses[p.id] = 50;  
+      if (worstIndex === 0) catchupBonuses[p.id] = 400;      
+      else if (worstIndex === 1) catchupBonuses[p.id] = 400; 
+      else if (worstIndex === 2) catchupBonuses[p.id] = 300;
+      else if (worstIndex === 3) catchupBonuses[p.id] = 300; 
+      else if (worstIndex === 4) catchupBonuses[p.id] = 250; 
+      else if (worstIndex === 5) catchupBonuses[p.id] = 250; 
+      else if (worstIndex === 6) catchupBonuses[p.id] = 200;
+      else if (worstIndex === 7) catchupBonuses[p.id] = 200; 
+      else if (worstIndex === 8) catchupBonuses[p.id] = 100; 
+      else if (worstIndex === 9) catchupBonuses[p.id] = 100;
+      else if (worstIndex === 10) catchupBonuses[p.id] = 50;     
     });
   }
 

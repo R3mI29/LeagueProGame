@@ -9,7 +9,7 @@ export const RARITY_WEIGHTS = {
   Rare: 290,
   'Épique': 40,
   'Légendaire': 10,
-  WANTED : 2
+  WANTED : 3
 };
 
 export const RARITY_COLORS = {
@@ -989,8 +989,8 @@ export const CARD_POOL = [
     "baseName": "Uzi",
     "variant": "ADC God Uzi",
     "role": "ADC",
-    "rating": 94,
-    "rarity": "Légendaire",
+    "rating": 95,
+    "rarity": "WANTED",
     "image": "/cardsImg/others/uzi_adc_god.png"
     
   },

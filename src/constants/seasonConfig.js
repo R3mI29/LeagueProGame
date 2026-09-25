@@ -9,8 +9,8 @@ export const EVENTS = [
     color: '#00D8FF',
     logo: '/logo/first-stand.webp',
     rewards: {
-      points: { champion: 3, finalist: 2, top4: 1, top8: 0, base: 0 },
-      money:  { champion: 300, finalist: 200, top4: 100, top8: 150, base: 100 }
+      points: { champion: 5, finalist: 3, top4: 2, top8: 1, base: 0 },
+      money:  { champion: 500, finalist: 400, top4: 300, top8: 200, base: 100 }
     }
   },
   {
@@ -22,7 +22,7 @@ export const EVENTS = [
     color: '#FFB020',
     logo: '/logo/msi.webp',
     rewards: {
-      points: { champion: 5, finalist: 3, top4: 2, top8: 1, base: 0 },
+      points: { champion: 7, finalist: 4, top4: 3, top8: 1, base: 0 },
       money:  { champion: 600, finalist: 400, top4: 300, top8: 200, base: 100 }
     }
   },
@@ -49,8 +49,8 @@ export const EVENTS = [
     logo: '/logo/world-championship.webp',
     isMajor: true, // Pour le mettre en avant visuellement
     rewards: {
-      points: { champion: 10, finalist: 5, top4: 3, top8: 2, base: 0 },
-      money:  { champion: 600, finalist: 350, top4: 250, top8: 200, base: 100 }
+      points: { champion: 10, finalist: 7, top4: 4, top8: 2, base: 0 },
+      money:  { champion: 600, finalist: 450, top4: 350, top8: 250, base: 150 }
     }
   }
 ];
