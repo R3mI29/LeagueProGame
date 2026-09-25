@@ -1206,5 +1206,14 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire"
-  }
+  },
+  {
+    "id": "Shwomaker-Prime",
+    "baseName": "Showmaker",
+    "variant": "THE MAGICIAN",
+    "role": "Mid",
+    "rating": 97,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/showmaker_prime.jpg"
+  },
 ];
