@@ -201,7 +201,7 @@ function playNextGame(match) {
   io.emit('draft-update', state);
 
   const isBotOnly = match.teamA.id.startsWith('bot-') && match.teamB.id.startsWith('bot-');
-  const EVENT_DELAY = isBotOnly ? 50 : 2500; 
+  const EVENT_DELAY = isBotOnly ? 50 : 3500; 
   const RESULT_DELAY = isBotOnly ? 100 : 4000; 
 
   const processNextEvent = () => {

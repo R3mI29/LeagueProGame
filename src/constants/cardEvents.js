@@ -15,13 +15,13 @@ export const CUSTOM_CARD_EVENTS = [
       const CHANCE = 0.2; // 20% de chance
 
       // Test pour l'équipe A
-      const aPlayer = teamA.roster.find(p => p.id.includes('faker-hall-of-legends') || p.id.includes("faker-4x-champ"));
+      const aPlayer = teamA.roster.find(p => p.id.includes('faker-hall-of-legends') || p.id.includes("faker-6x-champ"));
       if (aPlayer && Math.random() <= CHANCE) {
         results.push({ side: 'A', targetRoles: ['Mid'], ratingDelta: 999, label: `LE ROI DÉMON SE RÉVEILLE ! ${aPlayer.name} solocarry la game (Buff Worlds) !` });
       }
 
       // Test pour l'équipe B (Indépendant)
-      const bPlayer = teamB.roster.find(p => p.id.includes('faker-hall-of-legends') || p.id.includes("faker-4x-champ"));
+      const bPlayer = teamB.roster.find(p => p.id.includes('faker-hall-of-legends') || p.id.includes("faker-6x-champ"));
       if (bPlayer && Math.random() <= CHANCE) {
         results.push({ side: 'B', targetRoles: ['Mid'], ratingDelta: 999, label: `LE ROI DÉMON SE RÉVEILLE ! ${bPlayer.name} solocarry la game (Buff Worlds) !` });
       }
@@ -56,29 +56,41 @@ export const CUSTOM_CARD_EVENTS = [
     uniquePerBO: false, 
     apply(match, teamA, teamB, scoreA, scoreB, state) {
       const results = [];
-      const CHANCE = 0.3; 
+      const CHANCE = 0.3; // 30% de chance de proc (et de relancer la boucle)
 
-      const aPlayer = teamA.roster.find(p => p.id.includes("showmaker-DK-icon"));
-      if (aPlayer && Math.random() <= CHANCE) {
-        const top = teamA.roster.find(p => p.role === 'Top');
-        const adc = teamA.roster.find(p => p.role === 'ADC');
-        if (top && adc) {
-          const weakestRole = (top.rating || top.overall || 0) <= (adc.rating || adc.overall || 0) ? 'Top' : 'ADC';
-          const buffedPlayer = weakestRole === 'Top' ? top.name : adc.name;
-          results.push({ side: 'A', ratingDelta: 12, targetRoles: [weakestRole], label: `DÉCALAGE PARFAIT ! ${aPlayer.name} roam et débloque la situation pour ${buffedPlayer} (+12 OVR).` });
-        }
-      }
+      // Fonction factorisée pour gérer le roam, peu importe l'équipe
+      const processRoam = (team, side, player) => {
+        // On récupère tous les joueurs de l'équipe SAUF Showmaker (pour éviter qu'il se gank lui-même)
+        const teammates = team.roster.filter(p => p.id !== player.id);
+        if (teammates.length === 0) return;
 
-      const bPlayer = teamB.roster.find(p => p.id.includes("showmaker-DK-icon"));
-      if (bPlayer && Math.random() <= CHANCE) {
-        const top = teamB.roster.find(p => p.role === 'Top');
-        const adc = teamB.roster.find(p => p.role === 'ADC');
-        if (top && adc) {
-          const weakestRole = (top.rating || top.overall || 0) <= (adc.rating || adc.overall || 0) ? 'Top' : 'ADC';
-          const buffedPlayer = weakestRole === 'Top' ? top.name : adc.name;
-          results.push({ side: 'B', ratingDelta: 12, targetRoles: [weakestRole], label: `DÉCALAGE PARFAIT ! ${bPlayer.name} roam et débloque la situation pour ${buffedPlayer} (+12 OVR).` });
+        let roamCount = 0;
+
+        // Tant que la probabilité passe, il enchaîne les décalages !
+        while (Math.random() <= CHANCE) {
+          roamCount++;
+          
+          // On tire un coéquipier totalement au hasard pour CE décalage
+          const target = teammates[Math.floor(Math.random() * teammates.length)];
+          
+          results.push({ 
+            side, 
+            ratingDelta: 12, 
+            targetRoles: [target.role], 
+            label: roamCount > 1 
+              ? `🔥 ENCORE UN DÉCALAGE (Combo x${roamCount}) ! ${player.name} roam à nouveau et aide ${target.name} (+12 OVR).`
+              : `DÉCALAGE PARFAIT ! ${player.name} roam et débloque la situation pour ${target.name} (+12 OVR).` 
+          });
         }
-      }
+      };
+
+      // --- TEST POUR L'ÉQUIPE A ---
+      const aPlayer = teamA.roster.find(p => p.id.includes("showmaker-DK-mentor"));
+      if (aPlayer) processRoam(teamA, 'A', aPlayer);
+
+      // --- TEST POUR L'ÉQUIPE B ---
+      const bPlayer = teamB.roster.find(p => p.id.includes("showmaker-DK-mentor"));
+      if (bPlayer) processRoam(teamB, 'B', bPlayer);
 
       return results.length > 0 ? results : null;
     }
@@ -134,7 +146,7 @@ export const CUSTOM_CARD_EVENTS = [
       if (aPlayer && Math.random() <= CHANCE) {
         results.push({
           side: 'A',
-          ratingDelta: 15,
+          ratingDelta:20,
           persistentBO: false,
           targetRoles: ['Top'], 
           label: `🗡️ THE SHY DESCEND DU CIEL ! Son Aatrox se jette en 1v4 avec un Flash-Q3 et annihile l'équipe de ${teamB.name} !`

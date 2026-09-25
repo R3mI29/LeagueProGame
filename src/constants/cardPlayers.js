@@ -262,16 +262,14 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/TheShy_legend.jpg"
   },
 
-  // ==========================================
-  // --- JUNGLE ---
-  // ==========================================
   {
-    "id": "ns-sylvie",
-    "baseName": "Sylvie",
-    "variant": "NS Sylvie",
+    "id": "bro-gideon",
+    "baseName": "Gideon",
+    "variant": "BRO Gideon",
     "role": "Jungle",
     "rating": 64,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/BRO_gideon.webp"
   },
   {
     "id": "gen-canyon",
@@ -279,7 +277,8 @@ export const CARD_POOL = [
     "variant": "Gen.G Canyon",
     "role": "Jungle",
     "rating": 83,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/GENG_canyon.webp"
   },
   {
     "id": "canyon-worlds-2020",
@@ -302,8 +301,9 @@ export const CARD_POOL = [
     "baseName": "Isma",
     "variant": "GX Isma",
     "role": "Jungle",
-    "rating": 66,
-    "rarity": "Commune"
+    "rating": 65,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/GX_isma.webp"
   },
   {
     "id": "jdg-kanavi",
@@ -311,7 +311,8 @@ export const CARD_POOL = [
     "variant": "JDG Kanavi",
     "role": "Jungle",
     "rating": 82,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/JDG_kanavi.png"
   },
   {
     "id": "kanavi-msi-2023",
@@ -334,17 +335,18 @@ export const CARD_POOL = [
     "baseName": "Painter",
     "variant": "T1 Painter",
     "role": "Jungle",
-    "rating": 66,
+    "rating": 62,
     "rarity": "Commune",
     "image": "/cardsImg/2026-players/T1_Painter.webp"
   },
   {
-    "id": "bro-raptor",
+    "id": "frx-raptor",
     "baseName": "Raptor",
-    "variant": "BRO Raptor",
+    "variant": "FRX Raptor",
     "role": "Jungle",
-    "rating": 63,
-    "rarity": "Commune"
+    "rating": 64,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/FRX_raptor.webp"
   },
   {
     "id": "t1-oner",
@@ -352,7 +354,8 @@ export const CARD_POOL = [
     "variant": "T1 Oner",
     "role": "Jungle",
     "rating": 81,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_oner.webp"
   },
   {
     "id": "oner-worlds-2023",
@@ -363,12 +366,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "rge-markoon",
-    "baseName": "Markoon",
-    "variant": "RGE Markoon",
+    "id": "DKC-sharvel",
+    "baseName": "Sharvel",
+    "variant": "DK.C Sharvel",
     "role": "Jungle",
-    "rating": 67,
-    "rarity": "Commune"
+    "rating": 68,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/DKC_sharvel.webp"
   },
   {
     "id": "hle-peanut",
@@ -376,7 +380,8 @@ export const CARD_POOL = [
     "variant": "HLE Peanut",
     "role": "Jungle",
     "rating": 79,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/HLE_peanut.webp"
   },
   {
     "id": "peanut-lck-mvp",
@@ -387,12 +392,13 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "th-jankos",
-    "baseName": "Jankos",
-    "variant": "TH Jankos",
+    "id": "C9-blaber",
+    "baseName": "Blaber",
+    "variant": "C9 Blaber",
     "role": "Jungle",
-    "rating": 70,
-    "rarity": "Commune"
+    "rating": 71,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/C9_blaber.webp"
   },
   {
     "id": "tes-tian",
@@ -400,7 +406,8 @@ export const CARD_POOL = [
     "variant": "TES Tian",
     "role": "Jungle",
     "rating": 80,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/TES_tian.webp"
   },
   {
     "id": "tian-mvp",
@@ -416,23 +423,26 @@ export const CARD_POOL = [
     "variant": "MAD Lions Elyoya",
     "role": "Jungle",
     "rating": 77,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/MAD_elyoya.png"
   },
   {
-    "id": "bds-sheo",
+    "id": "th-sheo",
     "baseName": "Sheo",
-    "variant": "BDS Sheo",
+    "variant": "TH Sheo",
     "role": "Jungle",
-    "rating": 68,
-    "rarity": "Commune"
+    "rating": 64,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_sheo.webp"
   },
   {
-    "id": "g2-yike",
+    "id": "kc-yike",
     "baseName": "Yike",
-    "variant": "G2 Yike",
+    "variant": "KC Yike",
     "role": "Jungle",
     "rating": 78,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/KC_yike.webp"
   },
   {
     "id": "blg-xun",
@@ -444,12 +454,13 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/blg_xun.webp"
   },
   {
-    "id": "kcb-lyncas",
+    "id": "vit-lyncas",
     "baseName": "Lyncas",
-    "variant": "KCB Lyncas",
+    "variant": "VIT Lyncas",
     "role": "Jungle",
-    "rating": 65,
-    "rarity": "Commune"
+    "rating": 66,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/VIT_lyncas.webp"
   },
   {
     "id": "g2-jankos",
@@ -457,15 +468,17 @@ export const CARD_POOL = [
     "variant": "G2 Jankos",
     "role": "Jungle",
     "rating": 79,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/others/G2_jankos.png"
   },
   {
-    "id": "vit-daglas",
+    "id": "th-daglas",
     "baseName": "Daglas",
-    "variant": "VIT Daglas",
+    "variant": "TH Daglas",
     "role": "Jungle",
     "rating": 62,
-    "rarity": "Commune"
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_daglas.webp"
   },
   {
     "id": "fnc-razork",
@@ -473,7 +486,8 @@ export const CARD_POOL = [
     "variant": "FNC Razork",
     "role": "Jungle",
     "rating": 75,
-    "rarity": "Rare"
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/FNC_razork.webp"
   },
 
   // ==========================================
@@ -498,18 +512,18 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/faker_T1.png"
   },
   {
-    "id": "faker-4x-champ",
+    "id": "faker-6x-champ",
     "baseName": "Faker",
-    "variant": "World Champion Faker",
+    "variant": "6x World Champion Faker",
     "role": "Mid",
-    "rating": 92,
+    "rating": 95,
     "rarity": "Épique",
     "image": "/cardsImg/others/T1_faker_2023.png"
   },
   {
     "id": "faker-hall-of-legends",
     "baseName": "Faker",
-    "variant": "Unkillable Demon King Faker",
+    "variant": "Unkillable Demon King",
     "role": "Mid",
     "rating": 99,
     "rarity": "WANTED",
@@ -576,7 +590,7 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "showmaker-DK-icon",
+    "id": "showmaker-DK-mentor",
     "baseName": "ShowMaker",
     "variant": "Mentor ShowMaker",
     "role": "Mid",
