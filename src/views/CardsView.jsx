@@ -71,6 +71,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             {[
               { id: 'roster', label: 'Gestion Équipe' },
               { id: 'shop', label: 'Boutique' },
+              { id: 'sell', label: 'Revente' },
               { id: 'circuit', label: 'Compétitions' },
               { id: 'halloffame', label: 'Classement' }
             ].map(tab => (
@@ -226,7 +227,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   <div style={{ background: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', transition: 'transform 0.2s', cursor: 'default' }}>
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>📦</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '24px', margin: '0 0 10px 0' }}>PACK STANDARD</h3>
-                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Idéal pour commencer, Probabilités classiques (5 cartes).</p>
+                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Idéal pour commencer. Probabilités classiques (5 cartes).</p>
                     <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>100 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'standard')} 
@@ -239,8 +240,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   <div style={{ background: 'linear-gradient(180deg, rgba(0, 229, 255, 0.1) 0%, #11141E 100%)', border: `1px solid #00e5ff`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0, 229, 255, 0.1)' }}>
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>💎</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e5ff', fontSize: '24px', margin: '0 0 10px 0' }}>PACK ÉLITE</h3>
-                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances doublées d'obtenir des cartes Épiques, Légendaire et WANTED.</p>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>200 💲</div>
+                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances doublées d'obtenir des cartes Rares, Épiques, Légendaires et WANTED.</p>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>250 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'elite')} 
                       disabled={myEconomy < 200}
@@ -253,7 +254,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>👑</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: THEME.accentGold, fontSize: '24px', margin: '0 0 10px 0' }}>PACK LÉGENDE</h3>
                     <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances multipliées par 5 pour les cartes de niveau Épique, Légendaire et WANTED.</p>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>450 💲</div>
+                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}> 500 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'legendary')} 
                       disabled={myEconomy < 400}
@@ -266,7 +267,73 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           </div>
         )}
 
-        {/* ONGLET 3 : CALENDRIER & COMPÉTITIONS */}
+        {/* ONGLET 3 : REVENTE */}
+        {activeTab === 'sell' && (
+          <div style={{ animation: 'fadeIn 0.3s' }}>
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '36px', margin: '0 0 10px 0', color: '#FFF' }}>
+                MARCHÉ DES TRANSFERTS
+              </h2>
+              <p style={{ color: THEME.textMuted, fontSize: '16px' }}>
+                Revendez définitivement des joueurs qui ne figurent pas dans votre équipe titulaire pour récupérer des crédits.
+              </p>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginTop: '20px' }}>
+                SOLDE : 💲 {myEconomy} CRÉDITS
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {Object.keys(myCollection)
+                // INTERDICTION COTE CLIENT DE VENDRE DES LIFETIME OU DES TITULAIRES
+                .filter(cardId => myCollection[cardId] !== 0 && myCollection[cardId] !== 'LIFETIME' && !Object.values(myLineup).includes(cardId))
+                .map(cardId => {
+                  const card = getCard(cardId);
+                  if (!card) return null;
+                  
+                  const contract = myCollection[cardId];
+                  const isLifetime = contract === 'LIFETIME';
+                  
+                  let price = 10;
+                  if (card.rarity === 'Rare') price = 25;
+                  else if (card.rarity === 'Épique') price = 50;
+                  else if (card.rarity === 'Légendaire' || card.rarity === 'WANTED') price = 100;
+
+                  return (
+                    <div key={cardId} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', background: THEME.bgPanel, padding: '20px', borderRadius: '12px', border: `1px solid ${THEME.border}`, transition: 'transform 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+                      <CardIllustration card={card} width={140} />
+                      
+                      <div style={{ fontSize: '12px', color: THEME.textMuted, fontWeight: 'bold', marginTop: '8px' }}>
+                        {isLifetime ? '♾️ CONTRAT À VIE' : `CONTRAT: ${contract} TRN`}
+                      </div>
+                      
+                      <button 
+                        onClick={() => socket.emit('sell-card', cardId)}
+                        style={{ 
+                          width: '100%', backgroundColor: '#e63946', color: '#FFF', 
+                          border: 'none', padding: '10px', borderRadius: '4px', 
+                          fontWeight: 'bold', cursor: 'pointer', fontSize: '14px',
+                          transition: 'background-color 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#d62828'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = '#e63946'}
+                      >
+                        VENDRE LE JOUEUR ( 💲 {price} )
+                      </button>
+                    </div>
+                  );
+              })}
+              
+              {Object.keys(myCollection).filter(cardId => myCollection[cardId] !== 0 && myCollection[cardId] !== 'LIFETIME' && !Object.values(myLineup).includes(cardId)).length === 0 && (
+                <div style={{ width: '100%', textAlign: 'center', color: THEME.textMuted, padding: '40px', fontStyle: 'italic', background: THEME.bgPanel, borderRadius: '8px', border: `1px solid ${THEME.border}` }}>
+                  Aucun joueur disponible à la vente.<br/>
+                  (Les joueurs de votre équipe titulaire et ceux sous contrat À VIE sont protégés et ne peuvent pas être vendus).
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ONGLET 4 : CALENDRIER & COMPÉTITIONS */}
         {activeTab === 'circuit' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -339,7 +406,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           </div>
         )}
 
-        {/* ONGLET 4 : LE PANTHÉON */}
+        {/* ONGLET 5 : LE PANTHÉON */}
         {activeTab === 'halloffame' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             

@@ -3,8 +3,7 @@ import { ORDERED_ROLES } from '../src/constants/roles.js';
 
 export const PACK_SIZE = 5;
 
-// NOUVEAU : Définition des types de packs et de leurs probabilités
-// NOUVEAU : Définition des types de packs et de leurs probabilités ajustées
+// Définition des types de packs et de leurs probabilités ajustées
 export const PACK_TYPES = {
   standard: {
     name: "Pack Standard",
@@ -15,21 +14,20 @@ export const PACK_TYPES = {
   },
   elite: {
     name: "Pack Élite",
-    price: 200,
+    price: 250,
     size: 5,
     // Chances x2 sur les cartes Rares et supérieures
     weights: { Commune: 459, Rare: 435, 'Épique': 80, 'Légendaire': 20, WANTED: 6 }
   },
   legendary: {
     name: "Pack Légende",
-    price: 450,
+    price: 500,
     size: 5,
     // Chances x5 sur les cartes Épiques, Légendaires et WANTED
     weights: { Commune: 155, Rare: 580, 'Épique': 200, 'Légendaire': 50, WANTED: 15 }
   }
 };
 
-// Modifié pour accepter des poids (probabilités) dynamiques
 function weightedRarity(weights) {
   const total = Object.values(weights).reduce((a, b) => a + b, 0);
   let roll = Math.random() * total;
@@ -45,9 +43,6 @@ function drawCardOfRarity(rarity) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/**
- * NOUVEAU : Ouverture d'un pack selon son type (Standard, Élite, Légende).
- */
 export function openPack(packTypeId = 'standard') {
   const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
   const cards = [];
@@ -81,19 +76,9 @@ export function openStarterPack() {
   return pack;
 }
 
-export function addCardsToCollection(collection, cards) {
-  cards.forEach(card => {
-    collection[card.id] = (collection[card.id] || 0) + 1;
-  });
-}
-
 export function ownedCardsByRole(collection, role) {
   if (!collection) return [];
   return CARD_POOL.filter(c => c.role === role && (collection[c.id] || 0) > 0);
-}
-
-export function hasCompleteLineup(collection) {
-  return ORDERED_ROLES.every(role => ownedCardsByRole(collection, role).length > 0);
 }
 
 export function getCardById(id) {
@@ -125,7 +110,7 @@ export function upgradeBotRoster(currentRoster, packsWon) {
   const newRoster = [...currentRoster];
   
   for (let i = 0; i < packsWon; i++) {
-    const pack = openPack('standard'); // Les bots ouvrent des packs standards pour l'instant
+    const pack = openPack('standard'); 
     
     for (const card of pack) {
       const roleIndex = newRoster.findIndex(p => p.role === card.role);
