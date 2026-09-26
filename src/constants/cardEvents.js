@@ -218,38 +218,6 @@ export const CUSTOM_CARD_EVENTS = [
 
       return results.length > 0 ? results : null;
     }
-  },
-  {
-    id: 'synergy-jdg-botlane',
-    uniquePerBO: true, 
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      
-      // 30% de chance que la synergie s'active pendant une game
-      if (Math.random() > 0.30) return null;
-
-      // Fonction pour vérifier la présence des 2 joueurs
-      const checkSynergy = (team) => {
-        const hasRuler = team.roster.some(p => p.id.toLowerCase().includes('ruler'));
-        const hasMissing = team.roster.some(p => p.id.toLowerCase().includes('missing'));
-        return hasRuler && hasMissing;
-      };
-
-      if (checkSynergy(teamA)) {
-        return { 
-          side: 'A', ratingDelta: 12, targetRoles: ['ADC', 'Support'], persistentBO: true, 
-          label: "SYNERGIE : RULER ET MISSING ÉCRASENT LA BOTLANE !", 
-          image: "/cardsImg/others/ruler_missing_DUO.jpg" // Image à créer dans public/cardsImg/synergies/
-        };
-      }
-      
-      if (checkSynergy(teamB)) {
-        return { 
-          side: 'B', ratingDelta: 12, targetRoles: ['ADC', 'Support'], persistentBO: true, 
-          label: "SYNERGIE : RULER ET MISSING ÉCRASENT LA BOTLANE !", 
-          image: "/cardsImg/others/ruler_missing_DUO.jpg" 
-        };
-      }
-      return null;
-    }
   }
+  
 ];
