@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { socket } from '../api/socket';
 
 export default function BracketView({ state, event }) {
@@ -16,6 +16,18 @@ export default function BracketView({ state, event }) {
   const finalMatch = bracket?.[bracket.length - 1]?.[0];
   const isTournamentOver = finalMatch?.status === 'finished';
   const actualChampion = isTournamentOver ? finalMatch.winner : null;
+
+  // --- ÉCOUTEUR DE L'ÉVÉNEMENT SECRET GLOBAL ---
+  const [secretUnlock, setSecretUnlock] = useState(null);
+
+  useEffect(() => {
+    socket.on('secret-unlocked', (data) => {
+      setSecretUnlock(data);
+      setTimeout(() => setSecretUnlock(null), 10000); 
+    });
+    return () => socket.off('secret-unlocked');
+  }, []);
+  // ---------------------------------------------
 
   const toggleReady = () => socket.emit('toggle-ready');
   const advanceRound = () => socket.emit('advance-round');
@@ -93,7 +105,6 @@ export default function BracketView({ state, event }) {
               </div>
             )}
             
-            {/* LOGO PRÉCISÉMENT À GAUCHE DE LA FINALE */}
             {bracket[2] && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '50px', position: 'relative' }}>
                 {isWorlds && event?.logo && (
@@ -139,6 +150,50 @@ export default function BracketView({ state, event }) {
           </button>
         )}
       </div>
+
+      {/* --- CINÉMATIQUE SÉCRÈTE AJOUTÉE ICI POUR LA VUE ARBRE --- */}
+      {secretUnlock && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: '#050508', zIndex: 9999, display: 'flex', flexDirection: 'column',
+          justifyContent: 'center', alignItems: 'center',
+          animation: 'fadeIn 2s forwards', overflow: 'hidden'
+        }}>
+          
+          <div style={{ position: 'absolute', top: 0, width: '100%', height: '12%', backgroundColor: 'black', zIndex: 1, animation: 'slideDown 1.5s forwards' }}></div>
+          <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '12%', backgroundColor: 'black', zIndex: 1, animation: 'slideUp 1.5s forwards' }}></div>
+
+          <div style={{ 
+            position: 'relative', zIndex: 2, 
+            boxShadow: '0 0 50px rgba(255, 61, 129, 0.3)', border: '1px solid #332918',
+            animation: 'scaleUpSlow 10s forwards' 
+          }}>
+            <img 
+              src={secretUnlock.image} 
+              alt="Ruler x Missing" 
+              style={{ maxHeight: '60vh', width: 'auto', display: 'block', borderRadius: '4px' }} 
+            />
+          </div>
+
+          <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', marginTop: '40px', animation: 'fadeInDelay 3s forwards', opacity: 0 }}>
+            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '48px', color: '#ff3366', margin: '0 0 10px 0', textShadow: '0 0 20px rgba(255,51,102,0.8)' }}>
+              {secretUnlock.title}
+            </h1>
+            <p style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: '24px', color: '#F0F2F5', letterSpacing: '2px', maxWidth: '800px' }}>
+              {secretUnlock.description} <br/>
+              <span style={{ color: '#D4AF37' }}>CARTE SECRÈTE DÉBLOQUÉE DANS VOTRE COLLECTION.</span>
+            </p>
+          </div>
+
+          <style>{`
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes fadeInDelay { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+            @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            @keyframes scaleUpSlow { from { transform: scale(0.95); } to { transform: scale(1.05); } }
+          `}</style>
+        </div>
+      )}
     </div>
   );
 }

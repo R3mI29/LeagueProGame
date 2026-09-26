@@ -69,7 +69,8 @@ let state = {
   cardCollections: {}, 
   activeLineups: {}, 
   economy: {}, 
-  cardStats: {}, // <-- NOUVEAU : Tracker d'XP des cartes
+  cardStats: {}, // Tracker d'XP des cartes
+  globalSecrets: {}, // Tracker d'unicité pour les secrets
   lastOpenedPack: {}, 
   starterPackClaimed: {}, 
   seasonRound: 0,
@@ -168,7 +169,7 @@ function simulateGame(match, state) {
     });
   }
 
-  const probA = 1 / (1 + Math.pow(10, (ratingB - ratingA) / 20));
+  const probA = 1 / (1 + Math.pow(10, (ratingB - ratingA) / 11));
   const winnerSide = Math.random() < probA ? 'A' : 'B';
   return { winnerSide, events: triggeredEvents };
 }
@@ -528,33 +529,63 @@ function awardSeasonRewards() {
   const totalTournamentsPlayed = state.history.length;
   
   if (totalTournamentsPlayed >= 3) {
-    const getScoreKey = (p) => `${state.seasonScores[p.id].points}-${state.seasonScores[p.id].titles}`;
-    
-    const uniqueScoreKeys = [...new Set(state.participants.map(getScoreKey))]
-      .sort((a, b) => {
-        const [ptsA, titlesA] = a.split('-').map(Number);
-        const [ptsB, titlesB] = b.split('-').map(Number);
-        if (ptsA !== ptsB) return ptsB - ptsA;
-        return titlesB - titlesA;
-      })
-      .reverse(); 
-
-    state.participants.forEach(p => {
-      const scoreKey = getScoreKey(p);
-      const worstIndex = uniqueScoreKeys.indexOf(scoreKey); 
-      
-      if (worstIndex === 0) catchupBonuses[p.id] = 400;      
-      else if (worstIndex === 1) catchupBonuses[p.id] = 400; 
-      else if (worstIndex === 2) catchupBonuses[p.id] = 300;
-      else if (worstIndex === 3) catchupBonuses[p.id] = 300; 
-      else if (worstIndex === 4) catchupBonuses[p.id] = 250; 
-      else if (worstIndex === 5) catchupBonuses[p.id] = 250; 
-      else if (worstIndex === 6) catchupBonuses[p.id] = 200;
-      else if (worstIndex === 7) catchupBonuses[p.id] = 200; 
-      else if (worstIndex === 8) catchupBonuses[p.id] = 100; 
-      else if (worstIndex === 9) catchupBonuses[p.id] = 100;
-      else if (worstIndex === 10) catchupBonuses[p.id] = 50;     
+    // 1. On trie les participants du 1er au dernier (en prenant en compte points ET titres)
+    const sortedPlayers = [...state.participants].sort((a, b) => {
+      const ptsA = state.seasonScores[a.id]?.points || 0;
+      const ptsB = state.seasonScores[b.id]?.points || 0;
+      if (ptsA !== ptsB) return ptsB - ptsA;
+      const titlesA = state.seasonScores[a.id]?.titles || 0;
+      const titlesB = state.seasonScores[b.id]?.titles || 0;
+      return titlesB - titlesA;
     });
+
+    // 2. On définit le pactole des dernières places (adapté à l'économie des packs)
+    const baseRewards = sortedPlayers.map((_, index) => {
+      const reverseRank = sortedPlayers.length - 1 - index; 
+      if (reverseRank === 0) return 400; // Le vrai dernier
+      if (reverseRank === 1) return 300; // Avant-dernier
+      if (reverseRank === 2) return 200; 
+      if (reverseRank === 3) return 100; 
+      return 0; // Les autres n'ont pas besoin de compensation
+    });
+
+    // 3. Répartition équitable des fonds en cas d'égalité absolue (Prize pool partagé)
+    let currentRank = 0;
+    while (currentRank < sortedPlayers.length) {
+      let tieCount = 1;
+      
+      const areTied = (p1, p2) => {
+        const s1 = state.seasonScores[p1.id];
+        const s2 = state.seasonScores[p2.id];
+        return s1.points === s2.points && s1.titles === s2.titles;
+      };
+
+      // Compter combien de joueurs sont à égalité parfaite sur ce palier
+      while (
+        currentRank + tieCount < sortedPlayers.length && 
+        areTied(sortedPlayers[currentRank], sortedPlayers[currentRank + tieCount])
+      ) {
+        tieCount++;
+      }
+
+      // Additionner l'argent total prévu pour ces "sièges" au classement
+      let totalPool = 0;
+      for (let i = 0; i < tieCount; i++) {
+        totalPool += baseRewards[currentRank + i];
+      }
+
+      // Calculer la part de chacun (pour éviter de générer de l'argent depuis le néant)
+      const sharedReward = Math.floor(totalPool / tieCount);
+
+      // Assigner la récompense partagée
+      for (let i = 0; i < tieCount; i++) {
+        const p = sortedPlayers[currentRank + i];
+        catchupBonuses[p.id] = sharedReward;
+      }
+
+      // On passe aux joueurs du rang suivant
+      currentRank += tieCount;
+    }
   }
 
   const rewards = eventConfig.rewards;
@@ -777,7 +808,8 @@ io.on('connection', (socket) => {
         state.seasonScores = null; 
         
         state.economy = {}; 
-        state.cardStats = {}; // <-- RESET EXPERIENCES
+        state.cardStats = {}; 
+        state.globalSecrets = {}; // <-- RESET SECRETS
         state.readyPlayers = []; 
         state.history = [];
         state.eventIndex = 0;
@@ -826,6 +858,7 @@ io.on('connection', (socket) => {
 
     match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
     match.status = 'finished';
+    
     SECRET_UNLOCKS.forEach(secret => {
       secret.checkAndApply(match, state, io);
     });
@@ -1000,7 +1033,6 @@ io.on('connection', (socket) => {
     
     if (state.continueSeasonVotes.length === humanParticipants.length && humanParticipants.length > 0) {
       
-      // --- INCÉMENTATION DU TRACKER DE FIDÉLITÉ (PRODIGE) ---
       if (!state.cardStats) state.cardStats = {};
       humanParticipants.forEach(p => {
         if (!state.cardStats[p.id]) state.cardStats[p.id] = {};
@@ -1036,10 +1068,67 @@ io.on('connection', (socket) => {
         }
       });
 
+      // ===============================================
+      // BILAN DE L'ANNÉE & CHECK DE LA GOLDEN ROAD
+      // ===============================================
+      let endOfYearRecap = null;
       state.eventIndex += 1;
-      if (state.eventIndex >= EVENTS.length) { state.eventIndex = 0; state.year += 1; }
+
+      if (state.eventIndex >= EVENTS.length) { 
+         const currentYearHistory = state.history.filter(h => h.year === state.year);
+         const wonAll = currentYearHistory.length === EVENTS.length && currentYearHistory.every(h => h.winnerName === currentYearHistory[0].winnerName);
+         
+         let goldenRoadData = null;
+         
+         if (wonAll) {
+            const winnerName = currentYearHistory[0].winnerName;
+            
+            if (!state.globalSecrets) state.globalSecrets = {};
+            if (!state.globalSecrets['golden-road-achieved']) {
+                state.globalSecrets['golden-road-achieved'] = true; 
+                
+                const winnerTeam = state.participants.find(p => p.name === winnerName);
+                let texteRecompense = "";
+                
+                if (winnerTeam && !winnerTeam.id.startsWith('bot-')) {
+                    if (!state.cardCollections[winnerTeam.id]) state.cardCollections[winnerTeam.id] = {};
+                    state.cardCollections[winnerTeam.id]['golden-road'] = 1; 
+                    texteRecompense = " \nRÉCOMPENSE ABSOLUE DÉBLOQUÉE.";
+                } else {
+                    texteRecompense = " \nUN BOT A VOLÉ CE SUCCÈS UNIQUE !";
+                }
+
+                goldenRoadData = {
+                    title: "THE GOLDEN ROAD",
+                    description: `L'exploit parfait. ${winnerName} a remporté tous les trophées de l'année ${state.year} sans en laisser un seul.${texteRecompense}`,
+                    image: '/cardsImg/others/golden_road.jpg'
+                };
+            }
+         }
+
+         endOfYearRecap = {
+            year: state.year,
+            history: currentYearHistory,
+            goldenRoadSecret: goldenRoadData
+         };
+
+         state.eventIndex = 0; 
+         state.year += 1; 
+      }
+      // ===============================================
 
       state.continueSeasonVotes = []; state.readyPlayers = []; state.champion = null; state.bracket = []; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.seasonRound += 1; state.phase = 'cards';
+
+      // NOUVELLE MÉTHODE INFAILLIBLE : On pousse les données dans le state
+      if (endOfYearRecap) {
+         state.endOfYearRecap = endOfYearRecap;
+         
+         // On nettoie le state après 16 secondes pour que l'animation ne se relance pas si on actualise la page
+         setTimeout(() => {
+             state.endOfYearRecap = null;
+             io.emit('draft-update', state);
+         }, 16000);
+      }
     }
     io.emit('draft-update', state);
   });
@@ -1315,7 +1404,8 @@ io.on('connection', (socket) => {
       state.cardCollections = {};
       state.activeLineups = {};
       state.economy = {};
-      state.cardStats = {}; // <-- RESET EXP
+      state.cardStats = {}; 
+      state.globalSecrets = {}; 
       state.pendingPacks = {};
       state.lastOpenedPack = {};
       state.starterPackClaimed = {};
@@ -1345,7 +1435,7 @@ io.on('connection', (socket) => {
       delete state.cardCollections[socket.id]; 
       delete state.activeLineups[socket.id]; 
       delete state.economy[socket.id]; 
-      delete state.cardStats?.[socket.id]; // <-- SUPPRESSION EXP
+      delete state.cardStats?.[socket.id]; 
       delete state.lastOpenedPack[socket.id]; 
       delete state.starterPackClaimed[socket.id];
       
@@ -1368,7 +1458,8 @@ io.on('connection', (socket) => {
         state.cardCollections = {};
         state.activeLineups = {};
         state.economy = {}; 
-        state.cardStats = {}; // <-- RESET EXP
+        state.cardStats = {}; 
+        state.globalSecrets = {}; 
         state.pendingPacks = {};
         state.lastOpenedPack = {};
         state.starterPackClaimed = {};

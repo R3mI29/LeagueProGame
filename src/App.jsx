@@ -12,7 +12,7 @@ import DevCardsView from './views/DevCardView';
 import PackOpener from './components/PackOpener'; 
 import SeasonHub from './components/SeasonHub';
 import TournamentWrapper from './views/TournamentWrapper';
-
+import SeasonRecapCinematic from './components/SeasonRecapCinematic';
 import './styles/theme.css';
 
 export default function App() {
@@ -20,8 +20,6 @@ export default function App() {
   const { state, showBracket } = draft;
   
   const [showDevMode, setShowDevMode] = useState(false);
-
-  // SUPPRESSION DE L'ANCIEN BLOC if(showDevMode) QUI FAISAIT PLANTER L'APPLICATION ICI
 
   const renderMainContent = () => {
     if (state.phase === 'lobby') {
@@ -145,8 +143,11 @@ export default function App() {
         </button>
       )}
 
-      {/* Affichage de la vue DEV si active (Ici state={state} est bien passé !) */}
+      {/* Affichage de la vue DEV si active */}
       {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
+
+      {/* LA CINÉMATIQUE DE FIN DE SAISON ET DE LA GOLDEN ROAD EST INSÉRÉE ICI */}
+      {state && <SeasonRecapCinematic state={state} />}
     </>
   );
 }

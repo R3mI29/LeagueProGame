@@ -218,6 +218,34 @@ export const CUSTOM_CARD_EVENTS = [
 
       return results.length > 0 ? results : null;
     }
+  },
+  {
+    id: 'keria-always-ahead',
+    uniquePerBO: false,
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const results = [];
+      const CHANCE = 0.8;
+
+      // Test pour l'équipe A
+      const aPlayer = teamA.roster.find(p => p.id.includes("keria-3PEAT-WC"));
+      if (aPlayer     &&  Math.random() <= CHANCE ) {
+        results.push(
+          {
+            side: 'A',
+            ratingDelta: 7, 
+            targetRoles: ['ADC', 'Mid', 'Jungle', 'Support'], 
+            label: `🧲 AIMANT À JUNGLER : 4 joueurs viennent tuer TheShy au top... son équipe récupère le Dragon, une T2 et le contrôle total de la carte !`
+          },
+          {
+            side: 'A',
+            ratingDelta: -5, 
+            targetRoles: ['Top'], 
+            label: null 
+          }
+        );
+      }
+
+      return null;
+    }
   }
-  
 ];

@@ -363,7 +363,8 @@ export const CARD_POOL = [
     "variant": "World Champion Oner",
     "role": "Jungle",
     "rating": 88,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/oner_blondie_nobg.png"
   },
   {
     "id": "DKC-sharvel",
@@ -517,7 +518,7 @@ export const CARD_POOL = [
     "variant": "6x World Champion Faker",
     "role": "Mid",
     "rating": 95,
-    "rarity": "Épique",
+    "rarity": "Légendaire",
     "image": "/cardsImg/others/T1_faker_2023.png"
   },
   {
@@ -603,7 +604,7 @@ export const CARD_POOL = [
     "baseName": "ShowMaker",
     "variant": "Mentor ShowMaker",
     "role": "Mid",
-    "rating": 96,
+    "rating": 94,
     "rarity": "WANTED",
     "image": "/cardsImg/others/showmaker_mentor.jpg"
   },
@@ -1093,20 +1094,29 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/T1_keria.webp"
   },
   {
-    "id": "keria-worlds-2023",
+    "id": "keria-lck-mvp",
     "baseName": "Keria",
-    "variant": "World Champion Keria",
+    "variant": "LCK MVP Keria",
     "role": "Support",
     "rating": 89,
     "rarity": "Épique"
   },
   {
-    "id": "keria-lck-mvp",
+    "id": "keria-worlds-2023",
     "baseName": "Keria",
-    "variant": "LCK MVP Keria",
+    "variant": "World Champion Keria",
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire"
+  },
+  {
+    "id": "keria-3PEAT-WC",
+    "baseName": "Keria",
+    "variant": "3PEAT Keria",
+    "role": "Support",
+    "rating": 97,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/3PEAT_keria.jpg"
   },
   {
     "id": "kt-effort",

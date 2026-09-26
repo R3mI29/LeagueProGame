@@ -21,7 +21,7 @@ export const SECRET_UNLOCKS = [
       // 3. Présence du duo et de Faker
       const hasRuler = winner.roster.some(p => p.id.toLowerCase().includes('ruler'));
       const hasMissing = winner.roster.some(p => p.id.toLowerCase().includes('missing'));
-      const hasGodFaker = loser.roster.some(p => p.id.toLowerCase().includes('faker') && p.rating >= 94);
+      const hasGodFaker = loser.roster.some(p => p.id.toLowerCase().includes('faker') && (p.rarity === 'WANTED' || p.rarity === 'Légendaire'));
 
       if (hasRuler && hasMissing && hasGodFaker) {
         
