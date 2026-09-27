@@ -62,10 +62,11 @@ export const CARD_POOL = [
   {
     "id": "zeus-mvp-2023",
     "baseName": "Zeus",
-    "variant": "Worlds MVP Zeus",
+    "variant": "T1 legend Zeus",
     "role": "Top",
     "rating": 94,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_legend_zeus.jpg"
   },
   {
     "id": "NAVI-adam",
@@ -295,7 +296,8 @@ export const CARD_POOL = [
     "variant": "Worlds MVP Canyon",
     "role": "Jungle",
     "rating": 94,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/DWG_canyon.jpeg"
   },
   {
     "id": "gx-isma",
@@ -521,7 +523,7 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 95,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_faker_2023.png"
+    "image": "/cardsImg/others/T1_faker.jpg"
   },
   {
     "id": "faker-hall-of-legends",
@@ -564,7 +566,8 @@ export const CARD_POOL = [
     "variant": "LCK 4x Champion Chovy",
     "role": "Mid",
     "rating": 93,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/GENG_chovy_leg.jpg"
   },
   {
     "id": "GX-jackies",
@@ -651,7 +654,8 @@ export const CARD_POOL = [
     "variant": "LPL Legend Knight",
     "role": "Mid",
     "rating": 93,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/JDG_knight_msi.png"
   },
   {
     "id": "DRX_ucal",
@@ -822,7 +826,8 @@ export const CARD_POOL = [
     "variant": "Worlds MVP Ruler",
     "role": "ADC",
     "rating": 95,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/GENG_ruler.jpg"
   },
   {
     "id": "drx-jiwoo",
@@ -865,7 +870,8 @@ export const CARD_POOL = [
     "variant": "LPL MVP Viper",
     "role": "ADC",
     "rating": 90,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/BLG_viper_leg.jpg"
   },
   {
     "id": "bro-teddy",
@@ -899,7 +905,8 @@ export const CARD_POOL = [
     "variant": "Franchise Player Gumayusi",
     "role": "ADC",
     "rating": 93,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_gumayusi.jpg"
   },
   {
     "id": "th-flakked",
@@ -1311,7 +1318,8 @@ export const CARD_POOL = [
     "variant": "LPL Legend Meiko",
     "role": "Support",
     "rating": 92,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/legend_MEIKO.jpg"
   },
 
 
