@@ -69,8 +69,8 @@ let state = {
   cardCollections: {}, 
   activeLineups: {}, 
   economy: {}, 
-  cardStats: {}, // Tracker d'XP des cartes
-  globalSecrets: {}, // Tracker d'unicité pour les secrets
+  cardStats: {}, 
+  globalSecrets: {}, 
   lastOpenedPack: {}, 
   starterPackClaimed: {}, 
   seasonRound: 0,
@@ -131,7 +131,8 @@ function simulateGame(match, state) {
   for (const event of ALL_EVENTS) {
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
 
-    const results = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state);
+    // NOUVEAU : On transmet triggeredEvents pour que Keria puisse le lire
+    const results = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state, triggeredEvents);
     if (!results) continue;
     
     if (event.uniquePerBO) match.triggeredUniqueEvents.push(event.id);
@@ -362,10 +363,10 @@ function startCardTournament() {
       const baseCard = getCardById(cardId);
       const rosterEntry = cardToRosterEntry(baseCard);
 
-      // --- PASSIF CALISTE (WANTED) : LA NOTE AUGMENTE PHYSIQUEMENT ! ---
+      // CALISTE (WANTED) : +1 par tournoi joué
       if (baseCard && baseCard.id.toLowerCase().includes('caliste') && baseCard.rarity === 'WANTED') {
         const played = state.cardStats?.[p.id]?.[cardId] || 0;
-        rosterEntry.rating += played;
+        rosterEntry.rating += played; 
       }
       return rosterEntry;
     });
@@ -529,7 +530,6 @@ function awardSeasonRewards() {
   const totalTournamentsPlayed = state.history.length;
   
   if (totalTournamentsPlayed >= 3) {
-    // 1. On trie les participants du 1er au dernier (en prenant en compte points ET titres)
     const sortedPlayers = [...state.participants].sort((a, b) => {
       const ptsA = state.seasonScores[a.id]?.points || 0;
       const ptsB = state.seasonScores[b.id]?.points || 0;
@@ -539,17 +539,15 @@ function awardSeasonRewards() {
       return titlesB - titlesA;
     });
 
-    // 2. On définit le pactole des dernières places (adapté à l'économie des packs)
     const baseRewards = sortedPlayers.map((_, index) => {
       const reverseRank = sortedPlayers.length - 1 - index; 
-      if (reverseRank === 0) return 400; // Le vrai dernier
-      if (reverseRank === 1) return 300; // Avant-dernier
+      if (reverseRank === 0) return 400; 
+      if (reverseRank === 1) return 300; 
       if (reverseRank === 2) return 200; 
       if (reverseRank === 3) return 100; 
-      return 0; // Les autres n'ont pas besoin de compensation
+      return 0; 
     });
 
-    // 3. Répartition équitable des fonds en cas d'égalité absolue (Prize pool partagé)
     let currentRank = 0;
     while (currentRank < sortedPlayers.length) {
       let tieCount = 1;
@@ -560,7 +558,6 @@ function awardSeasonRewards() {
         return s1.points === s2.points && s1.titles === s2.titles;
       };
 
-      // Compter combien de joueurs sont à égalité parfaite sur ce palier
       while (
         currentRank + tieCount < sortedPlayers.length && 
         areTied(sortedPlayers[currentRank], sortedPlayers[currentRank + tieCount])
@@ -568,22 +565,18 @@ function awardSeasonRewards() {
         tieCount++;
       }
 
-      // Additionner l'argent total prévu pour ces "sièges" au classement
       let totalPool = 0;
       for (let i = 0; i < tieCount; i++) {
         totalPool += baseRewards[currentRank + i];
       }
 
-      // Calculer la part de chacun (pour éviter de générer de l'argent depuis le néant)
       const sharedReward = Math.floor(totalPool / tieCount);
 
-      // Assigner la récompense partagée
       for (let i = 0; i < tieCount; i++) {
         const p = sortedPlayers[currentRank + i];
         catchupBonuses[p.id] = sharedReward;
       }
 
-      // On passe aux joueurs du rang suivant
       currentRank += tieCount;
     }
   }
@@ -628,6 +621,13 @@ function awardSeasonRewards() {
       state.economy[p.id] += moneyEarned;
     } else {
       p.roster = p.roster.map(pro => {
+        
+        // CALISTE (WANTED) BOTS : +1 par tournoi joué
+        if (pro.id.toLowerCase().includes('caliste') && pro.rarity === 'WANTED') {
+          pro.rating = (pro.rating || 89) + 1;
+          pro.overall = (pro.overall || 89) + 1;
+        }
+
         if (pro.contract === 'LIFETIME') return pro; 
         let currentContract = pro.contract !== undefined ? pro.contract : 3;
         currentContract -= 1;
@@ -755,6 +755,7 @@ function startAllBotMatchesInCurrentRound() {
 // DEBUT DES SOCKETS
 // ==========================================
 io.on('connection', (socket) => {
+  
   socket.emit('draft-update', state);
 
   socket.on('select-mode', (modeId) => {
@@ -809,7 +810,7 @@ io.on('connection', (socket) => {
         
         state.economy = {}; 
         state.cardStats = {}; 
-        state.globalSecrets = {}; // <-- RESET SECRETS
+        state.globalSecrets = {};
         state.readyPlayers = []; 
         state.history = [];
         state.eventIndex = 0;
@@ -1068,9 +1069,6 @@ io.on('connection', (socket) => {
         }
       });
 
-      // ===============================================
-      // BILAN DE L'ANNÉE & CHECK DE LA GOLDEN ROAD
-      // ===============================================
       let endOfYearRecap = null;
       state.eventIndex += 1;
 
@@ -1115,15 +1113,11 @@ io.on('connection', (socket) => {
          state.eventIndex = 0; 
          state.year += 1; 
       }
-      // ===============================================
 
       state.continueSeasonVotes = []; state.readyPlayers = []; state.champion = null; state.bracket = []; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.seasonRound += 1; state.phase = 'cards';
 
-      // NOUVELLE MÉTHODE INFAILLIBLE : On pousse les données dans le state
       if (endOfYearRecap) {
          state.endOfYearRecap = endOfYearRecap;
-         
-         // On nettoie le state après 16 secondes pour que l'animation ne se relance pas si on actualise la page
          setTimeout(() => {
              state.endOfYearRecap = null;
              io.emit('draft-update', state);

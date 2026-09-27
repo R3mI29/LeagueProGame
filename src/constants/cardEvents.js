@@ -220,32 +220,35 @@ export const CUSTOM_CARD_EVENTS = [
     }
   },
   {
-    id: 'keria-always-ahead',
+    id: 'keria-adaptability',
+    probability: 0.30, 
     uniquePerBO: false,
-    apply(match, teamA, teamB, scoreA, scoreB, state) {
-      const results = [];
-      const CHANCE = 0.8;
+    apply(match, teamA, teamB, scoreA, scoreB, state, triggeredEvents) {
+      const hasA = teamA.roster.some(p => p.id.includes("keria"));
+      const hasB = teamB.roster.some(p => p.id.includes("keria"));
+      if (!hasA && !hasB) return null;
 
-      // Test pour l'équipe A
-      const aPlayer = teamA.roster.find(p => p.id.includes("keria-3PEAT-WC"));
-      if (aPlayer     &&  Math.random() <= CHANCE ) {
-        results.push(
-          {
-            side: 'A',
-            ratingDelta: 7, 
-            targetRoles: ['ADC', 'Mid', 'Jungle', 'Support'], 
-            label: `🧲 AIMANT À JUNGLER : 4 joueurs viennent tuer TheShy au top... son équipe récupère le Dragon, une T2 et le contrôle total de la carte !`
-          },
-          {
-            side: 'A',
-            ratingDelta: -5, 
-            targetRoles: ['Top'], 
-            label: null 
-          }
-        );
-      }
+      const keriaSide = hasA ? 'A' : 'B';
+      const enemySide = hasA ? 'B' : 'A';
 
-      return null;
+      
+      if (!triggeredEvents || triggeredEvents.length === 0) return null;
+
+      
+      const enemyBuffs = triggeredEvents.filter(e => e.side === enemySide && e.ratingDelta > 0);
+      if (enemyBuffs.length === 0) return null;
+
+      
+      const stolenPower = enemyBuffs.reduce((sum, e) => sum + e.ratingDelta, 0);
+
+      
+      return {
+        side: keriaSide,
+        ratingDelta: stolenPower,
+        targetRoles: ['Top', 'Jungle', 'Mid', 'ADC', 'Support'],
+        label: `GÉNIE TACTIQUE : Keria a analysé la stratégie adverse et renverse la situation (+${stolenPower}) sur toute son équipe !`,
+        
+      };
     }
   }
 ];

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { socket } from './api/socket';
+import { socket } from './api/socket'; 
 import { useDraftSocket } from './hooks/useDraftSocket';
 import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import LobbyView from './views/LobbyView';
@@ -54,10 +54,8 @@ export default function App() {
       );
     }
 
-    // --- On vérifie l'arène AVANT l'arbre de tournoi ---
     const myActiveMatch = getMyActiveMatch(state, socket.id);
 
-    // Si on a un match qui nous concerne (en attente, en cours ou à valider à la fin)
     if (myActiveMatch) {
       return (
         <ArenaView
@@ -69,7 +67,6 @@ export default function App() {
       );
     }
 
-    // SI nous n'avons pas de match actif, on affiche tranquillement l'arbre ou les groupes
     if (state.phase === 'tournament' || state.phase === 'simulation') {
       return (
         <TournamentWrapper 
@@ -82,7 +79,6 @@ export default function App() {
       ); 
     }
 
-    // (Code de secours au cas où)
     const tournamentPhase = isTournamentPhase(state);
     if (tournamentPhase && showBracket) {
       return (
@@ -106,11 +102,9 @@ export default function App() {
     );
   };
 
-  // Récupération sécurisée du dernier pack ouvert par ce joueur
   const myLastOpened = state.lastOpenedPack?.[socket.id] || [];
-
-  // VÉRIFICATION DU PSEUDO POUR AFFICHER LE BOUTON DEV
   const myPlayerInfo = state.participants?.find(p => p.id === socket.id);
+  
   const isDevModeUnlocked = /^dev\d*$/i.test(myPlayerInfo?.name?.toLowerCase());
 
   return (
@@ -122,10 +116,8 @@ export default function App() {
         />
       )}
 
-      {/* Affichage du jeu normal en dessous */}
       {renderMainContent()}
 
-      {/* Bouton secret DEV conditionné au pseudo "dev" */}
       {isDevModeUnlocked && !showDevMode && (
         <button
           onClick={() => setShowDevMode(true)}
@@ -143,10 +135,8 @@ export default function App() {
         </button>
       )}
 
-      {/* Affichage de la vue DEV si active */}
       {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
 
-      {/* LA CINÉMATIQUE DE FIN DE SAISON ET DE LA GOLDEN ROAD EST INSÉRÉE ICI */}
       {state && <SeasonRecapCinematic state={state} />}
     </>
   );

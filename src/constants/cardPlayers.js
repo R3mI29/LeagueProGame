@@ -100,7 +100,8 @@ export const CARD_POOL = [
     "variant": "LPL Finals MVP Bin",
     "role": "Top",
     "rating": 92,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/BLG_bin.jpg"
   },
   {
     "id": "szygenda",
@@ -328,7 +329,8 @@ export const CARD_POOL = [
     "variant": "LPL MVP Kanavi",
     "role": "Jungle",
     "rating": 91,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/JDG_kanavi.jpg"
   },
   {
     "id": "painter-t1-2026-sub",
@@ -1107,7 +1109,8 @@ export const CARD_POOL = [
     "variant": "World Champion Keria",
     "role": "Support",
     "rating": 92,
-    "rarity": "Légendaire"
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_keria.jpg"
   },
   {
     "id": "keria-3PEAT-WC",
@@ -1316,7 +1319,7 @@ export const CARD_POOL = [
 
   {
     "id": "ruler-missing-redemption",
-    "baseName": "Ruler & Missing",
+    "baseName": "JDG 2023 Missing",
     "variant": "La Rédemption",
     "role": "Support", 
     "rating": 98,

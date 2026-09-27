@@ -4,10 +4,12 @@ import { EVENTS } from '../constants/seasonConfig';
 export default function SeasonRecapCinematic({ state }) {
   const [recap, setRecap] = useState(null);
   const [showGoldenRoad, setShowGoldenRoad] = useState(false);
+  const [processedYear, setProcessedYear] = useState(null); // <-- LE VERROU ANTI-BOUCLE
 
   useEffect(() => {
-    // Si le serveur a placé un récapitulatif dans le state, on lance l'animation !
-    if (state?.endOfYearRecap && !recap) {
+    // Si on a un recap ET qu'on ne l'a pas encore visionné pour cette année précise
+    if (state?.endOfYearRecap && state.endOfYearRecap.year !== processedYear && !recap) {
+      setProcessedYear(state.endOfYearRecap.year); // On verrouille cette année
       setRecap(state.endOfYearRecap);
       setShowGoldenRoad(false);
 
@@ -26,7 +28,7 @@ export default function SeasonRecapCinematic({ state }) {
         }
       }, 7000); 
     }
-  }, [state?.endOfYearRecap]);
+  }, [state?.endOfYearRecap, processedYear, recap]);
 
   if (!recap) return null;
 
@@ -108,7 +110,7 @@ export default function SeasonRecapCinematic({ state }) {
                 alt="Logo" 
                 style={{ 
                   height: '80px', 
-                  maxWidth: '100%', // <-- CORRECTION ICI : empêche le logo de sortir du cadre
+                  maxWidth: '100%', 
                   objectFit: 'contain', 
                   marginBottom: '20px', 
                   filter: `drop-shadow(0 0 10px ${eventDetails?.color}60)` 
