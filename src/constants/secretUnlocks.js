@@ -11,8 +11,8 @@ export const SECRET_UNLOCKS = [
       const currentEvent = EVENTS[state.eventIndex];
       if (!currentEvent || !currentEvent.isMajor) return false;
 
-      // 2. Est-ce une demi-finale ou une finale ?
-      const isEndGame = match.id.includes('sf') || match.id.includes('gf') || match.id.includes('ub4') || match.id.includes('lb6') || match.id.includes('f-');
+      // 2. Est-ce un quart de finale, une demi-finale ou une finale ?
+      const isEndGame = match.id.includes('qf') || match.id.includes('sf') || match.id.includes('gf') || match.id.includes('ub4') || match.id.includes('lb6') || match.id.includes('f-');
       if (!isEndGame) return false;
 
       const winner = match.winner;
@@ -32,7 +32,7 @@ export const SECRET_UNLOCKS = [
           // On vérifie s'il ne l'a pas déjà pour éviter le spam
           if (state.cardCollections[humanId]['ruler-missing-redemption']) return false;
           
-          state.cardCollections[humanId]['ruler-missing-redemption'] = 1; // Ou "LIFETIME" selon ton système
+          state.cardCollections[humanId]['ruler-missing-redemption'] = "LIFETIME"; // Ou "LIFETIME" selon ton système
         }
 
         // 5. On envoie l'événement au frontend avec les textes dynamiques !

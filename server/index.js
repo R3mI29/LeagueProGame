@@ -115,7 +115,7 @@ function getTeamRating(team) {
 }
 
 const GAMES_TO_WIN = 3;
-const GAME_SIMULATE_MS = 6000; 
+const GAME_SIMULATE_MS = 3000; 
 const GAME_GAP_MS = 3500; 
 
 function simulateGame(match, state) {

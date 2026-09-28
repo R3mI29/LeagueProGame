@@ -224,8 +224,8 @@ export const CUSTOM_CARD_EVENTS = [
     probability: 0.30, 
     uniquePerBO: false,
     apply(match, teamA, teamB, scoreA, scoreB, state, triggeredEvents) {
-      const hasA = teamA.roster.some(p => p.id.includes("keria"));
-      const hasB = teamB.roster.some(p => p.id.includes("keria"));
+      const hasA = teamA.roster.some(p => p.id.includes("keria-3PEAT-WC"));
+      const hasB = teamB.roster.some(p => p.id.includes("keria-3PEAT-WC"));
       if (!hasA && !hasB) return null;
 
       const keriaSide = hasA ? 'A' : 'B';
@@ -244,7 +244,7 @@ export const CUSTOM_CARD_EVENTS = [
       
       return {
         side: keriaSide,
-        ratingDelta: stolenPower,
+        ratingDelta: stolenPower/5,
         targetRoles: ['Top', 'Jungle', 'Mid', 'ADC', 'Support'],
         label: `GÉNIE TACTIQUE : Keria a analysé la stratégie adverse et renverse la situation (+${stolenPower}) sur toute son équipe !`,
         
