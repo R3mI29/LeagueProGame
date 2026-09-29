@@ -131,7 +131,6 @@ function simulateGame(match, state) {
   for (const event of ALL_EVENTS) {
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
 
-    // NOUVEAU : On transmet triggeredEvents pour que Keria puisse le lire
     const results = event.apply(match, teamA, teamB, match.scoreA, match.scoreB, state, triggeredEvents);
     if (!results) continue;
     
@@ -205,18 +204,30 @@ function playNextGame(match) {
   io.emit('draft-update', state);
 
   const isBotOnly = match.teamA.id.startsWith('bot-') && match.teamB.id.startsWith('bot-');
-  const EVENT_DELAY = isBotOnly ? 50 : 3500; 
-  const RESULT_DELAY = isBotOnly ? 100 : 4000; 
+  
+  // NOUVEAU SYSTÈME DE VITESSE INTELLIGENT
+  // 1. Initialisation : le premier événement de la game apparaît presque immédiatement
+  const INIT_DELAY = isBotOnly ? 50 : 1200; 
+  // 2. Vitesse normale : pour lire un "vrai" événement de carte
+  const EVENT_READ_DELAY = isBotOnly ? 50 : 4500; 
+  // 3. Vitesse rapide : s'il n'y a que le texte "Phase de lane tactique..."
+  const NO_EVENT_DELAY = isBotOnly ? 50 : 1500; 
 
   const processNextEvent = () => {
     if (match.pendingEvents && match.pendingEvents.length > 0) {
       const evsToPush = [];
+      let isGenericEvent = false;
       
       while (match.pendingEvents.length > 0) {
         const ev = match.pendingEvents.shift();
         evsToPush.push(ev);
         
         if (ev.label) {
+          // On détecte si c'est la phrase par défaut (game sans event majeur)
+          if (ev.label === "Phase de lane très tactique, les deux équipes s'observent...") {
+            isGenericEvent = true;
+          }
+
           while (match.pendingEvents.length > 0 && !match.pendingEvents[0].label) {
             evsToPush.push(match.pendingEvents.shift());
           }
@@ -227,13 +238,18 @@ function playNextGame(match) {
       match.currentEvents.push(...evsToPush);
       io.emit('draft-update', state);
       
-      const delay = evsToPush.some(e => e.label) ? EVENT_DELAY : 50;
+      // On choisit le délai dynamiquement selon l'importance du texte
+      const delay = isBotOnly ? 50 : (isGenericEvent ? NO_EVENT_DELAY : EVENT_READ_DELAY);
       matchTimeouts[match.id] = setTimeout(processNextEvent, delay);
       
     } else {
       match.status = 'simulating_result';
       io.emit('draft-update', state);
       
+      // Ajustement du temps d'affichage de l'explosion du Nexus selon si la game était rapide ou lente
+      const hasAnyRealEvent = match.currentEvents.some(e => e.label && e.label !== "Phase de lane très tactique, les deux équipes s'observent...");
+      const RESULT_DELAY = isBotOnly ? 100 : (hasAnyRealEvent ? 4000 : 2000); 
+
       matchTimeouts[match.id] = setTimeout(() => {
         if (match.winnerSidePending === 'A') match.scoreA++; else match.scoreB++;
         match.games.push({ gameNumber: match.games.length + 1, winnerSide: match.winnerSidePending, events: match.currentEvents });
@@ -278,13 +294,16 @@ function playNextGame(match) {
           io.emit('draft-update', state);
         } else {
           io.emit('draft-update', state);
-          matchTimeouts[match.id] = setTimeout(() => playNextGame(match), isBotOnly ? 100 : GAME_GAP_MS);
+          // Transition plus rapide entre deux games d'un même BO (2.5s au lieu de 3.5s)
+          const GAME_GAP_MS = isBotOnly ? 100 : 2500; 
+          matchTimeouts[match.id] = setTimeout(() => playNextGame(match), GAME_GAP_MS);
         }
       }, RESULT_DELAY);
     }
   };
   
-  matchTimeouts[match.id] = setTimeout(processNextEvent, EVENT_DELAY);
+  // On lance le premier timeout avec la nouvelle vitesse d'initialisation
+  matchTimeouts[match.id] = setTimeout(processNextEvent, INIT_DELAY);
 }
 
 function buildPlayoffsFromSwiss() {
@@ -607,22 +626,10 @@ function awardSeasonRewards() {
     state.seasonScores[p.id].points += pointsEarned;
 
     if (!p.id.startsWith('bot-')) {
-      const lineup = state.activeLineups[p.id] || {};
-      const fullArtCount = Object.values(lineup).reduce((count, cardId) => {
-        const card = getCardById(cardId);
-        return count + (card?.isFullArt ? 1 : 0);
-      }, 0);
-
-      if (fullArtCount > 0) {
-        const bonusMultiplier = 1 + (0.20 * fullArtCount);
-        moneyEarned = Math.round(moneyEarned * bonusMultiplier);
-      }
-
       state.economy[p.id] += moneyEarned;
     } else {
       p.roster = p.roster.map(pro => {
         
-        // CALISTE (WANTED) BOTS : +1 par tournoi joué
         if (pro.id.toLowerCase().includes('caliste') && pro.rarity === 'WANTED') {
           pro.rating = (pro.rating || 89) + 1;
           pro.overall = (pro.overall || 89) + 1;

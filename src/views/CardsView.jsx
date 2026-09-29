@@ -25,7 +25,6 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const [activeTab, setActiveTab] = useState('roster'); 
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
 
-  // --- NOUVEAU : Fonction utilitaire pour injecter dynamiquement le buff Caliste ---
   const getDynamicCard = (cardId) => {
     const card = getCard(cardId);
     if (!card) return null;
@@ -48,7 +47,6 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   
   const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
 
-  // Utilisation de la carte dynamique pour calculer la vraie moyenne boostée
   const teamPower = ORDERED_ROLES.reduce((total, role) => {
     const card = getDynamicCard(myLineup[role]);
     return total + (card ? (card.overall || card.rating || 80) : 0);
@@ -66,6 +64,12 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const currentEventIndex = state.eventIndex || 0;
   const myEconomy = state.economy?.[myId] || 0;
   const hasStarter = state.starterPackClaimed?.[myId];
+
+  // LE RETOUR FORCÉ :
+  const handleToggleReady = () => {
+    if (!isReady) setActiveTab('roster');
+    toggleLineupReady();
+  };
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: THEME.bgApp, color: THEME.textMain, fontFamily: "'Inter', sans-serif", padding: '40px 20px' }}>
@@ -92,13 +96,19 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
+                }}
+                disabled={isReady && tab.id !== 'roster'}
                 style={{
                   backgroundColor: 'transparent',
                   color: activeTab === tab.id ? THEME.accentGold : THEME.textMuted,
                   border: 'none',
                   borderBottom: activeTab === tab.id ? `2px solid ${THEME.accentGold}` : '2px solid transparent',
-                  padding: '12px 24px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px'
+                  padding: '12px 24px', fontSize: '14px', fontWeight: 600, 
+                  cursor: (isReady && tab.id !== 'roster') ? 'not-allowed' : 'pointer', 
+                  transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px',
+                  opacity: (isReady && tab.id !== 'roster') ? 0.3 : 1
                 }}
               >
                 {tab.label}
@@ -121,11 +131,13 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                 {ORDERED_ROLES.map(role => {
                   const selectedCard = getDynamicCard(myLineup[role]);
                   return (
-                    <button key={role} onClick={() => setActiveRole(role)}
+                    <button key={role} onClick={() => !isReady && setActiveRole(role)}
                       style={{
                         flex: 1, padding: '12px 8px', borderRadius: '4px', border: 'none',
                         backgroundColor: activeRole === role ? '#1A1E2C' : 'transparent',
-                        color: activeRole === role ? '#FFF' : THEME.textMuted, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'background-color 0.2s'
+                        color: activeRole === role ? '#FFF' : THEME.textMuted, 
+                        cursor: isReady ? 'not-allowed' : 'pointer', 
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'background-color 0.2s'
                       }}>
                       <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{role}</span>
                       <span style={{ fontSize: '13px', color: selectedCard ? THEME.accentGold : THEME.textMuted, fontWeight: selectedCard ? 600 : 400 }}>
@@ -141,7 +153,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: THEME.textMuted, fontStyle: 'italic' }}>Aucun joueur disponible pour le poste de {activeRole}.</div>
                 ) : (
                   ownedCardsForRole(activeRole).map(baseCard => {
-                    const card = getDynamicCard(baseCard.id); // On récupère la carte dynamiquement boostée
+                    const card = getDynamicCard(baseCard.id); 
                     const selected = myLineup[activeRole] === card.id;
                     const contract = myCollection[card.id] || 0;
                     const isLifetime = contract === 'LIFETIME';
@@ -149,8 +161,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     
                     return (
                       <div key={card.id} 
-                        onClick={() => !isExpired && setLineupCard(activeRole, card.id)} 
-                        style={{ cursor: isExpired ? 'not-allowed' : 'pointer', transition: 'transform 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
+                        onClick={() => (!isExpired && !isReady) && setLineupCard(activeRole, card.id)} 
+                        style={{ cursor: (isExpired || isReady) ? 'not-allowed' : 'pointer', transition: 'transform 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
                       >
                         <div style={{ 
                           padding: '4px', borderRadius: '12px', 
@@ -190,25 +202,27 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                 <div style={{ fontSize: '56px', fontFamily: "'Oswald', sans-serif", fontWeight: 600, color: teamPower > 0 ? THEME.accentGold : THEME.textMuted }}>{teamPower > 0 ? Math.round(teamPower) : '-'}</div>
               </div>
 
-              {/* Raccourci vers la boutique */}
               <div style={{ backgroundColor: '#131621', border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
                 <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>TRÉSORERIE</h3>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>
                   {myEconomy} 💲 CRÉDITS
                 </div>
-                <button onClick={() => setActiveTab('shop')} style={{ width: '100%', backgroundColor: THEME.accentGold, color: '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                <button 
+                  onClick={() => !isReady && setActiveTab('shop')} 
+                  disabled={isReady}
+                  style={{ width: '100%', backgroundColor: isReady ? '#333' : THEME.accentGold, color: isReady ? '#888' : '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: isReady ? 'not-allowed' : 'pointer' }}>
                   ALLER À LA BOUTIQUE
                 </button>
               </div>
 
-              <button onClick={toggleLineupReady} disabled={!lineupComplete && !isReady} style={{ backgroundColor: isReady ? THEME.accentGold : lineupComplete ? '#FFFFFF' : '#1F2433', color: isReady ? '#000' : lineupComplete ? '#000' : THEME.textMuted, border: 'none', padding: '20px', borderRadius: '8px', fontSize: '15px', fontWeight: 700, cursor: (!lineupComplete && !isReady) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <button onClick={handleToggleReady} disabled={!lineupComplete && !isReady} style={{ backgroundColor: isReady ? THEME.accentGold : lineupComplete ? '#FFFFFF' : '#1F2433', color: isReady ? '#000' : lineupComplete ? '#000' : THEME.textMuted, border: 'none', padding: '20px', borderRadius: '8px', fontSize: '15px', fontWeight: 700, cursor: (!lineupComplete && !isReady) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px' }}>
                 {isReady ? 'ROSTER VERROUILLÉ ✓' : lineupComplete ? 'VALIDER LE ROSTER' : 'ROSTER INCOMPLET'}
               </button>
             </div>
           </div>
         )}
 
-        {/* ONGLET 2 : NOUVELLE BOUTIQUE */}
+        {/* ONGLET 2 : BOUTIQUE */}
         {activeTab === 'shop' && (
           <div style={{ animation: 'fadeIn 0.3s' }}>
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -231,7 +245,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e676', fontSize: '24px', margin: '0 0 10px 0' }}>PACK DE DÉPART</h3>
                   <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Une base solide pour débuter votre saison. Contient 10 cartes de contrat À VIE.</p>
                   <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#FFF', marginBottom: '20px' }}>GRATUIT</div>
-                  <button onClick={() => socket.emit('buy-pack', 'standard')} style={{ width: '100%', backgroundColor: '#00e676', color: '#000', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: 'pointer', fontSize: '16px' }}>
+                  <button onClick={() => socket.emit('buy-pack', 'standard')} disabled={isReady} style={{ width: '100%', backgroundColor: isReady ? '#333' : '#00e676', color: isReady ? '#888' : '#000', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: isReady ? 'not-allowed' : 'pointer', fontSize: '16px' }}>
                     OUVRIR
                   </button>
                 </div>
@@ -239,7 +253,6 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
               {hasStarter && (
                 <>
-                  {/* PACK STANDARD */}
                   <div style={{ background: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', transition: 'transform 0.2s', cursor: 'default' }}>
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>📦</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '24px', margin: '0 0 10px 0' }}>PACK STANDARD</h3>
@@ -247,12 +260,11 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>100 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'standard')} 
-                      disabled={myEconomy < 100}
-                      style={{ width: '100%', backgroundColor: myEconomy >= 100 ? '#FFF' : '#333', color: myEconomy >= 100 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 100 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      disabled={myEconomy < 100 || isReady}
+                      style={{ width: '100%', backgroundColor: (myEconomy >= 100 && !isReady) ? '#FFF' : '#333', color: (myEconomy >= 100 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 100 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
                     >ACHETER</button>
                   </div>
 
-                  {/* PACK ELITE */}
                   <div style={{ background: 'linear-gradient(180deg, rgba(0, 229, 255, 0.1) 0%, #11141E 100%)', border: `1px solid #00e5ff`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0, 229, 255, 0.1)' }}>
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>💎</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e5ff', fontSize: '24px', margin: '0 0 10px 0' }}>PACK ÉLITE</h3>
@@ -260,12 +272,11 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>250 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'elite')} 
-                      disabled={myEconomy < 200}
-                      style={{ width: '100%', backgroundColor: myEconomy >= 200 ? '#00e5ff' : '#333', color: myEconomy >= 200 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 200 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      disabled={myEconomy < 250 || isReady}
+                      style={{ width: '100%', backgroundColor: (myEconomy >= 250 && !isReady) ? '#00e5ff' : '#333', color: (myEconomy >= 250 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 250 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
                     >ACHETER</button>
                   </div>
 
-                  {/* PACK LEGENDE */}
                   <div style={{ background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, #11141E 100%)', border: `1px solid ${THEME.accentGold}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(212, 175, 55, 0.15)' }}>
                     <div style={{ fontSize: '50px', marginBottom: '10px' }}>👑</div>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", color: THEME.accentGold, fontSize: '24px', margin: '0 0 10px 0' }}>PACK LÉGENDE</h3>
@@ -273,8 +284,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}> 500 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'legendary')} 
-                      disabled={myEconomy < 400}
-                      style={{ width: '100%', backgroundColor: myEconomy >= 400 ? THEME.accentGold : '#333', color: myEconomy >= 400 ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: myEconomy >= 400 ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      disabled={myEconomy < 500 || isReady}
+                      style={{ width: '100%', backgroundColor: (myEconomy >= 500 && !isReady) ? THEME.accentGold : '#333', color: (myEconomy >= 500 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 500 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
                     >ACHETER</button>
                   </div>
                 </>
@@ -300,7 +311,6 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
             <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
               {Object.keys(myCollection)
-                // INTERDICTION COTE CLIENT DE VENDRE DES LIFETIME OU DES TITULAIRES
                 .filter(cardId => myCollection[cardId] !== 0 && myCollection[cardId] !== 'LIFETIME' && !Object.values(myLineup).includes(cardId))
                 .map(cardId => {
                   const card = getCard(cardId);
@@ -323,15 +333,14 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                       </div>
                       
                       <button 
-                        onClick={() => socket.emit('sell-card', cardId)}
+                        onClick={() => !isReady && socket.emit('sell-card', cardId)}
+                        disabled={isReady}
                         style={{ 
-                          width: '100%', backgroundColor: '#e63946', color: '#FFF', 
+                          width: '100%', backgroundColor: isReady ? '#444' : '#e63946', color: isReady ? '#888' : '#FFF', 
                           border: 'none', padding: '10px', borderRadius: '4px', 
-                          fontWeight: 'bold', cursor: 'pointer', fontSize: '14px',
+                          fontWeight: 'bold', cursor: isReady ? 'not-allowed' : 'pointer', fontSize: '14px',
                           transition: 'background-color 0.2s'
                         }}
-                        onMouseEnter={(e) => e.target.style.backgroundColor = '#d62828'}
-                        onMouseLeave={(e) => e.target.style.backgroundColor = '#e63946'}
                       >
                         VENDRE LE JOUEUR ( 💲 {price} )
                       </button>

@@ -93,7 +93,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
             const buff = getPlayerBuff(teamSide, role);
             
             return (
-              <div key={role} style={{ textAlign: 'center', position: 'relative' }}>
+              <div key={role} style={{ textAlign: 'center', position: 'relative', display: 'inline-block', zIndex: 1 }}>
                 {dynamicCard ? <CardIllustration card={dynamicCard} width={90} /> : <div className="player-slot">{p.name}</div>}
                 
                 {/* Pastille dynamique de Buff de GAME sur la carte */}
@@ -102,7 +102,8 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
                     position: 'absolute', top: '-10px', right: '-10px',
                     background: '#00e676', color: '#000', fontWeight: '800',
                     padding: '4px 8px', borderRadius: '12px', fontSize: '14px',
-                    boxShadow: '0 0 10px #00e676', animation: 'skillPopIn 0.3s forwards'
+                    boxShadow: '0 0 10px #00e676', animation: 'skillPopIn 0.3s forwards',
+                    zIndex: 999
                   }}>
                     +{buff}
                   </div>
@@ -112,7 +113,8 @@ export default function ArenaView({ match, matchReady, dismissMatch, state }) {
                     position: 'absolute', top: '-10px', right: '-10px',
                     background: '#f74242', color: '#000', fontWeight: '800',
                     padding: '4px 8px', borderRadius: '12px', fontSize: '14px',
-                    boxShadow: '0 0 10px #f04646', animation: 'skillPopIn 0.3s forwards'
+                    boxShadow: '0 0 10px #f04646', animation: 'skillPopIn 0.3s forwards',
+                    zIndex: 999
                   }}>
                     {buff}
                   </div>

@@ -93,14 +93,14 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 89,
     "rarity": "Épique",
-    "image": "/cardsImg/others/firststand_mvp_bin.png"
+    "image": "/cardsImg/others/BLG-Bin-FST.jpg"
   },
   {
     "id": "bin-lpl-mvp",
     "baseName": "Bin",
-    "variant": "LPL Finals MVP Bin",
+    "variant": "2x LPL Finals MVP Bin",
     "role": "Top",
-    "rating": 92,
+    "rating": 93,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/BLG_bin.jpg"
   },
@@ -283,21 +283,31 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/GENG_canyon.webp"
   },
   {
-    "id": "canyon-worlds-2020",
+    "id": "canyon-ewc",
     "baseName": "Canyon",
-    "variant": "World Champion Canyon",
+    "variant": "EWC 2025 Champion",
     "role": "Jungle",
     "rating": 89,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/GenG_Canyon.jpg"
+  },
+  {
+    "id": "canyon-lck-champion",
+    "baseName": "Canyon",
+    "variant": "5x LCK champion",
+    "role": "Jungle",
+    "rating": 92,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/LCK_geng_canyon.jpg"
   },
   {
     "id": "canyon-mvp-2020",
     "baseName": "Canyon",
     "variant": "Worlds MVP Canyon",
     "role": "Jungle",
-    "rating": 94,
-    "rarity": "Légendaire",
-    "image": "/cardsImg/others/DWG_canyon.jpeg"
+    "rating": 96,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/DWG_canyon_WORLDS.jpeg"
   },
   {
     "id": "gx-isma",
@@ -362,13 +372,13 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/T1_oner.webp"
   },
   {
-    "id": "oner-worlds-2023",
+    "id": "oner-lck",
     "baseName": "Oner",
-    "variant": "World Champion Oner",
+    "variant": "LCK Champ Oner",
     "role": "Jungle",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/oner_blondie_nobg.png"
+    "image": "/cardsImg/others/Oner_blondie.jpg"
   },
   {
     "id": "DKC-sharvel",
@@ -563,11 +573,20 @@ export const CARD_POOL = [
   {
     "id": "chovy-4peat",
     "baseName": "Chovy",
-    "variant": "LCK 4x Champion Chovy",
+    "variant": "LCK 4PEAT Chovy",
     "role": "Mid",
     "rating": 93,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/GENG_chovy_leg.jpg"
+  },
+  {
+    "id": "zeka-FST-mvp",
+    "baseName": "Zeka",
+    "variant": "First Stand MVP Zeka",
+    "role": "Mid",
+    "rating": 88,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/FST_MVP_ZEKA.jpg"
   },
   {
     "id": "GX-jackies",
@@ -596,7 +615,7 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "Shwomaker-Prime",
+    "id": "showmaker-prime",
     "baseName": "Showmaker",
     "variant": "THE MAGICIAN",
     "role": "Mid",
@@ -708,7 +727,7 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 89,
     "rarity": "Épique",
-    "image": "/cardsImg/others/msi_mvp_caps.png"
+    "image": "/cardsImg/others/CAPS-MSI.avif"
   },
   {
     "id": "FEARX-vicla",
@@ -809,7 +828,6 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 88,
     "rarity": "Épique",
-    "isFullArt": true,
     "image": "/cardsImg/fullart/JDG_ruler.png"
   },
   {
@@ -1003,7 +1021,7 @@ export const CARD_POOL = [
     "rating": 77,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/kc_caliste.webp"
-  },
+  },/* à garder pour futur pack différent ...
   {
     "id": "caliste-firststand-2025",
     "baseName": "Caliste",
@@ -1011,9 +1029,8 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 83,
     "rarity": "Rare",
-    "isFullArt": true,
     "image": "/cardsImg/fullart/caliste_firststand.jpg"
-  },
+  },*/
   {
     "id": "caliste-2026",
     "baseName": "Caliste",
@@ -1021,7 +1038,6 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 87,
     "rarity": "Épique",
-    "isFullArt": true,
     "image": "/cardsImg/fullart/caliste_star.jpg"
   },
   {
@@ -1067,7 +1083,7 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 89,
     "rarity": "Épique",
-    "image": "/cardsImg/others/uzi_msi.png"
+    "image": "/cardsImg/others/uzi_msi.webp"
   },
   {
     "id": "uzi-adc-god",
@@ -1107,8 +1123,9 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "LCK MVP Keria",
     "role": "Support",
-    "rating": 89,
-    "rarity": "Épique"
+    "rating": 88,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/T1_keria_2022.jpg"
   },
   {
     "id": "keria-worlds-2023",
@@ -1142,17 +1159,27 @@ export const CARD_POOL = [
     "baseName": "MISSING",
     "variant": "JDG MISSING",
     "role": "Support",
-    "rating": 83,
+    "rating": 81,
     "rarity": "Rare",
     "image": "/cardsImg/others/JDG_missing.png"
+  },
+  {
+    "id": "3LPL-missing",
+    "baseName": "Missing",
+    "variant": "3x LPL champion Missing",
+    "role": "Support",
+    "rating": 85,
+    "rarity": 'Épique',
+    "image": "/cardsImg/others/JDG_missing.jpg"
   },
   {
     "id": "missing-msi-2023",
     "baseName": "Missing",
     "variant": "MSI Champion Missing",
     "role": "Support",
-    "rating": 86,
-    "rarity": "Épique"
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/MSI_MISSING.jpeg"
   },
   {
     "id": "gx-jun",
@@ -1305,12 +1332,14 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/tes_meiko.png"
   },
   {
-    "id": "meiko-worlds-2021",
+    "id": "meiko-edg-msi",
     "baseName": "Meiko",
-    "variant": "World Champion Meiko",
+    "variant": "MSI Champion Meiko",
     "role": "Support",
-    "rating": 88,
-    "rarity": "Épique"
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/EDG_meiko_MSI.png"
+    
   },
   {
     "id": "meiko-LPL-Legend",
@@ -1321,6 +1350,15 @@ export const CARD_POOL = [
     "rarity": "Légendaire",
     "image": "/cardsImg/others/legend_MEIKO.jpg"
   },
+  {
+    "id": "JDG-2026-vampire",
+    "baseName": "Vampire",
+    "variant": "JDG Vampire",
+    "role": "Support",
+    "rating": 78,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/JDG_vampire.webp"
+  },
 
 
   /////// SPECIAL ///////
@@ -1330,10 +1368,9 @@ export const CARD_POOL = [
     "baseName": "JDG 2023 Missing",
     "variant": "La Rédemption",
     "role": "Support", 
-    "rating": 98,
+    "rating": 96,
     themeColor: '#E5142E',
     "rarity": "SECRET", 
-    "isFullArt": true,
     "image": "/cardsImg/others/ruler_missing_DUO.jpg"
   },
 ];
