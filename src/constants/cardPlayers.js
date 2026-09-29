@@ -52,17 +52,26 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/hle_zeus.webp"
   },
   {
-    "id": "zeus-worlds-2023",
+    "id": "zeus-lck",
     "baseName": "Zeus",
-    "variant": "World Champion Zeus",
+    "variant": "LCK champ Zeus",
     "role": "Top",
-    "rating": 88,
+    "rating": 87,
     "rarity": "Épique"
+  },
+  {
+    "id": "zeus-mvp-msi",
+    "baseName": "Zeus",
+    "variant": "2026 MSI MVP",
+    "role": "Top",
+    "rating": 93,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/MSI_MVP_zeus.jpg"
   },
   {
     "id": "zeus-mvp-2023",
     "baseName": "Zeus",
-    "variant": "T1 legend Zeus",
+    "variant": "T1 legend",
     "role": "Top",
     "rating": 94,
     "rarity": "Légendaire",
@@ -98,7 +107,7 @@ export const CARD_POOL = [
   {
     "id": "bin-lpl-mvp",
     "baseName": "Bin",
-    "variant": "2x LPL Finals MVP Bin",
+    "variant": "2x LPL Finals MVP",
     "role": "Top",
     "rating": 93,
     "rarity": "Légendaire",
@@ -338,7 +347,7 @@ export const CARD_POOL = [
   {
     "id": "kanavi-lpl-mvp",
     "baseName": "Kanavi",
-    "variant": "LPL MVP Kanavi",
+    "variant": "LPL MVP",
     "role": "Jungle",
     "rating": 91,
     "rarity": "Légendaire",
@@ -529,7 +538,7 @@ export const CARD_POOL = [
   {
     "id": "faker-6x-champ",
     "baseName": "Faker",
-    "variant": "6x World Champion Faker",
+    "variant": "6x World Champion",
     "role": "Mid",
     "rating": 95,
     "rarity": "Légendaire",
@@ -573,7 +582,7 @@ export const CARD_POOL = [
   {
     "id": "chovy-4peat",
     "baseName": "Chovy",
-    "variant": "LCK 4PEAT Chovy",
+    "variant": "LCK 4PEAT",
     "role": "Mid",
     "rating": 93,
     "rarity": "Légendaire",
@@ -609,10 +618,11 @@ export const CARD_POOL = [
   {
     "id": "showmaker-worlds-2020",
     "baseName": "ShowMaker",
-    "variant": "World Champion ShowMaker",
+    "variant": "2026 EWC ShowMaker",
     "role": "Mid",
-    "rating": 88,
-    "rarity": "Épique"
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/DK_2026_showmaker.jpg"
   },
   {
     "id": "showmaker-prime",
@@ -670,7 +680,7 @@ export const CARD_POOL = [
   {
     "id": "knight-lpl-legend",
     "baseName": "Knight",
-    "variant": "LPL Legend Knight",
+    "variant": "LPL Legend",
     "role": "Mid",
     "rating": 93,
     "rarity": "Légendaire",
@@ -723,10 +733,10 @@ export const CARD_POOL = [
   {
     "id": "caps-msi-mvp",
     "baseName": "Caps",
-    "variant": "MSI MVP Caps",
+    "variant": "2019 MSI MVP",
     "role": "Mid",
-    "rating": 89,
-    "rarity": "Épique",
+    "rating": 92,
+    "rarity": "Légendaire",
     "image": "/cardsImg/others/CAPS-MSI.avif"
   },
   {
@@ -841,7 +851,7 @@ export const CARD_POOL = [
   {
     "id": "ruler-worlds-mvp",
     "baseName": "Ruler",
-    "variant": "Worlds MVP Ruler",
+    "variant": "Worlds MVP",
     "role": "ADC",
     "rating": 95,
     "rarity": "Légendaire",
@@ -885,7 +895,7 @@ export const CARD_POOL = [
   {
     "id": "viper-lpl-mvp",
     "baseName": "Viper",
-    "variant": "LPL MVP Viper",
+    "variant": "LPL MVP",
     "role": "ADC",
     "rating": 90,
     "rarity": "Légendaire",
@@ -918,9 +928,9 @@ export const CARD_POOL = [
     "rarity": "Épique"
   },
   {
-    "id": "gumayusi-franchise",
+    "id": "gumayusi-T1-legend",
     "baseName": "Gumayusi",
-    "variant": "Franchise Player Gumayusi",
+    "variant": "T1 Legend",
     "role": "ADC",
     "rating": 93,
     "rarity": "Légendaire",
@@ -1130,7 +1140,7 @@ export const CARD_POOL = [
   {
     "id": "keria-worlds-2023",
     "baseName": "Keria",
-    "variant": "World Champion Keria",
+    "variant": "World Champion",
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",
@@ -1257,7 +1267,8 @@ export const CARD_POOL = [
     "variant": "MSI Champion Mikyx",
     "role": "Support",
     "rating": 86,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/MSI_2019_mikyx.jpg"
   },
   {
     "id": "th-stend",
@@ -1344,7 +1355,7 @@ export const CARD_POOL = [
   {
     "id": "meiko-LPL-Legend",
     "baseName": "Meiko",
-    "variant": "LPL Legend Meiko",
+    "variant": "LPL Legend",
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",

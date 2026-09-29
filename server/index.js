@@ -829,7 +829,7 @@ io.on('connection', (socket) => {
           state.pendingPacks[p.id] = 1; 
           state.lastOpenedPack[p.id] = [];
           state.starterPackClaimed[p.id] = false;
-          state.economy[p.id] = 0; 
+          state.economy[p.id] = 100; 
         });
         state.phase = 'cards';
         io.emit('draft-update', state);
