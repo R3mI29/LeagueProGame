@@ -266,7 +266,7 @@ export const CARD_POOL = [
   {
     "id": "theshy-legend",
     "baseName": "TheShy",
-    "variant": "Legend TheShy",
+    "variant": "Legend",
     "role": "Top",
     "rating": 97,
     "rarity": "WANTED",
@@ -312,7 +312,7 @@ export const CARD_POOL = [
   {
     "id": "canyon-mvp-2020",
     "baseName": "Canyon",
-    "variant": "Worlds MVP Canyon",
+    "variant": "Worlds MVP",
     "role": "Jungle",
     "rating": 96,
     "rarity": "WANTED",
@@ -636,7 +636,7 @@ export const CARD_POOL = [
   {
     "id": "showmaker-DK-mentor",
     "baseName": "ShowMaker",
-    "variant": "Mentor ShowMaker",
+    "variant": "Mentor",
     "role": "Mid",
     "rating": 94,
     "rarity": "WANTED",
@@ -1098,7 +1098,7 @@ export const CARD_POOL = [
   {
     "id": "uzi-adc-god",
     "baseName": "Uzi",
-    "variant": "ADC God Uzi",
+    "variant": "ADC God",
     "role": "ADC",
     "rating": 95,
     "rarity": "WANTED",
@@ -1149,7 +1149,7 @@ export const CARD_POOL = [
   {
     "id": "keria-3PEAT-WC",
     "baseName": "Keria",
-    "variant": "3PEAT Keria",
+    "variant": "3PEAT Worlds",
     "role": "Support",
     "rating": 97,
     "rarity": "WANTED",
