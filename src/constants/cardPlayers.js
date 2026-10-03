@@ -57,7 +57,8 @@ export const CARD_POOL = [
     "variant": "LCK champ Zeus",
     "role": "Top",
     "rating": 87,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/zeus_lck_2022.jpg"
   },
   {
     "id": "zeus-mvp-msi",
@@ -887,10 +888,11 @@ export const CARD_POOL = [
   {
     "id": "viper-worlds-2021",
     "baseName": "Viper",
-    "variant": "World Champion Viper",
+    "variant": "3x LPL champion",
     "role": "ADC",
     "rating": 88,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/blg_viper_lpl.jpg"
   },
   {
     "id": "viper-lpl-mvp",
@@ -918,14 +920,6 @@ export const CARD_POOL = [
     "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/webp/t1_gumayusi.webp"
-  },
-  {
-    "id": "gumayusi-worlds-2023",
-    "baseName": "Gumayusi",
-    "variant": "World Champion Gumayusi",
-    "role": "ADC",
-    "rating": 88,
-    "rarity": "Épique"
   },
   {
     "id": "gumayusi-T1-legend",
@@ -959,8 +953,9 @@ export const CARD_POOL = [
     "baseName": "Elk",
     "variant": "LPL MVP Elk",
     "role": "ADC",
-    "rating": 85,
-    "rarity": "Épique"
+    "rating": 86,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/elk_lpl_mvp.jpg"
   },
   {
     "id": "sen-rahel",
@@ -979,14 +974,6 @@ export const CARD_POOL = [
     "rating": 82,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/TES_jackeylove.webp"
-  },
-  {
-    "id": "jackeylove-worlds",
-    "baseName": "JackeyLove",
-    "variant": "World Champion JackeyLove",
-    "role": "ADC",
-    "rating": 87,
-    "rarity": "Épique"
   },
   {
     "id": "DNS-deokdam",
