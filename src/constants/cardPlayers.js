@@ -56,7 +56,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "LCK champ Zeus",
     "role": "Top",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Épique",
     "image": "/cardsImg/others/zeus_lck_2022.jpg"
   },
@@ -65,7 +65,7 @@ export const CARD_POOL = [
     "baseName": "Zeus",
     "variant": "2026 MSI MVP",
     "role": "Top",
-    "rating": 93,
+    "rating": 92,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/MSI_MVP_zeus.jpg"
   },
@@ -706,12 +706,13 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/IG_rookie.webp"
   },
   {
-    "id": "rookie-worlds-2018",
+    "id": "rookie-IG_2019",
     "baseName": "Rookie",
-    "variant": "World Champion Rookie",
+    "variant": "LPL Champion",
     "role": "Mid",
-    "rating": 89,
-    "rarity": "Épique"
+    "rating": 86,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/IG_Rookie_2019.jpg"
   },
   {
     "id": "fnc-vladi",
@@ -831,7 +832,7 @@ export const CARD_POOL = [
     "rating": 76,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/FLY_massu.webp"
-  },
+  },/* garder pr autre pack
   {
     "id": "jdg-ruler-fa",
     "baseName": "Ruler",
@@ -840,14 +841,15 @@ export const CARD_POOL = [
     "rating": 88,
     "rarity": "Épique",
     "image": "/cardsImg/fullart/JDG_ruler.png"
-  },
+  },*/
   {
     "id": "ruler-msi-2023",
     "baseName": "Ruler",
-    "variant": "MSI Champion Ruler",
+    "variant": "MSI Champion",
     "role": "ADC",
-    "rating": 89,
-    "rarity": "Épique"
+    "rating": 88,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/jdg_ruler_msi.jpg"
   },
   {
     "id": "ruler-worlds-mvp",
@@ -951,7 +953,7 @@ export const CARD_POOL = [
   {
     "id": "elk-lpl-mvp",
     "baseName": "Elk",
-    "variant": "LPL MVP Elk",
+    "variant": "LPL MVP",
     "role": "ADC",
     "rating": 86,
     "rarity": "Épique",
@@ -1076,10 +1078,10 @@ export const CARD_POOL = [
   {
     "id": "uzi-msi-2018",
     "baseName": "Uzi",
-    "variant": "MSI Champion Uzi",
+    "variant": "MSI MVP",
     "role": "ADC",
-    "rating": 89,
-    "rarity": "Épique",
+    "rating": 92,
+    "rarity": "Légendaire",
     "image": "/cardsImg/others/uzi_msi.webp"
   },
   {
@@ -1223,12 +1225,22 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/NS_lehends.webp"
   },
   {
-    "id": "lehends-lck-mvp",
+    "id": "lehends-lck-2x",
     "baseName": "Lehends",
-    "variant": "LCK MVP Lehends",
+    "variant": "2x LCK champion",
     "role": "Support",
     "rating": 87,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/lck_lehends_geng.jpg"
+  },
+  {
+    "id": "lehends-msi_mvp",
+    "baseName": "Lehends",
+    "variant": "2024 MSI MVP",
+    "role": "Support",
+    "rating": 92,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/msi_mvp_lehends.jpg"
   },
   {
     "id": "sk-mikyx",
