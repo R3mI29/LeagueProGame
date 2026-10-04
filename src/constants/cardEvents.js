@@ -300,9 +300,8 @@ export const CUSTOM_CARD_EVENTS = [
       const minEnemyRating = Math.min(topRating, jglRating);
       const diff = canyonRating - minEnemyRating;
 
-      if (diff > 0) {
-        // CAS 1 : NOOB STOMP (L'un des deux adversaires est plus faible)
-        // On génère un texte dynamique pour savoir qui s'est fait écraser
+      if (diff > 6) {
+        
         const victim = topRating < jglRating ? "le Toplaner" : "le Jungler";
         
         return {
@@ -319,7 +318,7 @@ export const CUSTOM_CARD_EVENTS = [
           ratingDelta: 2, 
           targetRoles: ['Top', 'Mid', 'ADC', 'Support'], 
           persistentBO: false,
-          label: `ADAPTATION : Le topside adverse est trop solide. Canyon lock un Tank utilitaire et buff son équipe (+2) !`
+          label: `ADAPTATION :  Canyon respecte le topside adverse et lock un Tank utilitaire pour jouer macro !`
         };
       }
     }

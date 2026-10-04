@@ -1,5 +1,5 @@
-import { CARD_POOL, RARITY_WEIGHTS } from '../src/constants/cardPlayers.js';
-import { ORDERED_ROLES } from '../src/constants/roles.js';
+import { CARD_POOL, RARITY_WEIGHTS } from '../../src/constants/cardPlayers.js';
+import { ORDERED_ROLES } from '../../src/constants/roles.js';
 
 export const PACK_SIZE = 5;
 
