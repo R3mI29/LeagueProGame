@@ -1,18 +1,19 @@
 export default function JoinForm({ pseudo, setPseudo, joinLobby }) {
   return (
-    <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="w-full max-w-[450px] p-8 bg-bg-panel border border-white/15 rounded-xl shadow-2xl">
+      <div className="flex flex-col gap-4">
         <input
           value={pseudo}
           onChange={(e) => setPseudo(e.target.value)}
           placeholder="Entrez votre pseudonyme"
-          style={{
-            width: '100%', padding: '14px', background: 'var(--bg-card)',
-            border: '1px solid var(--border)', color: 'white', borderRadius: '4px',
-            outline: 'none', fontSize: '16px'
-          }}
+          className="w-full p-3 bg-bg-card border border-white/15 text-white rounded outline-none focus:border-accent-cyan transition-colors text-base"
         />
-        <button className="btn btn-cyan" onClick={joinLobby}>Se connecter</button>
+        <button 
+          onClick={joinLobby}
+          className="font-rajdhani font-bold tracking-wider uppercase py-3 px-7 bg-accent-cyan text-black rounded hover:bg-[#00b3cc] hover:-translate-y-0.5 transition-all shadow-[0_0_15px_rgba(0,229,255,0.2)]"
+        >
+          Se connecter
+        </button>
       </div>
     </div>
   );

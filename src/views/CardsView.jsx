@@ -9,17 +9,6 @@ function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
 }
 
-const THEME = {
-  bgApp: '#080A10',        
-  bgPanel: '#11141E',      
-  border: '#222838',       
-  accentGold: '#D4AF37',   
-  accentSilver: '#C0C0C0', 
-  accentBronze: '#CD7F32', 
-  textMain: '#F0F2F5',     
-  textMuted: '#768196',    
-};
-
 export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const myId = socket.id;
   const [activeTab, setActiveTab] = useState('roster'); 
@@ -65,28 +54,30 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const myEconomy = state.economy?.[myId] || 0;
   const hasStarter = state.starterPackClaimed?.[myId];
 
-  // LE RETOUR FORCÉ :
   const handleToggleReady = () => {
     if (!isReady) setActiveTab('roster');
     toggleLineupReady();
   };
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: THEME.bgApp, color: THEME.textMain, fontFamily: "'Inter', sans-serif", padding: '40px 20px' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-[#080A10] text-[#F0F2F5] font-sans py-10 px-5">
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
+      <div className="max-w-[1280px] mx-auto">
         
         {/* EN-TÊTE ÉLÉGANT */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '24px', marginBottom: '32px' }}>
+        <div className="flex justify-between items-center border-b border-[#222838] pb-6 mb-8">
           <div>
-            <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '38px', margin: 0, fontWeight: 600, letterSpacing: '1px', color: '#FFFFFF' }}>
-              CIRCUIT <span style={{ color: THEME.accentGold }}>PRO</span>
+            <h1 className="font-['Oswald'] text-[38px] m-0 font-semibold tracking-[1px] text-white">
+              CIRCUIT <span className="text-[#D4AF37]">PRO</span>
             </h1>
-            <span style={{ color: THEME.textMuted, fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 500 }}>
+            <span className="text-[#768196] text-[13px] tracking-[2px] uppercase font-medium">
               Gestion de Roster Officiel — Année {state.year || 1}
             </span>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="flex gap-2">
             {[
               { id: 'roster', label: 'Gestion Équipe' },
               { id: 'shop', label: 'Boutique' },
@@ -100,16 +91,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
                 }}
                 disabled={isReady && tab.id !== 'roster'}
-                style={{
-                  backgroundColor: 'transparent',
-                  color: activeTab === tab.id ? THEME.accentGold : THEME.textMuted,
-                  border: 'none',
-                  borderBottom: activeTab === tab.id ? `2px solid ${THEME.accentGold}` : '2px solid transparent',
-                  padding: '12px 24px', fontSize: '14px', fontWeight: 600, 
-                  cursor: (isReady && tab.id !== 'roster') ? 'not-allowed' : 'pointer', 
-                  transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px',
-                  opacity: (isReady && tab.id !== 'roster') ? 0.3 : 1
-                }}
+                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-[#768196] border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 {tab.label}
               </button>
@@ -119,28 +101,25 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {/* ONGLET 1 : ROSTER */}
         {activeTab === 'roster' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px', animation: 'fadeIn 0.3s' }}>
+          <div className="grid grid-cols-[1fr_380px] gap-8 animate-[fadeIn_0.3s]">
             
-            <div style={{ backgroundColor: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '32px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h2 style={{ fontFamily: "'Oswald', sans-serif", margin: 0, color: '#FFF', fontSize: '24px', letterSpacing: '0.5px' }}>DRAFT D'ÉQUIPE</h2>
-                <div style={{ fontSize: '14px', color: THEME.textMuted }}>SÉLECTIONNEZ VOS 5 TITULAIRES</div>
+            <div className="bg-[#11141E] border border-[#222838] rounded-lg p-8 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-['Oswald'] m-0 text-white text-[24px] tracking-[0.5px]">DRAFT D'ÉQUIPE</h2>
+                <div className="text-sm text-[#768196]">SÉLECTIONNEZ VOS 5 TITULAIRES</div>
               </div>
               
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '32px', backgroundColor: '#0C0E14', padding: '6px', borderRadius: '6px' }}>
+              <div className="flex gap-2 mb-8 bg-[#0C0E14] p-1.5 rounded-md">
                 {ORDERED_ROLES.map(role => {
                   const selectedCard = getDynamicCard(myLineup[role]);
                   return (
-                    <button key={role} onClick={() => !isReady && setActiveRole(role)}
-                      style={{
-                        flex: 1, padding: '12px 8px', borderRadius: '4px', border: 'none',
-                        backgroundColor: activeRole === role ? '#1A1E2C' : 'transparent',
-                        color: activeRole === role ? '#FFF' : THEME.textMuted, 
-                        cursor: isReady ? 'not-allowed' : 'pointer', 
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'background-color 0.2s'
-                      }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '4px' }}>{role}</span>
-                      <span style={{ fontSize: '13px', color: selectedCard ? THEME.accentGold : THEME.textMuted, fontWeight: selectedCard ? 600 : 400 }}>
+                    <button 
+                      key={role} 
+                      onClick={() => !isReady && setActiveRole(role)}
+                      className={`flex-1 p-[12px_8px] rounded border-none flex flex-col items-center transition-colors ${activeRole === role ? 'bg-[#1A1E2C] text-white' : 'bg-transparent text-[#768196]'} ${isReady ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                    >
+                      <span className="text-[11px] font-semibold tracking-[1px] uppercase mb-1">{role}</span>
+                      <span className={`text-[13px] ${selectedCard ? 'text-[#D4AF37] font-semibold' : 'text-[#768196] font-normal'}`}>
                         {selectedCard ? selectedCard.baseName : 'Non assigné'}
                       </span>
                     </button>
@@ -148,9 +127,9 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                 })}
               </div>
 
-              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', minHeight: '300px' }}>
+              <div className="flex gap-5 flex-wrap min-h-[300px]">
                 {ownedCardsForRole(activeRole).length === 0 ? (
-                  <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: THEME.textMuted, fontStyle: 'italic' }}>Aucun joueur disponible pour le poste de {activeRole}.</div>
+                  <div className="w-full flex items-center justify-center text-[#768196] italic">Aucun joueur disponible pour le poste de {activeRole}.</div>
                 ) : (
                   ownedCardsForRole(activeRole).map(baseCard => {
                     const card = getDynamicCard(baseCard.id); 
@@ -160,33 +139,27 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                     const isExpired = contract === 0;
                     
                     return (
-                      <div key={card.id} 
+                      <div 
+                        key={card.id} 
                         onClick={() => (!isExpired && !isReady) && setLineupCard(activeRole, card.id)} 
-                        style={{ cursor: (isExpired || isReady) ? 'not-allowed' : 'pointer', transition: 'transform 0.2s ease', transform: selected ? 'translateY(-6px)' : 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}
+                        className={`flex flex-col items-center gap-2.5 transition-transform duration-200 ${(isExpired || isReady) ? 'cursor-not-allowed' : 'cursor-pointer'} ${selected ? '-translate-y-[6px]' : ''}`}
                       >
-                        <div style={{ 
-                          padding: '4px', borderRadius: '12px', 
-                          border: selected ? `2px solid ${THEME.accentGold}` : `2px solid transparent`, 
-                          boxShadow: selected ? `0 12px 24px rgba(212, 175, 55, 0.15)` : 'none', 
-                          backgroundColor: selected ? 'rgba(212, 175, 55, 0.05)' : 'transparent',
-                          filter: isExpired ? 'grayscale(100%) opacity(50%)' : 'none'
-                        }}>
+                        <div 
+                          className={`p-1 rounded-xl transition-all ${selected ? 'border-2 border-[#D4AF37] shadow-[0_12px_24px_rgba(212,175,55,0.15)] bg-[rgba(212,175,55,0.05)]' : 'border-2 border-transparent'} ${isExpired ? 'grayscale opacity-50' : ''}`}
+                        >
                           <CardIllustration card={card} width={155} />
                         </div>
                         
-                        <div style={{ 
-                          background: isLifetime 
-                            ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' 
-                            : (isExpired ? 'linear-gradient(135deg, #ff3366 0%, #88001b 100%)' : 'rgba(8, 10, 16, 0.95)'), 
-                          border: `1px solid ${isLifetime ? '#FFF' : (isExpired ? '#FFB3C6' : THEME.accentGold)}`, 
-                          color: isLifetime || isExpired ? '#FFF' : THEME.accentGold, 
-                          borderRadius: '20px', padding: '4px 12px', 
-                          fontSize: '12px', fontWeight: 800, 
-                          boxShadow: `0 4px 15px ${isLifetime ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0,0,0,0.6)'}`,
-                          display: 'flex', alignItems: 'center', gap: '6px',
-                          letterSpacing: '0.5px'
-                        }}>
-                          {isLifetime ? '♾️ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span style={{fontSize: '11px', opacity: 0.8}}>✍️</span> {contract} TRN</>}
+                        <div 
+                          className="rounded-full px-3 py-1 text-xs font-extrabold flex items-center gap-1.5 tracking-[0.5px]"
+                          style={{ 
+                            background: isLifetime ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' : (isExpired ? 'linear-gradient(135deg, #ff3366 0%, #88001b 100%)' : 'rgba(8, 10, 16, 0.95)'), 
+                            border: `1px solid ${isLifetime ? '#FFF' : (isExpired ? '#FFB3C6' : '#D4AF37')}`, 
+                            color: isLifetime || isExpired ? '#FFF' : '#D4AF37', 
+                            boxShadow: `0 4px 15px ${isLifetime ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0,0,0,0.6)'}`
+                          }}
+                        >
+                          {isLifetime ? '♾️ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span className="text-[11px] opacity-80">✍️</span> {contract} TRN</>}
                         </div>
                       </div>
                     );
@@ -196,26 +169,33 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             </div>
 
             {/* BARRE LATÉRALE */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ backgroundColor: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '32px', textAlign: 'center' }}>
-                <div style={{ fontSize: '11px', color: THEME.textMuted, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Moyenne d'Équipe</div>
-                <div style={{ fontSize: '56px', fontFamily: "'Oswald', sans-serif", fontWeight: 600, color: teamPower > 0 ? THEME.accentGold : THEME.textMuted }}>{teamPower > 0 ? Math.round(teamPower) : '-'}</div>
+            <div className="flex flex-col gap-6">
+              <div className="bg-[#11141E] border border-[#222838] rounded-lg p-8 text-center">
+                <div className="text-[11px] text-[#768196] tracking-[2px] uppercase mb-2">Moyenne d'Équipe</div>
+                <div className={`text-[56px] font-['Oswald'] font-semibold ${teamPower > 0 ? 'text-[#D4AF37]' : 'text-[#768196]'}`}>
+                  {teamPower > 0 ? Math.round(teamPower) : '-'}
+                </div>
               </div>
 
-              <div style={{ backgroundColor: '#131621', border: `1px solid ${THEME.border}`, borderRadius: '8px', padding: '24px', textAlign: 'center' }}>
-                <h3 style={{ margin: '0 0 16px 0', fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '18px', fontWeight: 500, letterSpacing: '0.5px' }}>TRÉSORERIE</h3>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>
+              <div className="bg-[#131621] border border-[#222838] rounded-lg p-6 text-center">
+                <h3 className="m-0 mb-4 font-['Oswald'] text-white text-[18px] font-medium tracking-[0.5px]">TRÉSORERIE</h3>
+                <div className="text-[24px] font-bold text-[#00e676] mb-5">
                   {myEconomy} 💲 CRÉDITS
                 </div>
                 <button 
                   onClick={() => !isReady && setActiveTab('shop')} 
                   disabled={isReady}
-                  style={{ width: '100%', backgroundColor: isReady ? '#333' : THEME.accentGold, color: isReady ? '#888' : '#000', border: 'none', padding: '16px', borderRadius: '4px', fontSize: '14px', fontWeight: 700, cursor: isReady ? 'not-allowed' : 'pointer' }}>
+                  className={`w-full border-none p-4 rounded text-sm font-bold ${isReady ? 'bg-[#333] text-[#888] cursor-not-allowed' : 'bg-[#D4AF37] text-black cursor-pointer'}`}
+                >
                   ALLER À LA BOUTIQUE
                 </button>
               </div>
 
-              <button onClick={handleToggleReady} disabled={!lineupComplete && !isReady} style={{ backgroundColor: isReady ? THEME.accentGold : lineupComplete ? '#FFFFFF' : '#1F2433', color: isReady ? '#000' : lineupComplete ? '#000' : THEME.textMuted, border: 'none', padding: '20px', borderRadius: '8px', fontSize: '15px', fontWeight: 700, cursor: (!lineupComplete && !isReady) ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              <button 
+                onClick={handleToggleReady} 
+                disabled={!lineupComplete && !isReady} 
+                className={`border-none p-5 rounded-lg text-[15px] font-bold transition-all duration-200 uppercase tracking-[1px] ${(!lineupComplete && !isReady) ? 'cursor-not-allowed' : 'cursor-pointer'} ${isReady ? 'bg-[#D4AF37] text-black' : lineupComplete ? 'bg-white text-black' : 'bg-[#1F2433] text-[#768196]'}`}
+              >
                 {isReady ? 'ROSTER VERROUILLÉ ✓' : lineupComplete ? 'VALIDER LE ROSTER' : 'ROSTER INCOMPLET'}
               </button>
             </div>
@@ -224,28 +204,32 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {/* ONGLET 2 : BOUTIQUE */}
         {activeTab === 'shop' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '36px', margin: '0 0 10px 0', color: '#FFF' }}>
+          <div className="animate-[fadeIn_0.3s]">
+            <div className="text-center mb-10">
+              <h2 className="font-['Oswald'] text-[36px] m-0 mb-2.5 text-white">
                 BOUTIQUE DU CIRCUIT
               </h2>
-              <p style={{ color: THEME.textMuted, fontSize: '16px' }}>
+              <p className="text-[#768196] text-[16px]">
                 Recrutez de nouveaux talents. Les packs supérieurs offrent de meilleures chances d'obtenir des joueurs d'élite.
               </p>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginTop: '20px' }}>
+              <div className="text-[28px] font-bold text-[#00e676] mt-5">
                 SOLDE : 💲 {myEconomy} CRÉDITS
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '30px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="flex gap-[30px] justify-center flex-wrap">
               
               {!hasStarter && (
-                <div style={{ background: THEME.bgPanel, border: `2px solid #00e676`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 0 30px rgba(0,230,118,0.2)' }}>
-                  <div style={{ fontSize: '50px', marginBottom: '10px' }}>🎁</div>
-                  <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e676', fontSize: '24px', margin: '0 0 10px 0' }}>PACK DE DÉPART</h3>
-                  <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Une base solide pour débuter votre saison. Contient 10 cartes de contrat À VIE.</p>
-                  <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#FFF', marginBottom: '20px' }}>GRATUIT</div>
-                  <button onClick={() => socket.emit('buy-pack', 'standard')} disabled={isReady} style={{ width: '100%', backgroundColor: isReady ? '#333' : '#00e676', color: isReady ? '#888' : '#000', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: isReady ? 'not-allowed' : 'pointer', fontSize: '16px' }}>
+                <div className="bg-[#11141E] border-2 border-[#00e676] rounded-xl p-[30px] w-[300px] text-center shadow-[0_0_30px_rgba(0,230,118,0.2)]">
+                  <div className="text-[50px] mb-2.5">🎁</div>
+                  <h3 className="font-['Oswald'] text-[#00e676] text-[24px] m-0 mb-2.5">PACK DE DÉPART</h3>
+                  <p className="text-[#768196] text-[14px] mb-5 min-h-[60px]">Une base solide pour débuter votre saison. Contient 10 cartes de contrat À VIE.</p>
+                  <div className="text-[24px] font-bold text-white mb-5">GRATUIT</div>
+                  <button 
+                    onClick={() => socket.emit('buy-pack', 'standard')} 
+                    disabled={isReady} 
+                    className={`w-full border-none p-3.5 rounded font-bold text-[16px] ${isReady ? 'bg-[#333] text-[#888] cursor-not-allowed' : 'bg-[#00e676] text-black cursor-pointer'}`}
+                  >
                     OUVRIR
                   </button>
                 </div>
@@ -253,39 +237,39 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
               {hasStarter && (
                 <>
-                  <div style={{ background: THEME.bgPanel, border: `1px solid ${THEME.border}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', transition: 'transform 0.2s', cursor: 'default' }}>
-                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>📦</div>
-                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', fontSize: '24px', margin: '0 0 10px 0' }}>PACK STANDARD</h3>
-                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Idéal pour commencer. Probabilités classiques (5 cartes).</p>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>100 💲</div>
+                  <div className="bg-[#11141E] border border-[#222838] rounded-xl p-[30px] w-[300px] text-center transition-transform cursor-default">
+                    <div className="text-[50px] mb-2.5">📦</div>
+                    <h3 className="font-['Oswald'] text-white text-[24px] m-0 mb-2.5">PACK STANDARD</h3>
+                    <p className="text-[#768196] text-[14px] mb-5 min-h-[60px]">Idéal pour commencer. Probabilités classiques (5 cartes).</p>
+                    <div className="text-[28px] font-bold text-[#00e676] mb-5">100 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'standard')} 
                       disabled={myEconomy < 100 || isReady}
-                      style={{ width: '100%', backgroundColor: (myEconomy >= 100 && !isReady) ? '#FFF' : '#333', color: (myEconomy >= 100 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 100 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      className={`w-full border-none p-3.5 rounded font-bold text-[16px] ${(myEconomy >= 100 && !isReady) ? 'bg-white text-black cursor-pointer' : 'bg-[#333] text-[#888] cursor-not-allowed'}`}
                     >ACHETER</button>
                   </div>
 
-                  <div style={{ background: 'linear-gradient(180deg, rgba(0, 229, 255, 0.1) 0%, #11141E 100%)', border: `1px solid #00e5ff`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(0, 229, 255, 0.1)' }}>
-                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>💎</div>
-                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#00e5ff', fontSize: '24px', margin: '0 0 10px 0' }}>PACK ÉLITE</h3>
-                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances doublées d'obtenir des cartes Rares, Épiques, Légendaires et WANTED.</p>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}>250 💲</div>
+                  <div className="bg-[linear-gradient(180deg,rgba(0,229,255,0.1)_0%,#11141E_100%)] border border-[#00e5ff] rounded-xl p-[30px] w-[300px] text-center shadow-[0_10px_30px_rgba(0,229,255,0.1)]">
+                    <div className="text-[50px] mb-2.5">💎</div>
+                    <h3 className="font-['Oswald'] text-[#00e5ff] text-[24px] m-0 mb-2.5">PACK ÉLITE</h3>
+                    <p className="text-[#768196] text-[14px] mb-5 min-h-[60px]">Chances doublées d'obtenir des cartes Rares, Épiques, Légendaires et WANTED.</p>
+                    <div className="text-[28px] font-bold text-[#00e676] mb-5">250 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'elite')} 
                       disabled={myEconomy < 250 || isReady}
-                      style={{ width: '100%', backgroundColor: (myEconomy >= 250 && !isReady) ? '#00e5ff' : '#333', color: (myEconomy >= 250 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 250 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      className={`w-full border-none p-3.5 rounded font-bold text-[16px] ${(myEconomy >= 250 && !isReady) ? 'bg-[#00e5ff] text-black cursor-pointer' : 'bg-[#333] text-[#888] cursor-not-allowed'}`}
                     >ACHETER</button>
                   </div>
 
-                  <div style={{ background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, #11141E 100%)', border: `1px solid ${THEME.accentGold}`, borderRadius: '12px', padding: '30px', width: '300px', textAlign: 'center', boxShadow: '0 10px 30px rgba(212, 175, 55, 0.15)' }}>
-                    <div style={{ fontSize: '50px', marginBottom: '10px' }}>👑</div>
-                    <h3 style={{ fontFamily: "'Oswald', sans-serif", color: THEME.accentGold, fontSize: '24px', margin: '0 0 10px 0' }}>PACK LÉGENDE</h3>
-                    <p style={{ color: THEME.textMuted, fontSize: '14px', marginBottom: '20px', minHeight: '60px' }}>Chances multipliées par 5 pour les cartes de niveau Épique, Légendaire et WANTED.</p>
-                    <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginBottom: '20px' }}> 500 💲</div>
+                  <div className="bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border border-[#D4AF37] rounded-xl p-[30px] w-[300px] text-center shadow-[0_10px_30px_rgba(212,175,55,0.15)]">
+                    <div className="text-[50px] mb-2.5">👑</div>
+                    <h3 className="font-['Oswald'] text-[#D4AF37] text-[24px] m-0 mb-2.5">PACK LÉGENDE</h3>
+                    <p className="text-[#768196] text-[14px] mb-5 min-h-[60px]">Chances multipliées par 5 pour les cartes de niveau Épique, Légendaire et WANTED.</p>
+                    <div className="text-[28px] font-bold text-[#00e676] mb-5"> 500 💲</div>
                     <button 
                       onClick={() => socket.emit('buy-pack', 'legendary')} 
                       disabled={myEconomy < 500 || isReady}
-                      style={{ width: '100%', backgroundColor: (myEconomy >= 500 && !isReady) ? THEME.accentGold : '#333', color: (myEconomy >= 500 && !isReady) ? '#000' : '#888', border: 'none', padding: '14px', borderRadius: '4px', fontWeight: 'bold', cursor: (myEconomy >= 500 && !isReady) ? 'pointer' : 'not-allowed', fontSize: '16px' }}
+                      className={`w-full border-none p-3.5 rounded font-bold text-[16px] ${(myEconomy >= 500 && !isReady) ? 'bg-[#D4AF37] text-black cursor-pointer' : 'bg-[#333] text-[#888] cursor-not-allowed'}`}
                     >ACHETER</button>
                   </div>
                 </>
@@ -296,20 +280,20 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {/* ONGLET 3 : REVENTE */}
         {activeTab === 'sell' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '36px', margin: '0 0 10px 0', color: '#FFF' }}>
+          <div className="animate-[fadeIn_0.3s]">
+            <div className="text-center mb-10">
+              <h2 className="font-['Oswald'] text-[36px] m-0 mb-2.5 text-white">
                 MARCHÉ DES TRANSFERTS
               </h2>
-              <p style={{ color: THEME.textMuted, fontSize: '16px' }}>
+              <p className="text-[#768196] text-[16px]">
                 Revendez définitivement des joueurs qui ne figurent pas dans votre équipe titulaire pour récupérer des crédits.
               </p>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00e676', marginTop: '20px' }}>
+              <div className="text-[28px] font-bold text-[#00e676] mt-5">
                 SOLDE : 💲 {myEconomy} CRÉDITS
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div className="flex gap-6 flex-wrap justify-center">
               {Object.keys(myCollection)
                 .filter(cardId => myCollection[cardId] !== 0 && myCollection[cardId] !== 'LIFETIME' && !Object.values(myLineup).includes(cardId))
                 .map(cardId => {
@@ -325,22 +309,17 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   else if (card.rarity === 'Légendaire' || card.rarity === 'WANTED') price = 100;
 
                   return (
-                    <div key={cardId} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', background: THEME.bgPanel, padding: '20px', borderRadius: '12px', border: `1px solid ${THEME.border}`, transition: 'transform 0.2s', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+                    <div key={cardId} className="flex flex-col items-center gap-3 bg-[#11141E] p-5 rounded-xl border border-[#222838] transition-transform shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                       <CardIllustration card={card} width={140} />
                       
-                      <div style={{ fontSize: '12px', color: THEME.textMuted, fontWeight: 'bold', marginTop: '8px' }}>
+                      <div className="text-xs text-[#768196] font-bold mt-2">
                         {isLifetime ? '♾️ CONTRAT À VIE' : `CONTRAT: ${contract} TRN`}
                       </div>
                       
                       <button 
                         onClick={() => !isReady && socket.emit('sell-card', cardId)}
                         disabled={isReady}
-                        style={{ 
-                          width: '100%', backgroundColor: isReady ? '#444' : '#e63946', color: isReady ? '#888' : '#FFF', 
-                          border: 'none', padding: '10px', borderRadius: '4px', 
-                          fontWeight: 'bold', cursor: isReady ? 'not-allowed' : 'pointer', fontSize: '14px',
-                          transition: 'background-color 0.2s'
-                        }}
+                        className={`w-full border-none p-2.5 rounded font-bold text-[14px] transition-colors ${isReady ? 'bg-[#444] text-[#888] cursor-not-allowed' : 'bg-[#e63946] text-white cursor-pointer'}`}
                       >
                         VENDRE LE JOUEUR ( 💲 {price} )
                       </button>
@@ -349,7 +328,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
               })}
               
               {Object.keys(myCollection).filter(cardId => myCollection[cardId] !== 0 && myCollection[cardId] !== 'LIFETIME' && !Object.values(myLineup).includes(cardId)).length === 0 && (
-                <div style={{ width: '100%', textAlign: 'center', color: THEME.textMuted, padding: '40px', fontStyle: 'italic', background: THEME.bgPanel, borderRadius: '8px', border: `1px solid ${THEME.border}` }}>
+                <div className="w-full text-center text-[#768196] p-10 italic bg-[#11141E] rounded-lg border border-[#222838]">
                   Aucun joueur disponible à la vente.<br/>
                   (Les joueurs de votre équipe titulaire et ceux sous contrat À VIE sont protégés et ne peuvent pas être vendus).
                 </div>
@@ -360,17 +339,17 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {/* ONGLET 4 : CALENDRIER & COMPÉTITIONS */}
         {activeTab === 'circuit' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '32px', margin: '0 0 10px 0', color: '#FFF' }}>
+          <div className="animate-[fadeIn_0.3s]">
+            <div className="text-center mb-10">
+              <h2 className="font-['Oswald'] text-[32px] m-0 mb-2.5 text-white">
                 FEUILLE DE ROUTE OFFICIELLE
               </h2>
-              <p style={{ color: THEME.textMuted, fontSize: '15px' }}>
+              <p className="text-[#768196] text-[15px]">
                 Le calendrier des tournois majeurs de la saison. Préparez votre roster pour chaque échéance.
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px' }}>
+            <div className="grid grid-cols-4 gap-5">
               {EVENTS.map((tourney, index) => {
                 const isActive = index === currentEventIndex;
                 const isCompleted = index < currentEventIndex;
@@ -380,46 +359,48 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                 return (
                   <div 
                     key={tourney.id}
+                    className={`bg-[#11141E] rounded-xl p-[24px_20px] flex flex-col items-center relative transition-all duration-300 ${isActive ? '-translate-y-1' : ''} ${isCompleted ? 'opacity-70' : (isActive ? 'opacity-100' : 'opacity-80')}`}
                     style={{
-                      backgroundColor: THEME.bgPanel,
-                      border: isActive ? `1px solid ${tourney.color}` : `1px solid ${THEME.border}`,
-                      borderRadius: '12px', padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative',
+                      border: isActive ? `1px solid ${tourney.color}` : `1px solid #222838`,
                       boxShadow: isActive ? `0 0 25px ${tourney.color}15` : 'none',
-                      transform: isActive ? 'translateY(-4px)' : 'none', transition: 'all 0.3s ease',
-                      opacity: isCompleted ? 0.7 : (isActive ? 1 : 0.8),
                     }}
                   >
                     {isActive && (
-                      <div style={{ position: 'absolute', top: '-12px', background: tourney.color, color: '#000', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+                      <div className="absolute -top-3 text-black px-3 py-1 rounded-xl font-bold text-[11px] tracking-[1px]" style={{ background: tourney.color }}>
                         EN COURS
                       </div>
                     )}
                     {isCompleted && (
-                      <div style={{ position: 'absolute', top: '-12px', background: '#3B4154', color: '#FFF', padding: '4px 12px', borderRadius: '12px', fontWeight: 'bold', fontSize: '11px', letterSpacing: '1px' }}>
+                      <div className="absolute -top-3 bg-[#3B4154] text-white px-3 py-1 rounded-xl font-bold text-[11px] tracking-[1px]">
                         TERMINÉ
                       </div>
                     )}
 
-                    <div style={{ height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', width: '100%' }}>
-                      <img src={tourney.logo} alt={tourney.shortName} style={{ maxHeight: '100%', maxWidth: '80px', objectFit: 'contain', filter: isActive ? `drop-shadow(0 0 8px ${tourney.color}40)` : 'grayscale(30%)' }} />
+                    <div className="h-[80px] flex items-center justify-center mb-4 w-full">
+                      <img 
+                        src={tourney.logo} 
+                        alt={tourney.shortName} 
+                        className={`max-h-full max-w-[80px] object-contain ${isActive ? '' : 'grayscale-[30%]'}`} 
+                        style={{ filter: isActive ? `drop-shadow(0 0 8px ${tourney.color}40)` : '' }}
+                      />
                     </div>
 
-                    <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: tourney.isMajor ? '22px' : '18px', margin: '0 0 8px 0', color: '#FFF', textAlign: 'center' }}>
+                    <h3 className={`font-['Oswald'] m-0 mb-2 text-white text-center ${tourney.isMajor ? 'text-[22px]' : 'text-[18px]'}`}>
                       {tourney.name}
                     </h3>
 
-                    <div style={{ fontSize: '12px', color: THEME.textMuted, marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <div className="text-[12px] text-[#768196] mb-5 uppercase tracking-[1px]">
                       {tourney.format === 'gsl_to_single' ? 'Groupes GSL' : tourney.format === 'swiss_to_single' ? 'Ronde Suisse' : 'Double Élimination'}
                     </div>
 
-                    <div style={{ marginTop: 'auto', width: '100%', textAlign: 'center', paddingTop: '16px', borderTop: `1px solid ${THEME.border}` }}>
+                    <div className="mt-auto w-full text-center pt-4 border-t border-[#222838]">
                       {latestWinner ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <span style={{ fontSize: '10px', color: THEME.textMuted, letterSpacing: '1px', textTransform: 'uppercase' }}>Dernier Vainqueur</span>
-                          <span style={{ fontSize: '14px', color: THEME.accentGold, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>👑 {latestWinner}</span>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] text-[#768196] tracking-[1px] uppercase">Dernier Vainqueur</span>
+                          <span className="text-[14px] text-[#D4AF37] font-bold whitespace-nowrap overflow-hidden text-ellipsis">👑 {latestWinner}</span>
                         </div>
                       ) : (
-                        <div style={{ fontSize: '12px', color: isActive ? tourney.color : THEME.textMuted, fontWeight: 500 }}>
+                        <div className="text-[12px] font-medium" style={{ color: isActive ? tourney.color : '#768196' }}>
                           {isActive ? 'Compétition en ligne' : 'Trophée vacant'}
                         </div>
                       )}
@@ -433,82 +414,82 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {/* ONGLET 5 : LE PANTHÉON */}
         {activeTab === 'halloffame' && (
-          <div style={{ animation: 'fadeIn 0.3s' }}>
+          <div className="animate-[fadeIn_0.3s]">
             
-            <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-              <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '32px', margin: '0 0 10px 0', color: '#FFF' }}>
+            <div className="text-center mb-[50px]">
+              <h2 className="font-['Oswald'] text-[32px] m-0 mb-2.5 text-white">
                 CLASSEMENT GLOBAL
               </h2>
-              <p style={{ color: THEME.textMuted, fontSize: '15px', maxWidth: '600px', margin: '0 auto' }}>
+              <p className="text-[#768196] text-[15px] max-w-[600px] mx-auto">
                 Le classement mondial officiel basé sur les performances accumulées lors des compétitions du Circuit Pro. Seuls les plus grands laissent leur empreinte.
               </p>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '20px', marginBottom: '60px', height: '200px' }}>
+            <div className="flex justify-center items-end gap-5 mb-[60px] h-[200px]">
               {/* TOP 2 */}
               {sortedLeaderboard[1] && (
-                <div style={{ width: '220px', background: 'linear-gradient(180deg, rgba(192, 192, 192, 0.1) 0%, #11141E 100%)', borderTop: `4px solid ${THEME.accentSilver}`, borderRadius: '12px 12px 0 0', padding: '20px', textAlign: 'center', position: 'relative', height: '140px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                  <div style={{ position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)', background: THEME.accentSilver, color: '#000', width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', border: '4px solid #080A10' }}>2</div>
-                  <h3 style={{ color: '#FFF', margin: '15px 0 5px 0', fontSize: '18px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sortedLeaderboard[1].name}</h3>
-                  <span style={{ color: THEME.accentSilver, fontWeight: 'bold' }}>{state.seasonScores?.[sortedLeaderboard[1].id]?.points || 0} PTS</span>
+                <div className="w-[220px] bg-[linear-gradient(180deg,rgba(192,192,192,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#C0C0C0] rounded-t-xl p-5 text-center relative h-[140px] flex flex-col justify-start">
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#C0C0C0] text-black w-[30px] h-[30px] rounded-full flex items-center justify-center font-bold text-[14px] border-[4px] border-[#080A10]">2</div>
+                  <h3 className="text-white mt-[15px] mb-[5px] text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[1].name}</h3>
+                  <span className="text-[#C0C0C0] font-bold">{state.seasonScores?.[sortedLeaderboard[1].id]?.points || 0} PTS</span>
                 </div>
               )}
 
               {/* TOP 1 */}
               {sortedLeaderboard[0] && (
-                <div style={{ width: '260px', background: 'linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, #11141E 100%)', borderTop: `6px solid ${THEME.accentGold}`, borderRadius: '12px 12px 0 0', padding: '30px 20px', textAlign: 'center', position: 'relative', height: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', boxShadow: '0 -10px 40px rgba(212, 175, 55, 0.15)' }}>
-                  <div style={{ position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)', fontSize: '40px', filter: 'drop-shadow(0 0 10px rgba(212, 175, 55, 0.5))' }}>👑</div>
-                  <h3 style={{ color: THEME.accentGold, margin: '5px 0 5px 0', fontSize: '24px', fontFamily: "'Oswald', sans-serif", letterSpacing: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sortedLeaderboard[0].name}</h3>
-                  <span style={{ color: '#FFF', fontWeight: 'bold', fontSize: '18px' }}>{state.seasonScores?.[sortedLeaderboard[0].id]?.points || 0} PTS</span>
-                  {(state.seasonScores?.[sortedLeaderboard[0].id]?.titles || 0) > 0 && <span style={{ fontSize: '12px', color: THEME.textMuted, marginTop: '10px' }}>{state.seasonScores[sortedLeaderboard[0].id].titles} Trophée(s)</span>}
+                <div className="w-[260px] bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border-t-[6px] border-[#D4AF37] rounded-t-xl p-[30px_20px] text-center relative h-[180px] flex flex-col justify-start shadow-[0_-10px_40px_rgba(212,175,55,0.15)]">
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[40px] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">👑</div>
+                  <h3 className="text-[#D4AF37] mt-[5px] mb-[5px] text-[24px] font-['Oswald'] tracking-[1px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[0].name}</h3>
+                  <span className="text-white font-bold text-[18px]">{state.seasonScores?.[sortedLeaderboard[0].id]?.points || 0} PTS</span>
+                  {(state.seasonScores?.[sortedLeaderboard[0].id]?.titles || 0) > 0 && <span className="text-[12px] text-[#768196] mt-2.5">{state.seasonScores[sortedLeaderboard[0].id].titles} Trophée(s)</span>}
                 </div>
               )}
 
               {/* TOP 3 */}
               {sortedLeaderboard[2] && (
-                <div style={{ width: '220px', background: 'linear-gradient(180deg, rgba(205, 127, 50, 0.1) 0%, #11141E 100%)', borderTop: `4px solid ${THEME.accentBronze}`, borderRadius: '12px 12px 0 0', padding: '20px', textAlign: 'center', position: 'relative', height: '120px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                  <div style={{ position: 'absolute', top: '-20px', left: '50%', transform: 'translateX(-50%)', background: THEME.accentBronze, color: '#000', width: '30px', height: '30px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px', border: '4px solid #080A10' }}>3</div>
-                  <h3 style={{ color: '#FFF', margin: '15px 0 5px 0', fontSize: '18px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sortedLeaderboard[2].name}</h3>
-                  <span style={{ color: THEME.accentBronze, fontWeight: 'bold' }}>{state.seasonScores?.[sortedLeaderboard[2].id]?.points || 0} PTS</span>
+                <div className="w-[220px] bg-[linear-gradient(180deg,rgba(205,127,50,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#CD7F32] rounded-t-xl p-5 text-center relative h-[120px] flex flex-col justify-start">
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#CD7F32] text-black w-[30px] h-[30px] rounded-full flex items-center justify-center font-bold text-[14px] border-[4px] border-[#080A10]">3</div>
+                  <h3 className="text-white mt-[15px] mb-[5px] text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[2].name}</h3>
+                  <span className="text-[#CD7F32] font-bold">{state.seasonScores?.[sortedLeaderboard[2].id]?.points || 0} PTS</span>
                 </div>
               )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-              <div style={{ backgroundColor: THEME.bgPanel, borderRadius: '8px', padding: '32px', border: `1px solid ${THEME.border}` }}>
-                <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '20px', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '16px' }}>CHALLENGERS (TOP 4 - 16)</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="grid grid-cols-2 gap-10">
+              <div className="bg-[#11141E] rounded-lg p-8 border border-[#222838]">
+                <h3 className="font-['Oswald'] text-white m-0 mb-5 text-[20px] border-b border-[#222838] pb-4">CHALLENGERS (TOP 4 - 16)</h3>
+                <div className="flex flex-col gap-2">
                   {sortedLeaderboard.slice(3, 16).map((p, i) => (
-                    <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: '#0C0E14', borderRadius: '6px' }}>
-                      <span style={{ color: '#EAEAEA' }}>
-                        <span style={{ color: THEME.textMuted, marginRight: '16px', display: 'inline-block', width: '20px' }}>#{i + 4}</span> 
+                    <div key={p.id} className="flex justify-between p-[12px_16px] bg-[#0C0E14] rounded-md">
+                      <span className="text-[#EAEAEA]">
+                        <span className="text-[#768196] mr-4 inline-block w-5">#{i + 4}</span> 
                         {p.name}
                       </span>
-                      <span style={{ color: '#FFF', fontWeight: 600 }}>{state.seasonScores?.[p.id]?.points || 0} PTS</span>
+                      <span className="text-white font-semibold">{state.seasonScores?.[p.id]?.points || 0} PTS</span>
                     </div>
                   ))}
-                  {sortedLeaderboard.length <= 3 && <div style={{ color: THEME.textMuted, fontStyle: 'italic', textAlign: 'center', padding: '20px' }}>En attente de plus d'équipes.</div>}
+                  {sortedLeaderboard.length <= 3 && <div className="text-[#768196] italic text-center p-5">En attente de plus d'équipes.</div>}
                 </div>
               </div>
 
-              <div style={{ backgroundColor: THEME.bgPanel, borderRadius: '8px', padding: '32px', border: `1px solid ${THEME.border}` }}>
-                <h3 style={{ fontFamily: "'Oswald', sans-serif", color: '#FFF', margin: '0 0 20px 0', fontSize: '20px', borderBottom: `1px solid ${THEME.border}`, paddingBottom: '16px' }}>LIVRE DES ARCHIVES</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="bg-[#11141E] rounded-lg p-8 border border-[#222838]">
+                <h3 className="font-['Oswald'] text-white m-0 mb-5 text-[20px] border-b border-[#222838] pb-4">LIVRE DES ARCHIVES</h3>
+                <div className="flex flex-col gap-4">
                   {state.history && state.history.length > 0 ? (
                     state.history.map((h, i) => {
                       const eventDetails = EVENTS.find(e => e.id === h.eventId);
                       return (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
-                          <img src={eventDetails?.logo} alt="Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '12px', color: THEME.textMuted, letterSpacing: '1px', textTransform: 'uppercase' }}>Année {h.year} - {eventDetails?.name || h.eventId}</div>
-                            <div style={{ color: THEME.accentGold, fontWeight: 700, fontSize: '16px' }}>{h.winnerName}</div>
+                        <div key={i} className="flex items-center gap-4 p-3 bg-white/5 rounded-lg">
+                          <img src={eventDetails?.logo} alt="Logo" className="w-10 h-10 object-contain" />
+                          <div className="flex-1">
+                            <div className="text-[12px] text-[#768196] tracking-[1px] uppercase">Année {h.year} - {eventDetails?.name || h.eventId}</div>
+                            <div className="text-[#D4AF37] font-bold text-[16px]">{h.winnerName}</div>
                           </div>
                         </div>
                       );
                     })
                   ) : (
-                    <div style={{ color: THEME.textMuted, fontStyle: 'italic', padding: '40px 0', textAlign: 'center' }}>
+                    <div className="text-[#768196] italic py-10 text-center">
                       L'histoire reste à écrire. Remportez le prochain tournoi pour marquer votre nom ici.
                     </div>
                   )}

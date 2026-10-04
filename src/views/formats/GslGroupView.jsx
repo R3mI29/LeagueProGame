@@ -7,7 +7,6 @@ export default function GslGroupView({ state, event }) {
   const isGlobalReady = readyPlayers?.includes(socket.id);
   const myId = socket.id;
 
-  // --- MOTEUR DE THEMES UNIFIÉ ---
   const eventName = event?.name?.toLowerCase() || '';
   const isWorlds = event?.isMajor || eventName.includes('worlds');
   const isEWC = eventName.includes('ewc') || eventName.includes('esports world cup');
@@ -41,7 +40,7 @@ export default function GslGroupView({ state, event }) {
       theme = { ...theme,
           main: '#FF5C00', bg: '#F4F5F8', boxBg: '#FFFFFF', border: '#E5E7EB',
           font: "'Rajdhani', sans-serif", textMain: '#25092C', textMuted: '#71717A', logoPlaceholder: '#F0F1F5',
-          headerBg: '#25092C', headerText: '#FFFFFF', // <-- RESTAURÉ : Les vraies couleurs First Stand !
+          headerBg: '#25092C', headerText: '#FFFFFF',
           logoFilter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.12))', boxShadow: '0 4px 10px rgba(0,0,0,0.03)',
           bgStyle: { backgroundImage: `repeating-linear-gradient(115deg, transparent, transparent 100px, rgba(0,0,0,0.02) 100px, rgba(0,0,0,0.02) 102px), repeating-linear-gradient(-65deg, transparent, transparent 150px, rgba(0,0,0,0.015) 150px, rgba(0,0,0,0.015) 152px)` }
       };
@@ -81,38 +80,55 @@ export default function GslGroupView({ state, event }) {
     }
 
     return (
-      <div style={{ position: 'relative', marginBottom: '12px', width: '100%' }} key={match.id}>
-        <div style={{ color: theme.main, fontSize: '11px', fontWeight: 800, position: 'absolute', top: '-16px', left: 0, letterSpacing: '0.5px', fontFamily: theme.font, textTransform: 'uppercase' }}>
-            {title} {isSim && <span className="pulse-text" style={{ color: theme.main, marginLeft: '4px' }}>• LIVE</span>}
+      <div className="relative mb-3 w-full" key={match.id}>
+        <div 
+          className="absolute -top-4 left-0 text-[11px] font-extrabold tracking-[0.5px] uppercase"
+          style={{ color: theme.main, fontFamily: theme.font }}
+        >
+            {title} {isSim && <span className="animate-pulse-fast ml-1" style={{ color: theme.main }}>• LIVE</span>}
         </div>
         
-        <div onClick={() => handleMatchClick(match)}
+        <div 
+            onClick={() => handleMatchClick(match)}
+            className="flex flex-col min-w-[160px] font-sans transition-all duration-200"
             style={{
                 background: theme.boxBg, 
                 backdropFilter: isWorlds ? 'blur(12px)' : 'none',
                 border: borderStyle,
                 borderLeft: (isWorlds || isEWC) && involvesMe ? `3px solid ${theme.accent}` : borderStyle,
                 borderRadius: isWorlds || isEWC ? '0px' : '6px', 
-                minWidth: '160px', cursor: isMyTurn ? 'pointer' : 'default',
-                display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif",
+                cursor: isMyTurn ? 'pointer' : 'default',
                 boxShadow: isWorlds || isEWC ? theme.boxShadow : (isMyTurn ? `0 0 12px ${theme.main}50` : theme.boxShadow),
-                transition: 'all 0.2s ease'
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', borderBottom: `1px solid ${theme.border}`, opacity: match.teamA ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamA?.id ? winnerBg : 'transparent' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                    {match.teamA?.logo ? <img src={match.teamA.logo} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain', filter: theme.logoFilter, flexShrink: 0 }} /> : <div style={{ width: '24px', height: '24px', background: theme.logoPlaceholder, borderRadius: '4px', flexShrink: 0 }} />}
-                    <span style={{ fontSize: '14px', color: teamAStyle.color, fontWeight: teamAStyle.weight, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.teamA ? match.teamA.tag : 'TBD'}</span>
+            <div 
+              className="flex justify-between items-center p-[6px_10px] border-b" 
+              style={{ borderColor: theme.border, opacity: match.teamA ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamA?.id ? winnerBg : 'transparent' }}
+            >
+                <div className="flex items-center gap-2.5 min-w-0">
+                    {match.teamA?.logo ? (
+                      <img src={match.teamA.logo} alt="" className="w-6 h-6 shrink-0 object-contain" style={{ filter: theme.logoFilter }} />
+                    ) : (
+                      <div className="w-6 h-6 shrink-0 rounded" style={{ background: theme.logoPlaceholder }} />
+                    )}
+                    <span className="text-[14px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: teamAStyle.color, fontWeight: teamAStyle.weight }}>{match.teamA ? match.teamA.tag : 'TBD'}</span>
                 </div>
-                <span style={{ fontSize: '15px', color: teamAStyle.color, fontWeight: teamAStyle.weight, flexShrink: 0, marginLeft: '6px' }}>{isFin ? match.scoreA : (isSim ? match.scoreA : '-')}</span>
+                <span className="text-[15px] shrink-0 ml-1.5" style={{ color: teamAStyle.color, fontWeight: teamAStyle.weight }}>{isFin ? match.scoreA : (isSim ? match.scoreA : '-')}</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', opacity: match.teamB ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamB?.id ? winnerBg : 'transparent' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                    {match.teamB?.logo ? <img src={match.teamB.logo} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain', filter: theme.logoFilter, flexShrink: 0 }} /> : <div style={{ width: '24px', height: '24px', background: theme.logoPlaceholder, borderRadius: '4px', flexShrink: 0 }} />}
-                    <span style={{ fontSize: '14px', color: teamBStyle.color, fontWeight: teamBStyle.weight, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.teamB ? match.teamB.tag : 'TBD'}</span>
+            <div 
+              className="flex justify-between items-center p-[6px_10px]" 
+              style={{ opacity: match.teamB ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamB?.id ? winnerBg : 'transparent' }}
+            >
+                <div className="flex items-center gap-2.5 min-w-0">
+                    {match.teamB?.logo ? (
+                      <img src={match.teamB.logo} alt="" className="w-6 h-6 shrink-0 object-contain" style={{ filter: theme.logoFilter }} />
+                    ) : (
+                      <div className="w-6 h-6 shrink-0 rounded" style={{ background: theme.logoPlaceholder }} />
+                    )}
+                    <span className="text-[14px] whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: teamBStyle.color, fontWeight: teamBStyle.weight }}>{match.teamB ? match.teamB.tag : 'TBD'}</span>
                 </div>
-                <span style={{ fontSize: '15px', color: teamBStyle.color, fontWeight: teamBStyle.weight, flexShrink: 0, marginLeft: '6px' }}>{isFin ? match.scoreB : (isSim ? match.scoreB : '-')}</span>
+                <span className="text-[15px] shrink-0 ml-1.5" style={{ color: teamBStyle.color, fontWeight: teamBStyle.weight }}>{isFin ? match.scoreB : (isSim ? match.scoreB : '-')}</span>
             </div>
         </div>
       </div>
@@ -120,40 +136,43 @@ export default function GslGroupView({ state, event }) {
   };
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 100, overflowY: 'auto', overflowX: 'hidden', padding: '40px 2vw', backgroundColor: theme.bg, ...theme.bgStyle }}>
+    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-hidden p-[40px_2vw]" style={{ backgroundColor: theme.bg, ...theme.bgStyle }}>
       
-      <div style={{ width: '100%', maxWidth: '1600px', margin: '0 auto 40px auto', background: theme.headerBg, borderRadius: isEWC ? '0px' : '8px', padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `4px solid ${theme.main}`, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none', boxShadow: theme.boxShadow }}>
-        <h2 style={{ fontFamily: theme.font, fontSize: '28px', color: theme.headerText, margin: 0, fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase' }}>
+      <div 
+        className="w-full max-w-[1600px] mx-auto mb-10 p-[24px_40px] flex justify-between items-center border-t-[4px]"
+        style={{ background: theme.headerBg, borderRadius: isEWC ? '0px' : '8px', borderTopColor: theme.main, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none', boxShadow: theme.boxShadow }}
+      >
+        <h2 className="m-0 text-[28px] font-extrabold tracking-[1px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
           {isFirstStand ? 'PHASE DE QUALIFICATION' : 'GROUP STAGE'}
         </h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {event?.logo && <img src={event.logo} alt="" style={{ height: '40px', objectFit: 'contain', filter: theme.logoFilter }} />}
-          <span style={{ fontFamily: theme.font, fontSize: '24px', color: theme.headerText, fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
+        <div className="flex items-center gap-5">
+          {event?.logo && <img src={event.logo} alt="" className="h-10 object-contain" style={{ filter: theme.logoFilter }} />}
+          <span className="text-[24px] font-extrabold tracking-[2px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
             {event?.name || 'TOURNAMENT'}
           </span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2vw', width: '100%', maxWidth: '1600px', margin: '0 auto', paddingBottom: '140px' }}>
+      <div className="grid grid-cols-2 gap-[2vw] w-full max-w-[1600px] mx-auto pb-[140px]">
         {groups?.map((group) => (
-          <div key={group.id} style={{ background: theme.boxBg, borderRadius: isEWC ? '0px' : '8px', border: `1px solid ${theme.border}`, overflow: 'hidden', boxShadow: theme.boxShadow }}>
-            <div style={{ background: theme.headerBg, padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: isEWC ? `1px solid ${theme.border}` : 'none' }}>
-              <h2 style={{ fontFamily: theme.font, margin: 0, color: theme.headerText, fontSize: '20px', fontWeight: 800, letterSpacing: '1px' }}>GROUP {group.id}</h2>
-              <div style={{ fontSize: '13px', color: isFirstStand ? '#FFFFFF' : theme.textMuted, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+          <div key={group.id} className="overflow-hidden border" style={{ background: theme.boxBg, borderRadius: isEWC ? '0px' : '8px', borderColor: theme.border, boxShadow: theme.boxShadow }}>
+            <div className="p-[16px_24px] flex justify-between items-center" style={{ background: theme.headerBg, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none' }}>
+              <h2 className="m-0 text-[20px] font-extrabold tracking-[1px]" style={{ fontFamily: theme.font, color: theme.headerText }}>GROUP {group.id}</h2>
+              <div className="text-[13px] font-semibold font-sans" style={{ color: isFirstStand ? '#FFFFFF' : theme.textMuted }}>
                 QUALIFIED: <span style={{ color: theme.main }}>{group.qualified?.length || 0}/2</span>
               </div>
             </div>
             
-            <div style={{ padding: '40px 2vw', display: 'flex', gap: '3vw' }}>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div className="p-[40px_2vw] flex gap-[3vw]">
+              <div className="flex-1 flex flex-col gap-[30px]">
                 {getMatchBox(group.matches[0], "OPENING 1")}
                 {getMatchBox(group.matches[1], "OPENING 2")}
               </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '30px' }}>
+              <div className="flex-1 flex flex-col gap-[30px]">
                 {getMatchBox(group.matches[2], "WINNERS")}
                 {getMatchBox(group.matches[3], "ELIMINATION")}
               </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div className="flex-1 flex flex-col justify-center">
                 {getMatchBox(group.matches[4], "DECIDER")}
               </div>
             </div>
@@ -161,28 +180,29 @@ export default function GslGroupView({ state, event }) {
         ))}
       </div>
 
-      {/* PANNEAU DE CONTRÔLE FLOTTANT UNIFIÉ ET CORRIGÉ */}
-      <div style={{ 
-          position: 'fixed', bottom: '30px', left: '50%', transform: 'translateX(-50%)',
+      <div 
+        className="fixed bottom-[30px] left-1/2 -translate-x-1/2 p-[12px_32px] flex gap-10 items-center z-[1000] border"
+        style={{ 
           background: isWorlds ? 'rgba(5, 10, 25, 0.95)' : (isEWC ? '#0D0D0D' : theme.boxBg), 
           backdropFilter: isWorlds ? 'blur(16px)' : 'none', 
           borderRadius: isEWC ? '0px' : '50px',
-          border: `1px solid ${isWorlds ? 'rgba(255, 255, 255, 0.15)' : theme.border}`, 
-          padding: '12px 32px', display: 'flex', gap: '40px', alignItems: 'center', 
+          borderColor: isWorlds ? 'rgba(255, 255, 255, 0.15)' : theme.border, 
           boxShadow: isWorlds ? '0 10px 40px rgba(0,0,0,0.9)' : (isEWC ? '0 10px 30px rgba(0,0,0,0.9)' : theme.boxShadow),
-          zIndex: 1000 
       }}>
-        <h3 style={{ fontFamily: theme.font, color: theme.textMain, margin: 0, fontSize: '16px', fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+        <h3 className="m-0 text-base font-bold uppercase whitespace-nowrap" style={{ fontFamily: theme.font, color: theme.textMain }}>
            CONTRÔLE DU TOURNOI
         </h3>
-        <button onClick={toggleReady} disabled={isGlobalReady}
+        <button 
+          onClick={toggleReady} 
+          disabled={isGlobalReady}
+          className="border-none p-[12px_28px] text-sm font-extrabold uppercase tracking-[1px] transition-all duration-200"
           style={{ 
               backgroundColor: isGlobalReady ? theme.border : (isWorlds ? '#FFFFFF' : theme.main), 
               color: isGlobalReady ? theme.textMuted : (isWorlds || isEWC ? '#000' : '#FFF'), 
-              border: 'none', padding: '12px 28px', borderRadius: isEWC ? '0px' : '30px', fontSize: '14px', fontWeight: 800, cursor: isGlobalReady ? 'wait' : 'pointer',
-              textTransform: 'uppercase', letterSpacing: '1px', transition: 'all 0.2s ease',
+              borderRadius: isEWC ? '0px' : '30px', cursor: isGlobalReady ? 'wait' : 'pointer',
               boxShadow: isGlobalReady || isFirstStand ? 'none' : (isWorlds ? '0 0 15px rgba(255, 255, 255, 0.2)' : 'none')
-          }}>
+          }}
+        >
           {isGlobalReady ? `EN ATTENTE (${readyPlayers?.length || 0}/${humanCount})` : 'LANCER / AVANCER'}
         </button>
       </div>

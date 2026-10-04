@@ -5,7 +5,6 @@ import { CARD_POOL } from '../constants/cardPlayers';
 import CardIllustration from '../components/CardIllustration';
 
 export default function ArenaView({ match, matchReady, dismissMatch, state, isSpectator = false }) {
-  
   const [secretUnlock, setSecretUnlock] = useState(null);
 
   useEffect(() => {
@@ -66,7 +65,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
 
   const renderRoster = (team, teamSide) => {
     return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', justifyContent: 'center' }}>
+      <div className="flex flex-wrap gap-3.5 justify-center">
         {ORDERED_ROLES.map(role => {
           const p = team.roster.find(pro => pro.role === role);
           if (!p) return null;
@@ -75,10 +74,24 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
           const buff = getPlayerBuff(teamSide, role);
           
           return (
-            <div key={role} style={{ textAlign: 'center', position: 'relative', display: 'inline-block', zIndex: 1 }}>
-              {dynamicCard ? <CardIllustration card={dynamicCard} width={90} /> : <div className="player-slot" style={{color: 'white'}}>{p.name}</div>}
-              {buff > 0 && <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#00e676', color: '#000', fontWeight: '800', padding: '4px 8px', borderRadius: '12px', fontSize: '14px', boxShadow: '0 0 10px #00e676', animation: 'skillPopIn 0.3s forwards', zIndex: 999 }}>+{buff}</div>}
-              {buff < 0 && <div style={{ position: 'absolute', top: '-10px', right: '-10px', background: '#f74242', color: '#000', fontWeight: '800', padding: '4px 8px', borderRadius: '12px', fontSize: '14px', boxShadow: '0 0 10px #f04646', animation: 'skillPopIn 0.3s forwards', zIndex: 999 }}>{buff}</div>}
+            <div key={role} className="text-center relative inline-block z-[1]">
+              {dynamicCard ? (
+                <CardIllustration card={dynamicCard} width={90} />
+              ) : (
+                <div className="flex justify-between items-center bg-bg-card p-[10px_14px] rounded-md mb-2 text-white">
+                  {p.name}
+                </div>
+              )}
+              {buff > 0 && (
+                <div className="absolute -top-2.5 -right-2.5 bg-[#00e676] text-black font-extrabold px-2 py-1 rounded-xl text-sm shadow-[0_0_10px_#00e676] animate-[skillPopIn_0.3s_forwards] z-[999]">
+                  +{buff}
+                </div>
+              )}
+              {buff < 0 && (
+                <div className="absolute -top-2.5 -right-2.5 bg-[#f74242] text-black font-extrabold px-2 py-1 rounded-xl text-sm shadow-[0_0_10px_#f04646] animate-[skillPopIn_0.3s_forwards] z-[999]">
+                  {buff}
+                </div>
+              )}
             </div>
           );
         })}
@@ -100,24 +113,35 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
   };
 
   return (
-    <div className="container" style={{ position: 'relative', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="relative min-h-screen flex flex-col items-center justify-center font-sans">
+      <style>{`
+        @keyframes skillPopIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      `}</style>
       
-      <h1 className="title-font text-cyan" style={{ fontSize: '32px' }}>CONFRONTATION PROTOCOLE</h1>
-      <p className="title-font text-muted" style={{ fontSize: '18px', letterSpacing: '4px' }}>
+      <h1 className="font-rajdhani text-accent-cyan text-[32px] uppercase tracking-wide">CONFRONTATION PROTOCOLE</h1>
+      <p className="font-rajdhani text-text-muted text-[18px] tracking-[4px] uppercase">
         {getMatchTitle(match.id)} {isSpectator && "- MODE SPECTATEUR"}
       </p>
       
-      <div className="arena-box" style={{ maxWidth: '1300px', alignItems: 'stretch' }}>
+      <div className="flex w-full max-w-[1300px] gap-10 items-center mt-10">
         
-        {/* EQUIPE A (NOM COMPLET + LOGO GÉANT) */}
-        <div className="panel arena-team" style={{ borderTop: isFinished && match.winner?.id === match.teamA.id ? '3px solid var(--accent-cyan)' : '' }}>
-          <h2 className="title-font" style={{ marginBottom: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                {match.teamA?.logo ? <img src={match.teamA.logo} style={{width: '60px', height: '60px', objectFit: 'contain'}} /> : <div style={{width:'60px', height:'60px', background:'#2B3040', borderRadius:'12px'}}/>}
-                <span style={{ fontSize: '26px' }}>{match.teamA.name}</span>
+        {/* EQUIPE A */}
+        <div 
+          className="flex-1 bg-bg-panel border border-white/15 rounded-xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]" 
+          style={{ borderTop: isFinished && match.winner?.id === match.teamA.id ? '3px solid var(--accent-cyan)' : '' }}
+        >
+          <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
+            <div className="flex flex-col items-center gap-2">
+                {match.teamA?.logo ? (
+                  <img src={match.teamA.logo} className="w-[60px] h-[60px] object-contain" alt="logo A" />
+                ) : (
+                  <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
+                )}
+                <span className="text-[26px]">{match.teamA.name}</span>
             </div>
-            <div style={{ fontSize: '16px', color: 'var(--text-muted)' }}>
-              MOYENNE : <span style={{ color: getTeamAvg(match.teamA, 'A') > (match.teamA.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? '#00e676' : 'inherit' }}>
+            <div className="text-base text-text-muted">
+              MOYENNE : <span className={getTeamAvg(match.teamA, 'A') > (match.teamA.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? 'text-[#00e676]' : ''}>
                 {getTeamAvg(match.teamA, 'A')}
               </span>
             </div>
@@ -126,48 +150,59 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
         </div>
 
         {/* SIMULATION AU CENTRE */}
-        <div style={{ textAlign: 'center', width: '380px', flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 20px', position: 'relative' }}>
+        <div className="text-center w-[380px] shrink-0 flex flex-col justify-center px-5 relative">
           
           {isSimulating && !isSpectator && (
-            <div style={{ marginBottom: '20px' }}>
-                <button className="btn btn-outline" style={{ fontSize: '12px', padding: '8px 16px', borderColor: 'var(--border)', color: 'var(--text-muted)', whiteSpace: 'nowrap' }} onClick={handleSkip}>
+            <div className="mb-5">
+                <button 
+                  className="bg-transparent border-2 border-text-muted text-text-main py-2 px-4 rounded text-xs font-rajdhani font-bold uppercase tracking-wider whitespace-nowrap transition-colors hover:border-accent-cyan hover:text-accent-cyan" 
+                  onClick={handleSkip}
+                >
                     PASSER L'ANIMATION ⏭
                 </button>
             </div>
           )}
 
-          <div className="title-font arena-vs" style={{ fontSize: '72px', color: 'var(--text-main)', margin: '0' }}>
+          <div 
+            className={`font-rajdhani text-[72px] text-text-muted transition-all duration-300 uppercase ${isSimulating ? 'text-accent-pink drop-shadow-[0_0_20px_rgba(255,51,102,0.6)] animate-pulse-fast' : 'drop-shadow-[0_0_20px_rgba(255,51,102,0)]'}`}
+          >
             {match.scoreA} - {match.scoreB}
           </div>
           
-          <div style={{ marginTop: '30px', minHeight: '140px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="mt-[30px] min-h-[140px] flex flex-col justify-center items-center">
             {match.status === 'pending' && !isSpectator && (
-              <button className={`btn ${isReady ? 'btn-outline' : 'btn-pink'}`} style={{ width: '100%' }} onClick={() => matchReady(match.id)} disabled={isReady}>
+              <button 
+                className={`w-full font-rajdhani font-bold text-base uppercase tracking-wider py-3 px-7 rounded transition-all ${isReady ? 'bg-transparent border-2 border-text-muted text-text-main opacity-50 cursor-not-allowed' : 'bg-accent-pink text-black shadow-pink hover:bg-[#ff1a53] hover:-translate-y-0.5'}`} 
+                onClick={() => matchReady(match.id)} 
+                disabled={isReady}
+              >
                 {isReady ? 'SYSTÈME ARMÉ...' : 'ARMER LA SÉQUENCE'}
               </button>
             )}
             
             {match.status === 'pending' && isSpectator && (
-              <div className="title-font text-pink pulse-text" style={{ fontSize: '18px', letterSpacing: '2px' }}>EN ATTENTE DES JOUEURS...</div>
+              <div className="font-rajdhani text-accent-pink text-[18px] tracking-[2px] uppercase animate-pulse-fast">
+                EN ATTENTE DES JOUEURS...
+              </div>
             )}
 
            {match.status === 'simulating_events' && (
-            <div style={{ width: '100%' }}>
+            <div className="w-full">
               {match.currentEvents?.filter(ev => ev.label).length > 0 ? (
-               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+               <div className="flex flex-col gap-4">
                   {match.currentEvents.filter(ev => ev.label).map((ev, index) => {
                     const eventColor = ev.side === 'A' ? '#00e5ff' : ev.side === 'B' ? '#ff3366' : '#8b9bb4';
                     return (
-                      <div key={`${match.currentEvents.length}-${index}`} style={{ animation: 'skillPopIn 0.4s forwards', width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        
-                        {/* TEXTE PUR SANS FOND */}
-                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px', fontWeight: 600, color: eventColor, textAlign: 'center', lineHeight: '1.5', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                      <div key={`${match.currentEvents.length}-${index}`} className="w-full flex flex-col gap-3 animate-[skillPopIn_0.4s_forwards]">
+                        <div 
+                          className="font-sans text-base font-semibold text-center leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+                          style={{ color: eventColor }}
+                        >
                           {ev.label}
                         </div>
-
                         {ev.image && (
-                          <div style={{ width: '100%', borderRadius: '4px', overflow: 'hidden', border: `1px solid #2A2C36`, backgroundColor: '#0A0A0C', display: 'flex', justifyContent: 'center' }}>
-                            <img src={ev.image} alt="Illustration" style={{ width: '100%', height: 'auto', maxHeight: '180px', objectFit: 'cover' }} />
+                          <div className="w-full rounded bg-[#0A0A0C] border border-[#2A2C36] overflow-hidden flex justify-center">
+                            <img src={ev.image} alt="Illustration" className="w-full h-auto max-h-[180px] object-cover" />
                           </div>
                         )}
                       </div>
@@ -175,24 +210,31 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
                   })}
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                  <div className="title-font text-cyan pulse-text" style={{ fontSize: '16px', letterSpacing: '2px' }}>LANCEMENT DE LA PARTIE...</div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontStyle: 'italic' }}>Les équipes entrent dans la Faille</div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="font-rajdhani text-accent-cyan text-[16px] tracking-[2px] uppercase animate-pulse-fast">
+                    LANCEMENT DE LA PARTIE...
+                  </div>
+                  <div className="text-xs text-text-muted italic">Les équipes entrent dans la Faille</div>
                 </div>
               )}
             </div>
           )}
             
             {match.status === 'simulating_result' && (
-               <div className="title-font text-pink pulse-text" style={{ fontSize: '20px', letterSpacing: '2px' }}>CALCUL DE L'ISSUE...</div>
+               <div className="font-rajdhani text-accent-pink text-[20px] tracking-[2px] uppercase animate-pulse-fast">
+                 CALCUL DE L'ISSUE...
+               </div>
             )}
 
             {isFinished && (
-              <div style={{ width: '100%', animation: 'fadeIn 0.5s' }}>
-                <div className="title-font text-cyan" style={{ fontSize: '24px', marginBottom: '20px' }}>
-                  VICTOIRE DE<br/><span style={{ fontSize: '32px', color: '#FFF' }}>{match.winner.name}</span>
+              <div className="w-full animate-[fadeIn_0.5s]">
+                <div className="font-rajdhani text-accent-cyan text-[24px] mb-5 uppercase">
+                  VICTOIRE DE<br/><span className="text-[32px] text-white">{match.winner.name}</span>
                 </div>
-                <button className="btn btn-cyan" style={{ width: '100%' }} onClick={() => dismissMatch(match.id)}>
+                <button 
+                  className="w-full font-rajdhani font-bold text-base uppercase tracking-wider py-3 px-7 bg-accent-cyan text-black rounded shadow-cyan hover:bg-[#00b3cc] hover:-translate-y-0.5 transition-all" 
+                  onClick={() => dismissMatch(match.id)}
+                >
                     {isSpectator ? "Quitter le mode spectateur" : "Poursuivre"}
                 </button>
               </div>
@@ -201,14 +243,21 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
         </div>
 
         {/* EQUIPE B */}
-        <div className="panel arena-team" style={{ borderTop: isFinished && match.winner?.id === match.teamB.id ? '3px solid var(--accent-cyan)' : '' }}>
-          <h2 className="title-font" style={{ marginBottom: '24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                {match.teamB?.logo ? <img src={match.teamB.logo} style={{width: '60px', height: '60px', objectFit: 'contain'}} /> : <div style={{width:'60px', height:'60px', background:'#2B3040', borderRadius:'12px'}}/>}
-                <span style={{ fontSize: '26px' }}>{match.teamB.name}</span>
+        <div 
+          className="flex-1 bg-bg-panel border border-white/15 rounded-xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]" 
+          style={{ borderTop: isFinished && match.winner?.id === match.teamB.id ? '3px solid var(--accent-cyan)' : '' }}
+        >
+          <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
+            <div className="flex flex-col items-center gap-2">
+                {match.teamB?.logo ? (
+                  <img src={match.teamB.logo} className="w-[60px] h-[60px] object-contain" alt="logo B" />
+                ) : (
+                  <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
+                )}
+                <span className="text-[26px]">{match.teamB.name}</span>
             </div>
-            <div style={{ fontSize: '16px', color: 'var(--text-muted)' }}>
-              MOYENNE : <span style={{ color: getTeamAvg(match.teamB, 'B') > (match.teamB.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? '#00e676' : 'inherit' }}>
+            <div className="text-base text-text-muted">
+              MOYENNE : <span className={getTeamAvg(match.teamB, 'B') > (match.teamB.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? 'text-[#00e676]' : ''}>
                 {getTeamAvg(match.teamB, 'B')}
               </span>
             </div>

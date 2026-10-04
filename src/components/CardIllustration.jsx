@@ -20,10 +20,7 @@ export default function CardIllustration({ card, width = 140 }) {
   };
 
   const [bgTop, bgBot] = bgGradients[card.rarity] || bgGradients['Commune'];
-
-  // Le plein format est désormais statique et réservé aux hautes raretés
   const hasFullIllustration = isWanted || isLegendary || isSecret || isEpic;
-
   const themeColor = card.themeColor || '#E5142E';
 
   let secretLogo = null;
@@ -31,11 +28,6 @@ export default function CardIllustration({ card, width = 140 }) {
     if (card.id === 'ruler-missing-redemption') secretLogo = '/equipes/jd-gaming.webp';
     else if (card.secretLogo) secretLogo = card.secretLogo;
   }
-
-  let containerClass = "tcg-card-wrapper ";
-  if (isWanted) containerClass += "wanted-card-container ";
-  if (isSecret) containerClass += "secret-card-container ";
-  if (isLegendary) containerClass += "legendary-card-container ";
 
   let borderColor = rarityColor;
   let nameFont = "Rajdhani, sans-serif";
@@ -51,13 +43,9 @@ export default function CardIllustration({ card, width = 140 }) {
   }
 
   if (!customBoxShadow) {
-    if (isLegendary) {
-      customBoxShadow = '0 8px 24px rgba(0,0,0,0.85), 0 0 15px rgba(255, 215, 0, 0.3)';
-    } else if (isEpic) {
-      customBoxShadow = `0 6px 20px rgba(0,0,0,0.8), 0 0 15px ${borderColor}44`;
-    } else {
-      customBoxShadow = `0 6px 16px rgba(0,0,0,0.6), 0 0 8px ${borderColor}22`;
-    }
+    if (isLegendary) customBoxShadow = '0 8px 24px rgba(0,0,0,0.85), 0 0 15px rgba(255, 215, 0, 0.3)';
+    else if (isEpic) customBoxShadow = `0 6px 20px rgba(0,0,0,0.8), 0 0 15px ${borderColor}44`;
+    else customBoxShadow = `0 6px 16px rgba(0,0,0,0.6), 0 0 8px ${borderColor}22`;
   }
 
   const nameLength = card.baseName.length;
@@ -65,42 +53,28 @@ export default function CardIllustration({ card, width = 140 }) {
   if (nameLength > 14) dynamicFontSize = "18";
   else if (nameLength > 10) dynamicFontSize = "22";
 
-  const sparkles = isLegendary
-    ? [
-        { top: '-6%', left: '8%', size: 14, delay: '0s' },
-        { top: '4%', left: '-8%', size: 10, delay: '0.4s' },
-        { top: '78%', left: '-6%', size: 12, delay: '0.9s' },
-        { top: '90%', left: '85%', size: 16, delay: '0.2s' },
-        { top: '15%', left: '96%', size: 10, delay: '1.3s' },
-        { top: '55%', left: '102%', size: 12, delay: '0.7s' },
-      ]
-    : [];
+  const sparkles = isLegendary ? [
+    { top: '-6%', left: '8%', size: 14, delay: '0s' },
+    { top: '4%', left: '-8%', size: 10, delay: '0.4s' },
+    { top: '78%', left: '-6%', size: 12, delay: '0.9s' },
+    { top: '90%', left: '85%', size: 16, delay: '0.2s' },
+    { top: '15%', left: '96%', size: 10, delay: '1.3s' },
+    { top: '55%', left: '102%', size: 12, delay: '0.7s' },
+  ] : [];
 
   const cardNode = (
     <div
-      className={containerClass}
+      className={`relative rounded-xl overflow-hidden inline-block cursor-pointer z-10 box-border transition-transform duration-300 ease-[cubic-bezier(0.175,0.885,0.32,1.275)] will-change-transform hover:-translate-y-2 hover:scale-[1.03] ${isWanted ? 'wanted-card-container' : ''} ${isSecret ? 'secret-card-container' : ''} ${isLegendary ? 'legendary-card-container' : ''}`}
       style={{
-        position: 'relative',
         width: `${width}px`,
         height: `${height}px`,
-        borderRadius: '12px',
-        overflow: 'hidden',
         boxShadow: isWanted ? 'none' : customBoxShadow,
         border: isWanted ? 'none' : `3px solid ${borderColor}`,
-        boxSizing: 'border-box',
-        display: 'inline-block',
-        cursor: 'pointer',
-        zIndex: 1,
         '--theme-color': themeColor,
         '--rarity-color': rarityColor,
       }}
     >
-      <svg
-        width="100%"
-        height="100%"
-        viewBox="0 0 200 280"
-        style={{ display: 'block', background: '#0d1323', userSelect: 'none' }}
-      >
+      <svg width="100%" height="100%" viewBox="0 0 200 280" className="block bg-[#0d1323] select-none">
         <defs>
           <linearGradient id={`bg-${card.id}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={bgTop} />
@@ -156,10 +130,8 @@ export default function CardIllustration({ card, width = 140 }) {
         {card.image && (
           <image
             href={card.image}
-            x="0"
-            y={hasFullIllustration ? "-2" : "25"}
-            width="200"
-            height={hasFullIllustration ? "282" : "260"}
+            x="0" y={hasFullIllustration ? "-2" : "25"}
+            width="200" height={hasFullIllustration ? "282" : "260"}
             preserveAspectRatio="xMidYMid slice"
           />
         )}
@@ -176,9 +148,7 @@ export default function CardIllustration({ card, width = 140 }) {
         {(isWanted || isSecret) && <rect x="0" y="0" width="200" height="280" fill="url(#wantedVignette)" />}
 
         {card.image ? (
-          <g>
-            <rect x="-2" y="150" width="204" height="140" fill="url(#bottomFade)" />
-          </g>
+          <rect x="-2" y="150" width="204" height="140" fill="url(#bottomFade)" />
         ) : (
           <g>
             <rect x="0" y="200" width="200" height="80" fill="rgba(0,0,0,0.75)" />
@@ -225,46 +195,18 @@ export default function CardIllustration({ card, width = 140 }) {
         {isWanted && <rect x="2" y="2" width="196" height="276" rx="10" fill="none" stroke="#ffffff" strokeWidth="4" className="wanted-svg-border" />}
       </svg>
 
-      {/* OVERLAYS CSS */}
-      {hasFullIllustration && !isWanted && !isSecret && (
-        <div className="card-foil-overlay" />
-      )}
-      
+      {hasFullIllustration && !isWanted && !isSecret && <div className="card-foil-overlay" />}
       {isLegendary && <div className="legendary-glint-sweep" />}
       {isLegendary && <div className="legendary-glint-sweep legendary-glint-sweep-2" />}
 
       <style>{`
-        .tcg-card-wrapper {
-          transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          will-change: transform;
-        }
-        .tcg-card-wrapper:hover {
-          transform: translateY(-8px) scale(1.03);
-          z-index: 10;
-        }
-
-        
-
-        .legendary-glint-sweep {
-          position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-          background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-          transform: skewX(-25deg); animation: glintSweep 5s ease-in-out infinite;
-          pointer-events: none; mix-blend-mode: overlay;
-        }
-        .legendary-glint-sweep-2 {
-          animation-delay: 2.5s;
-          opacity: 0.5;
-        }
-        @keyframes glintSweep {
-          0%, 15% { left: -100%; }
-          85%, 100% { left: 200%; }
-        }
-
+        .legendary-glint-sweep { position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); animation: glintSweep 5s ease-in-out infinite; pointer-events: none; mix-blend-mode: overlay; }
+        .legendary-glint-sweep-2 { animation-delay: 2.5s; opacity: 0.5; }
+        @keyframes glintSweep { 0%, 15% { left: -100%; } 85%, 100% { left: 200%; } }
         .wanted-card-container { animation: cardLevitate 4s ease-in-out infinite; }
         @keyframes cardLevitate { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         .wanted-svg-border { stroke-dasharray: 60 400; animation: borderRun 4s linear infinite; filter: drop-shadow(0 0 8px #fff); }
         @keyframes borderRun { 0% { stroke-dashoffset: 460; } 100% { stroke-dashoffset: 0; } }
-
         .secret-card-container { animation: secretAura 3s ease-in-out infinite alternate; }
         @keyframes secretAura { 0% { box-shadow: 0 15px 35px rgba(0,0,0,0.95), 0 0 10px var(--theme-color); } 100% { box-shadow: 0 15px 35px rgba(0,0,0,0.95), 0 0 35px var(--theme-color); } }
         .secret-neon-logo { mix-blend-mode: screen; animation: logoSmoothFade 6s ease-in-out infinite; }
@@ -276,11 +218,11 @@ export default function CardIllustration({ card, width = 140 }) {
   if (!isLegendary) return cardNode;
 
   return (
-    <div className="legendary-outer" style={{ position: 'relative', width: `${width}px`, height: `${height}px`, display: 'inline-block' }}>
+    <div className="relative inline-block animate-[legendaryReveal_0.7s_cubic-bezier(0.175,0.885,0.32,1.4)_both]" style={{ width: `${width}px`, height: `${height}px` }}>
       {sparkles.map((s, i) => (
         <span
           key={i}
-          className="legendary-sparkle"
+          className="absolute text-[#fff6c8] drop-shadow-[0_0_6px_#ffd700] z-20 pointer-events-none animate-[legendarySparkle_1.6s_ease-in-out_infinite]"
           style={{ top: s.top, left: s.left, fontSize: `${s.size}px`, animationDelay: s.delay }}
         >
           ✦
@@ -289,32 +231,10 @@ export default function CardIllustration({ card, width = 140 }) {
       {cardNode}
 
       <style>{`
-        .legendary-outer { animation: legendaryReveal 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.4) both; }
-        @keyframes legendaryReveal {
-          0% { transform: scale(0.4) rotate(-10deg); opacity: 0; }
-          55% { transform: scale(1.12) rotate(3deg); opacity: 1; }
-          75% { transform: scale(0.96) rotate(-1deg); }
-          100% { transform: scale(1) rotate(0deg); }
-        }
-
+        @keyframes legendaryReveal { 0% { transform: scale(0.4) rotate(-10deg); opacity: 0; } 55% { transform: scale(1.12) rotate(3deg); opacity: 1; } 75% { transform: scale(0.96) rotate(-1deg); } 100% { transform: scale(1) rotate(0deg); } }
         .legendary-card-container { animation: legendaryPulse 3.5s ease-in-out infinite; }
-        @keyframes legendaryPulse {
-          0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.85), 0 0 12px rgba(255, 215, 0, 0.2); }
-          50% { box-shadow: 0 8px 24px rgba(0,0,0,0.85), 0 0 20px rgba(255, 215, 0, 0.4); }
-        }
-
-        .legendary-sparkle {
-          position: absolute;
-          color: #fff6c8;
-          text-shadow: 0 0 6px #ffd700, 0 0 12px #ffd700;
-          z-index: 2;
-          pointer-events: none;
-          animation: legendarySparkle 1.6s ease-in-out infinite;
-        }
-        @keyframes legendarySparkle {
-          0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
-          50% { opacity: 1; transform: scale(1.1) rotate(90deg); }
-        }
+        @keyframes legendaryPulse { 0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,0.85), 0 0 12px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 8px 24px rgba(0,0,0,0.85), 0 0 20px rgba(255, 215, 0, 0.4); } }
+        @keyframes legendarySparkle { 0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(90deg); } }
       `}</style>
     </div>
   );

@@ -14,62 +14,44 @@ export default function DevCardsView({ onClose, state }) {
     .filter(c => filterRole === 'Tous' || c.role === filterRole)
     .sort((a, b) => (RARITY_ORDER[a.rarity] || 0) - (RARITY_ORDER[b.rarity] || 0));
 
-  // Actions d'administration
-  const handleGiveCard = (cardId) => {
-    socket.emit('dev-give-card', cardId);
-  };
-
-  const handleSetEvent = (idx) => {
-    socket.emit('dev-set-event', idx);
-  };
-
-  const handleGiveMoney = () => {
-    socket.emit('dev-give-money', 1000);
-  };
+  const handleGiveCard = (cardId) => socket.emit('dev-give-card', cardId);
+  const handleSetEvent = (idx) => socket.emit('dev-set-event', idx);
+  const handleGiveMoney = () => socket.emit('dev-give-money', 1000);
 
   return (
-    <div style={{ 
-      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-      background: 'rgba(8, 9, 13, 0.95)', backdropFilter: 'blur(10px)',
-      zIndex: 10000, display: 'flex', flexDirection: 'column',
-      padding: '20px', fontFamily: "'Inter', sans-serif"
-    }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div className="fixed inset-0 bg-[#08090d]/95 backdrop-blur-md z-[10000] flex flex-col p-5 font-sans">
+      <div className="max-w-[1400px] mx-auto w-full flex flex-col h-full">
         
-        <div style={{ flexShrink: 0, paddingBottom: '20px', borderBottom: '1px solid #1B2333', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div className="shrink-0 pb-5 border-b border-[#1B2333] mb-5">
+          <div className="flex justify-between items-center mb-5">
             <div>
-              <h1 className="title-font text-pink" style={{ fontSize: '32px', margin: 0 }}>
+              <h1 className="font-rajdhani text-accent-pink text-[32px] m-0 uppercase tracking-wide">
                 PANEL DÉVELOPPEUR ⚙️
               </h1>
-              <p className="text-muted" style={{ margin: '5px 0 0 0', letterSpacing: '1px' }}>
+              <p className="text-text-muted mt-1 mb-0 tracking-widest text-sm uppercase">
                 TRICHE ET OUTILS DE TEST
               </p>
             </div>
-            <button className="btn btn-outline" onClick={onClose} style={{ borderColor: 'var(--accent-pink)', color: 'var(--accent-pink)' }}>
+            <button 
+              className="font-rajdhani font-bold tracking-widest uppercase py-2.5 px-6 bg-transparent border-2 border-accent-pink text-accent-pink rounded hover:bg-accent-pink hover:text-black transition-all" 
+              onClick={onClose}
+            >
               FERMER LE MODE DEV
             </button>
           </div>
 
-          {/* ZONE DE CONTRÔLES ADMINISTRATIFS (Grille pour un affichage propre) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <div className="grid grid-cols-[2fr_1fr] gap-5 mb-5">
             
-            {/* CONTRÔLE DU CIRCUIT */}
-            <div style={{ background: '#0C0E14', padding: '16px', borderRadius: '8px', border: '1px solid #ff336640' }}>
-              <h3 className="title-font" style={{ color: '#FFF', margin: '0 0 12px 0', fontSize: '18px' }}>FORCER LE PROCHAIN TOURNOI</h3>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="bg-[#0C0E14] p-4 rounded-lg border border-accent-pink/25">
+              <h3 className="font-rajdhani text-white m-0 mb-3 text-lg uppercase tracking-wide">
+                FORCER LE PROCHAIN TOURNOI
+              </h3>
+              <div className="flex gap-3 flex-wrap">
                 {EVENTS.map((ev, idx) => (
                   <button 
                     key={ev.id} 
                     onClick={() => handleSetEvent(idx)}
-                    style={{
-                      background: state?.eventIndex === idx ? '#ff3366' : 'transparent',
-                      color: state?.eventIndex === idx ? '#FFF' : '#768196',
-                      border: `1px solid ${state?.eventIndex === idx ? '#ff3366' : '#222838'}`,
-                      padding: '8px 16px', borderRadius: '4px', cursor: 'pointer',
-                      fontFamily: "'Rajdhani', sans-serif", fontWeight: 'bold', letterSpacing: '1px',
-                      transition: 'all 0.2s'
-                    }}
+                    className={`px-4 py-2 rounded font-rajdhani font-bold tracking-wider cursor-pointer transition-all border ${state?.eventIndex === idx ? 'bg-accent-pink text-white border-accent-pink' : 'bg-transparent text-[#768196] border-[#222838] hover:border-[#768196]'}`}
                   >
                     {ev.shortName} {state?.eventIndex === idx && ' (ACTIF)'}
                   </button>
@@ -77,50 +59,40 @@ export default function DevCardsView({ onClose, state }) {
               </div>
             </div>
 
-            {/* TRICHE ÉCONOMIQUE */}
-            <div style={{ background: '#0C0E14', padding: '16px', borderRadius: '8px', border: '1px solid rgba(255, 215, 0, 0.25)' }}>
-              <h3 className="title-font" style={{ color: '#FFF', margin: '0 0 12px 0', fontSize: '18px' }}>RESSOURCES</h3>
+            <div className="bg-[#0C0E14] p-4 rounded-lg border border-[#ffd700]/25">
+              <h3 className="font-rajdhani text-white m-0 mb-3 text-lg uppercase tracking-wide">
+                RESSOURCES
+              </h3>
               <button 
                 onClick={handleGiveMoney}
-                style={{
-                  backgroundColor: '#FFD700', 
-                  color: '#000', 
-                  border: 'none', 
-                  padding: '10px 20px', 
-                  borderRadius: '4px',
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  cursor: 'pointer',
-                  fontFamily: "'Rajdhani', sans-serif",
-                  letterSpacing: '1px',
-                  boxShadow: '0 4px 15px rgba(255, 215, 0, 0.2)',
-                  transition: 'transform 0.1s'
-                }}
-                onMouseDown={(e) => e.target.style.transform = 'scale(0.95)'}
-                onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                className="bg-[#FFD700] text-black border-none py-2.5 px-5 rounded text-sm font-bold cursor-pointer font-rajdhani tracking-wider shadow-[0_4px_15px_rgba(255,215,0,0.2)] transition-transform active:scale-95"
               >
                 💰 +1000 CRÉDITS
               </button>
             </div>
-
           </div>
 
-          {/* FILTRES DES CARTES */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button className={`btn ${filterRole === 'Tous' ? 'btn-pink' : 'btn-outline'}`} onClick={() => setFilterRole('Tous')} style={{ padding: '8px 16px', fontSize: '13px' }}>
+          <div className="flex gap-2.5 flex-wrap">
+            <button 
+              className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === 'Tous' ? 'bg-accent-pink text-black border-accent-pink shadow-pink' : 'bg-transparent text-white border-text-muted hover:border-accent-pink hover:text-accent-pink'}`}
+              onClick={() => setFilterRole('Tous')}
+            >
               TOUTES LES CARTES
             </button>
             {ORDERED_ROLES.map(role => (
-              <button key={role} className={`btn ${filterRole === role ? 'btn-pink' : 'btn-outline'}`} onClick={() => setFilterRole(role)} style={{ padding: '8px 16px', fontSize: '13px' }}>
+              <button 
+                key={role} 
+                className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === role ? 'bg-accent-pink text-black border-accent-pink shadow-pink' : 'bg-transparent text-white border-text-muted hover:border-accent-pink hover:text-accent-pink'}`}
+                onClick={() => setFilterRole(role)}
+              >
                 {role.toUpperCase()}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Zone de cartes cliquables */}
-        <div style={{ flex: 1, overflowY: 'auto', paddingRight: '10px' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'center', alignItems: 'flex-start', paddingBottom: '40px' }}>
+        <div className="flex-1 overflow-y-auto pr-2.5">
+          <div className="flex flex-wrap gap-6 justify-center items-start pb-10">
             {displayedCards.map(card => {
               const myId = socket.id;
               const ownedContract = state?.cardCollections?.[myId]?.[card.id];
@@ -131,34 +103,26 @@ export default function DevCardsView({ onClose, state }) {
                 <div 
                   key={card.id} 
                   onClick={() => handleGiveCard(card.id)}
-                  style={{ 
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    width: '160px', background: '#0D1219', padding: '12px 10px',
-                    borderRadius: '8px', border: '1px solid #1B2333',
-                    cursor: 'pointer', transition: 'all 0.2s', position: 'relative'
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#ff3366'; e.currentTarget.style.transform = 'translateY(-5px)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#1B2333'; e.currentTarget.style.transform = 'none'; }}
+                  className="flex flex-col items-center w-[160px] bg-[#0D1219] p-[12px_10px] rounded-lg border border-[#1B2333] cursor-pointer transition-all duration-200 relative group hover:border-accent-pink hover:-translate-y-1.5"
                 >
-                  {/* Badge du contrat (À vie ou nb tournois) */}
                   {(contractCount > 0 || isLifetime) && (
-                    <div style={{ 
-                      position: 'absolute', top: '-10px', right: '-10px', 
-                      background: isLifetime ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' : '#ff3366', 
-                      color: isLifetime ? '#000' : '#FFF', 
-                      fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px', zIndex: 10, fontSize: '12px',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.5)'
-                    }}>
+                    <div 
+                      className="absolute -top-2.5 -right-2.5 font-bold py-1 px-2 rounded z-10 text-xs shadow-[0_4px_8px_rgba(0,0,0,0.5)]"
+                      style={{ 
+                        background: isLifetime ? 'linear-gradient(135deg, #FFD700 0%, #AA8011 100%)' : '#ff3366', 
+                        color: isLifetime ? '#000' : '#FFF'
+                      }}
+                    >
                       {isLifetime ? '♾️' : `x${contractCount}`}
                     </div>
                   )}
 
                   <CardIllustration card={card} width={140} />
                   
-                  <div style={{ marginTop: '14px', textAlign: 'center' }}>
-                    <span className="title-font text-cyan" style={{ fontSize: '14px', display: 'block', fontWeight: 'bold' }}>{card.id}</span>
-                    <span className="text-muted" style={{ fontSize: '11px', display: 'block', marginTop: '4px' }}>{card.rarity}</span>
-                    <span style={{ fontSize: '10px', color: '#ff3366', display: 'block', marginTop: '8px', letterSpacing: '1px' }}>CLIQUEZ POUR OBTENIR</span>
+                  <div className="mt-3.5 text-center">
+                    <span className="font-rajdhani text-accent-cyan text-[14px] block font-bold uppercase tracking-wide">{card.id}</span>
+                    <span className="text-text-muted text-[11px] block mt-1 uppercase tracking-wider">{card.rarity}</span>
+                    <span className="text-[10px] text-accent-pink block mt-2 tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">CLIQUEZ POUR OBTENIR</span>
                   </div>
                 </div>
               );

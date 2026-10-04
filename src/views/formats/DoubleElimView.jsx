@@ -10,7 +10,6 @@ export default function DoubleElimView({ state, event }) {
   const bgDark = '#0B0D14';
   const boxBg = '#141824';
   const borderMuted = '#2A3042';
-  const logoFilter = 'drop-shadow(0px 1px 4px rgba(255,255,255,0.25))';
 
   const humanCount = state.participants.filter(p => !p.id.startsWith('bot-') && !p.isBot).length;
   const isGlobalReady = readyPlayers?.includes(myId);
@@ -42,30 +41,48 @@ export default function DoubleElimView({ state, event }) {
     const teamBStyle = getTeamStyle(match.teamB);
 
     return (
-      <div style={{ position: 'relative', width: '100%', minWidth: isFinal ? '240px' : '150px' }} key={match.id}>
-        <div style={{ color: isMyTurn ? msiYellow : '#768196', fontSize: isFinal ? '12px' : '11px', fontWeight: 900, position: 'absolute', top: isFinal ? '-16px' : '-14px', left: 0, letterSpacing: '0.5px', fontFamily: "'Arial Black', sans-serif", fontStyle: 'italic' }}>
-            {title} {isSim && <span className="pulse-text" style={{ color: msiRed, marginLeft: '4px' }}>• LIVE</span>}
+      <div className={`relative w-full z-10 ${isFinal ? 'min-w-[240px]' : 'min-w-[150px]'}`} key={match.id}>
+        <div 
+          className={`absolute left-0 font-['Arial_Black'] italic font-black tracking-[0.5px] ${isFinal ? '-top-4 text-xs' : '-top-3.5 text-[11px]'}`}
+          style={{ color: isMyTurn ? msiYellow : '#768196' }}
+        >
+            {title} {isSim && <span className="animate-pulse-fast ml-1" style={{ color: msiRed }}>• LIVE</span>}
         </div>
         
-        <div onClick={() => handleMatchClick(match)}
+        <div 
+            onClick={() => handleMatchClick(match)}
+            className={`flex flex-col font-sans transition-all duration-100 ${isMyTurn ? 'cursor-pointer' : 'cursor-default'}`}
             style={{
-                background: boxBg, border: isMyTurn ? `3px solid ${msiYellow}` : `1px solid ${borderMuted}`,
-                cursor: isMyTurn ? 'pointer' : 'default',
+                background: boxBg, 
+                border: isMyTurn ? `3px solid ${msiYellow}` : `1px solid ${borderMuted}`,
                 boxShadow: isMyTurn ? `4px 4px 0px ${msiRed}` : '2px 2px 0px rgba(0,0,0,0.5)',
-                transition: 'all 0.1s ease', display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif"
             }}
         >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isFinal ? '12px 14px' : '6px 10px', borderBottom: `1px solid ${borderMuted}`, opacity: match.teamA ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamA?.id ? 'rgba(230, 25, 43, 0.15)' : 'transparent' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {match.teamA?.logo ? <img src={match.teamA.logo} alt="" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px', objectFit: 'contain', filter: logoFilter }} /> : <div style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px', background: '#2B3040' }} />}
+            <div 
+              className={`flex justify-between items-center border-b ${isFinal ? 'p-[12px_14px]' : 'p-[6px_10px]'}`} 
+              style={{ borderColor: borderMuted, opacity: match.teamA ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamA?.id ? 'rgba(230, 25, 43, 0.15)' : 'transparent' }}
+            >
+                <div className="flex items-center gap-2">
+                    {match.teamA?.logo ? (
+                      <img src={match.teamA.logo} alt="" className="object-contain drop-shadow-[0_1px_4px_rgba(255,255,255,0.25)]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                    ) : (
+                      <div className="bg-[#2B3040]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                    )}
                     <span style={{ fontSize: isFinal ? '18px' : '15px', color: teamAStyle.color, fontWeight: teamAStyle.weight }}>{match.teamA ? match.teamA.tag : 'TBD'}</span>
                 </div>
                 <span style={{ fontSize: isFinal ? '20px' : '15px', color: teamAStyle.color, fontWeight: teamAStyle.weight }}>{isFin ? match.scoreA : (isSim ? match.scoreA : '')}</span>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: isFinal ? '12px 14px' : '6px 10px', opacity: match.teamB ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamB?.id ? 'rgba(230, 25, 43, 0.15)' : 'transparent' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {match.teamB?.logo ? <img src={match.teamB.logo} alt="" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px', objectFit: 'contain', filter: logoFilter }} /> : <div style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px', background: '#2B3040' }} />}
+            <div 
+              className={`flex justify-between items-center ${isFinal ? 'p-[12px_14px]' : 'p-[6px_10px]'}`} 
+              style={{ opacity: match.teamB ? 1 : 0.5, backgroundColor: isFin && match.winner?.id === match.teamB?.id ? 'rgba(230, 25, 43, 0.15)' : 'transparent' }}
+            >
+                <div className="flex items-center gap-2">
+                    {match.teamB?.logo ? (
+                      <img src={match.teamB.logo} alt="" className="object-contain drop-shadow-[0_1px_4px_rgba(255,255,255,0.25)]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                    ) : (
+                      <div className="bg-[#2B3040]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                    )}
                     <span style={{ fontSize: isFinal ? '18px' : '15px', color: teamBStyle.color, fontWeight: teamBStyle.weight }}>{match.teamB ? match.teamB.tag : 'TBD'}</span>
                 </div>
                 <span style={{ fontSize: isFinal ? '20px' : '15px', color: teamBStyle.color, fontWeight: teamBStyle.weight }}>{isFin ? match.scoreB : (isSim ? match.scoreB : '')}</span>
@@ -78,39 +95,43 @@ export default function DoubleElimView({ state, event }) {
   const getMatchesByPrefix = (prefix) => bracket.flat().filter(m => m.id.startsWith(prefix));
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 100, overflowY: 'auto', overflowX: 'auto', padding: '40px 5vw', backgroundColor: bgDark }}>
+    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-auto p-[40px_5vw]" style={{ backgroundColor: bgDark }}>
       
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100vw', height: '100vh', background: `radial-gradient(circle, ${msiRed} 0%, transparent 40%)`, opacity: 0.08, pointerEvents: 'none', filter: 'blur(50px)', zIndex: 0 }} />
+      <div 
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-screen opacity-10 pointer-events-none blur-[50px] z-0" 
+        style={{ background: `radial-gradient(circle, ${msiRed} 0%, transparent 40%)` }} 
+      />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '80px', position: 'relative', zIndex: 1, maxWidth: '1800px', margin: '0 auto', paddingBottom: '120px' }}>
+      <div className="flex flex-col gap-20 relative z-[1] max-w-[1800px] mx-auto pb-[120px]">
         
         {/* WINNER BRACKET + GRANDE FINALE */}
-        <div style={{ position: 'relative', borderLeft: `4px solid ${msiRed}`, paddingLeft: '24px' }}>
-          <h2 style={{ fontFamily: "'Arial Black', sans-serif", fontStyle: 'italic', color: '#FFF', margin: '0 0 40px 0', fontSize: '20px', letterSpacing: '2px' }}>WINNER BRACKET</h2>
+        <div className="relative pl-6" style={{ borderLeft: `4px solid ${msiRed}` }}>
+          <h2 className="font-['Arial_Black'] italic text-white m-0 mb-10 text-xl tracking-[2px]">WINNER BRACKET</h2>
           
-          <div style={{ display: 'flex', gap: '6vw', alignItems: 'stretch' }}>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '30px' }}>
-                {getMatchesByPrefix('ub1').map(m => getMatchBox(m, "ROUND 1"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '40px' }}>
-                {getMatchesByPrefix('ub2').map(m => getMatchBox(m, "QUARTER"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '60px' }}>
-                {getMatchesByPrefix('ub3').map(m => getMatchBox(m, "SEMI"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                {getMatchesByPrefix('ub4').map(m => getMatchBox(m, "FINAL"))}
-            </div>
+          <div className="flex gap-[6vw] items-stretch">
+            <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('ub1').map(m => getMatchBox(m, "ROUND 1"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('ub2').map(m => getMatchBox(m, "QUARTER"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[60px]">{getMatchesByPrefix('ub3').map(m => getMatchBox(m, "SEMI"))}</div>
+            <div className="shrink-0 flex flex-col justify-around">{getMatchesByPrefix('ub4').map(m => getMatchBox(m, "FINAL"))}</div>
             
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '5vw' }}>
-              <div style={{ background: boxBg, border: `2px solid ${msiRed}`, padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: `inset 0 0 30px ${msiRed}20`, position: 'relative', width: '100%', minWidth: '280px' }}>
-                <div style={{ position: 'absolute', top: '-14px', background: msiYellow, color: '#000', padding: '6px 16px', fontFamily: "'Arial Black', sans-serif", fontStyle: 'italic', fontSize: '13px', textTransform: 'uppercase', boxShadow: '3px 3px 0px #000' }}>
+            <div className="shrink-0 flex flex-col justify-center pl-[5vw]">
+              <div 
+                className="p-[40px_24px] flex flex-col items-center relative w-full min-w-[280px]" 
+                style={{ background: boxBg, border: `2px solid ${msiRed}`, boxShadow: `inset 0 0 30px ${msiRed}20` }}
+              >
+                <div 
+                  className="absolute -top-[14px] text-black px-4 py-1.5 font-['Arial_Black'] italic text-[13px] uppercase" 
+                  style={{ background: msiYellow, boxShadow: '3px 3px 0px #000' }}
+                >
                   PHASE ULTIME
                 </div>
-                <h2 style={{ fontFamily: "'Arial Black', sans-serif", color: '#FFF', margin: '10px 0 40px 0', fontSize: '26px', fontStyle: 'italic', textShadow: `2px 2px 0px ${msiRed}`, textAlign: 'center', whiteSpace: 'nowrap' }}>
+                <h2 
+                  className="font-['Arial_Black'] text-white mt-2.5 mb-10 text-[26px] italic text-center whitespace-nowrap" 
+                  style={{ textShadow: `2px 2px 0px ${msiRed}` }}
+                >
                   GRANDE FINALE
                 </h2>
-                <div style={{ width: '100%' }}>
+                <div className="w-full">
                   {getMatchesByPrefix('gf').map(m => getMatchBox(m, "CHAMPIONSHIP", true))}
                 </div>
               </div>
@@ -120,53 +141,54 @@ export default function DoubleElimView({ state, event }) {
         </div>
 
         {/* LOSER BRACKET */}
-        <div style={{ position: 'relative', borderLeft: `4px solid #555`, paddingLeft: '24px' }}>
-          <h2 style={{ fontFamily: "'Arial Black', sans-serif", fontStyle: 'italic', color: '#888', margin: '0 0 40px 0', fontSize: '20px', letterSpacing: '2px' }}>LOSER BRACKET</h2>
+        <div className="relative pl-6" style={{ borderLeft: `4px solid #555` }}>
+          <h2 className="font-['Arial_Black'] italic text-[#888] m-0 mb-10 text-xl tracking-[2px]">LOSER BRACKET</h2>
           
-          <div style={{ display: 'flex', gap: '4vw', alignItems: 'stretch' }}>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '30px' }}>
-                {getMatchesByPrefix('lb1').map(m => getMatchBox(m, "L-ROUND 1"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '30px' }}>
-                {getMatchesByPrefix('lb2').map(m => getMatchBox(m, "L-ROUND 2"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '40px' }}>
-                {getMatchesByPrefix('lb3').map(m => getMatchBox(m, "L-ROUND 3"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '40px' }}>
-                {getMatchesByPrefix('lb4').map(m => getMatchBox(m, "L-ROUND 4"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around', gap: '60px' }}>
-                {getMatchesByPrefix('lb5').map(m => getMatchBox(m, "L-SEMI"))}
-            </div>
-            <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                {getMatchesByPrefix('lb6').map(m => getMatchBox(m, "L-FINAL"))}
-            </div>
+          <div className="flex gap-[4vw] items-stretch">
+            <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('lb1').map(m => getMatchBox(m, "L-ROUND 1"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('lb2').map(m => getMatchBox(m, "L-ROUND 2"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('lb3').map(m => getMatchBox(m, "L-ROUND 3"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('lb4').map(m => getMatchBox(m, "L-ROUND 4"))}</div>
+            <div className="shrink-0 flex flex-col justify-around gap-[60px]">{getMatchesByPrefix('lb5').map(m => getMatchBox(m, "L-SEMI"))}</div>
+            <div className="shrink-0 flex flex-col justify-around">{getMatchesByPrefix('lb6').map(m => getMatchBox(m, "L-FINAL"))}</div>
           </div>
         </div>
 
       </div>
 
       {/* ENCART DE CONTRÔLE DÉPLACÉ EN BAS À DROITE */}
-      <div style={{ 
-        position: 'fixed', bottom: '40px', right: '40px',
-        background: boxBg, border: `3px solid ${msiRed}`, width: '320px',
-        padding: '20px', boxShadow: `6px 6px 0px ${msiYellow}`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', zIndex: 1000
-      }}>
-        <h3 style={{ fontFamily: "'Arial Black', sans-serif", color: '#FFF', margin: 0, fontSize: '16px', fontStyle: 'italic', textTransform: 'uppercase', textAlign: 'center' }}>
+      <div 
+        className="fixed bottom-10 right-10 w-[320px] p-5 flex flex-col items-center gap-4 z-[1000]"
+        style={{ background: boxBg, border: `3px solid ${msiRed}`, boxShadow: `6px 6px 0px ${msiYellow}` }}
+      >
+        <h3 className="font-['Arial_Black'] text-white m-0 text-base italic uppercase text-center">
           {state.champion ? "COMPÉTITION TERMINÉE" : `ROUND ${currentRound + 1} / 8`}
         </h3>
         
         {state.champion ? (
-          <button onClick={() => socket.emit('continue-season')} style={{ width: '100%', backgroundColor: msiYellow, color: '#000', border: 'none', padding: '12px', fontFamily: "'Arial Black', sans-serif", fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+          <button 
+            onClick={() => socket.emit('continue-season')} 
+            className="w-full text-black border-none p-3 font-['Arial_Black'] text-sm italic cursor-pointer"
+            style={{ backgroundColor: msiYellow }}
+          >
             TERMINER SAISON
           </button>
         ) : roundComplete ? (
-          <button onClick={advanceRound} disabled={isRoundReady} style={{ width: '100%', backgroundColor: isRoundReady ? borderMuted : '#FFF', color: isRoundReady ? '#888' : '#000', border: 'none', padding: '12px', fontFamily: "'Arial Black', sans-serif", fontSize: '14px', fontStyle: 'italic', cursor: isRoundReady ? 'wait' : 'pointer', boxShadow: isRoundReady ? 'none' : `3px 3px 0px ${msiRed}` }}>
+          <button 
+            onClick={advanceRound} 
+            disabled={isRoundReady} 
+            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic"
+            style={{ backgroundColor: isRoundReady ? borderMuted : '#FFF', color: isRoundReady ? '#888' : '#000', cursor: isRoundReady ? 'wait' : 'pointer', boxShadow: isRoundReady ? 'none' : `3px 3px 0px ${msiRed}` }}
+          >
             {isRoundReady ? `EN ATTENTE (${state.roundReady.length}/${humanCount})` : "TOUR SUIVANT"}
           </button>
         ) : (
-          <button onClick={toggleReady} disabled={isGlobalReady} style={{ width: '100%', backgroundColor: isGlobalReady ? borderMuted : msiYellow, color: isGlobalReady ? '#888' : '#000', border: 'none', padding: '12px', fontFamily: "'Arial Black', sans-serif", fontSize: '14px', fontStyle: 'italic', cursor: isGlobalReady ? 'wait' : 'pointer', boxShadow: isGlobalReady ? 'none' : `3px 3px 0px ${msiRed}` }}>
+          <button 
+            onClick={toggleReady} 
+            disabled={isGlobalReady} 
+            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic"
+            style={{ backgroundColor: isGlobalReady ? borderMuted : msiYellow, color: isGlobalReady ? '#888' : '#000', cursor: isGlobalReady ? 'wait' : 'pointer', boxShadow: isGlobalReady ? 'none' : `3px 3px 0px ${msiRed}` }}
+          >
             {isGlobalReady ? `EN ATTENTE (${readyPlayers?.length || 0}/${humanCount})` : 'LANCER MATCH'}
           </button>
         )}

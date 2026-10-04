@@ -11,32 +11,38 @@ export default function WaitingRoom({ state, startDraft }) {
   const humanParticipants = state.participants.filter(p => !p.id.startsWith('bot-'));
 
   return (
-    <div className="panel" style={{ width: '100%', maxWidth: '450px' }}>
+    <div className="w-full max-w-[450px] p-8 bg-bg-panel border border-white/15 rounded-xl shadow-2xl">
       <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h3 className="title-font text-muted" style={{ margin: 0 }}>
+        <div className="flex justify-between items-center mb-5">
+          <h3 className="font-rajdhani text-text-muted m-0 uppercase tracking-widest text-lg">
             Commandants connectés ({humanParticipants.length}/8)
           </h3>
-          <span
-            className="title-font text-cyan"
-            style={{ fontSize: '12px', border: '1px solid var(--accent-cyan)', padding: '2px 8px', borderRadius: '4px' }}
-          >
+          <span className="font-rajdhani text-accent-cyan text-xs border border-accent-cyan px-2 py-0.5 rounded">
             {MODE_LABELS[state.gameMode] || state.gameMode}
           </span>
         </div>
-        <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 30px 0' }}>
+        <ul className="list-none p-0 m-0 mb-7">
           {humanParticipants.map(p => (
             <li
               key={p.id}
-              style={{ padding: '12px 16px', background: 'var(--bg-card)', marginBottom: '8px', borderRadius: '4px', display: 'flex', justifyContent: 'space-between' }}
+              className="px-4 py-3 bg-bg-card mb-2 rounded flex justify-between items-center"
             >
-              <span style={{ fontWeight: p.id === socket.id ? '600' : '400' }}>{p.name}</span>
-              {p.id === socket.id && <span className="text-cyan title-font" style={{ fontSize: '14px' }}>Vous</span>}
+              <span className={p.id === socket.id ? "font-semibold" : "font-normal"}>
+                {p.name}
+              </span>
+              {p.id === socket.id && (
+                <span className="text-accent-cyan font-rajdhani text-sm uppercase tracking-wider">
+                  Vous
+                </span>
+              )}
             </li>
           ))}
         </ul>
         {humanParticipants.length >= 1 && (
-          <button className="btn btn-green" style={{ width: '100%' }} onClick={startDraft}>
+          <button 
+            className="w-full font-rajdhani font-bold tracking-wider uppercase py-3 px-7 bg-accent-green text-black rounded hover:bg-[#00b25c] hover:-translate-y-0.5 transition-all shadow-green hover:shadow-green-hover" 
+            onClick={startDraft}
+          >
             Lancer la séquence
           </button>
         )}

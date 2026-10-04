@@ -1,95 +1,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&display=swap');
 
-:root {
-  --bg-base: #060913;
-  --bg-panel: #0d1323;
-  --bg-card: #151d33;
-  --accent-cyan: #00e5ff;
-  --accent-pink: #ff3366;
-  --accent-green: #00e676;
-  --text-main: #f8fafc;
-  --text-muted: #8b9bb4;
-  --border: rgba(139, 155, 180, 0.15);
+/* L'importation v4 de Tailwind */
+@import "tailwindcss";
+
+/* Ta configuration qui remplace l'ancien tailwind.config.js */
+@theme {
+  /* Le préfixe --color- indique à Tailwind de générer bg-*, text-*, border-* */
+  --color-bg-base: #060913;
+  --color-bg-panel: #0d1323;
+  --color-bg-card: #151d33;
+  --color-accent-cyan: #00e5ff;
+  --color-accent-pink: #ff3366;
+  --color-accent-green: #00e676;
+  --color-text-main: #f8fafc;
+  --color-text-muted: #8b9bb4;
+  --color-msi-red: #E6192B;
+  --color-msi-yellow: #FFEA00;
+  --color-msi-bg: #EAEAEA;
+
+  /* Le préfixe --font- indique à Tailwind de générer font-sans, font-rajdhani */
+  --font-sans: 'Inter', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  --font-msi: 'Arial Black', sans-serif;
+
+  /* Le préfixe --shadow- indique à Tailwind de générer shadow-cyan, shadow-msi-btn */
+  --shadow-cyan: 0 0 15px rgba(0, 229, 255, 0.2);
+  --shadow-cyan-hover: 0 0 25px rgba(0, 229, 255, 0.4);
+  --shadow-green: 0 0 15px rgba(0, 230, 118, 0.2);
+  --shadow-green-hover: 0 0 25px rgba(0, 230, 118, 0.4);
+  --shadow-pink: 0 0 15px rgba(255, 51, 102, 0.2);
+  --shadow-pink-hover: 0 0 25px rgba(255, 51, 102, 0.4);
+  --shadow-msi-btn: 4px 4px 0px #000;
+  --shadow-msi-panel: 8px 8px 0px #FFEA00;
+
+  /* Le préfixe --animate- indique à Tailwind de générer animate-pulse-fast */
+  --animate-pulse-fast: pulse 1s infinite alternate;
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg-base); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
-
-/* Typographie */
-.title-font { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; }
-.text-cyan { color: var(--accent-cyan); }
-.text-pink { color: var(--accent-pink); }
-.text-green { color: var(--accent-green); }
-.text-muted { color: var(--text-muted); }
-
-/* Boutons */
-.btn {
-  font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 12px 28px; border: none; borderRadius: 4px; cursor: pointer; transition: all 0.3s ease;
+/* Application du style de base en CSS pur avec les variables générées */
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-main);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  margin: 0;
 }
-.btn-cyan { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
-.btn-cyan:hover { background: #00b3cc; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4); transform: translateY(-2px); }
-.btn-green { background: var(--accent-green); color: #000; box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); }
-.btn-green:hover { background: #00b25c; box-shadow: 0 0 25px rgba(0, 230, 118, 0.4); transform: translateY(-2px); }
-.btn-pink { background: var(--accent-pink); color: #000; box-shadow: 0 0 15px rgba(255, 51, 102, 0.2); }
-.btn-pink:hover { background: #ff1a53; box-shadow: 0 0 25px rgba(255, 51, 102, 0.4); transform: translateY(-2px); }
-.btn-outline { background: transparent; border: 2px solid var(--text-muted); color: var(--text-main); }
-.btn-outline:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* Layouts & Cartes */
-.container { min-height: 100vh; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-.panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-.draft-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; width: 100%; max-width: 1400px; }
-
-.roster-card {
-  background: var(--bg-panel); width: 240px; border-radius: 8px; padding: 20px;
-  border-top: 3px solid var(--border); transition: border-color 0.3s ease;
-}
-.roster-card.active { border-top-color: var(--accent-green); background: linear-gradient(180deg, rgba(0,230,118,0.05) 0%, var(--bg-panel) 100%); }
-
-.player-slot { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; }
-.player-slot.empty { background: transparent; border: 1px dashed var(--border); }
-
-.pick-card {
-  background: var(--bg-card); width: 160px; padding: 24px 16px; border-radius: 8px; cursor: pointer;
-  border: 1px solid var(--border); transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center;
-}
-.pick-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 10px 20px rgba(0, 229, 255, 0.15); background: var(--bg-panel); }
-
-/* Arbre et Arène */
-.bracket-match {
-  background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-.bracket-match:hover { border-color: rgba(255, 255, 255, 0.2); }
-.bracket-row { padding: 12px 16px; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); }
-.bracket-row:last-child { border-bottom: none; }
-.bracket-row.winner { font-weight: 600; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); }
-
-.arena-box { display: flex; width: 100%; max-width: 1000px; gap: 40px; align-items: center; margin-top: 40px; }
-.arena-team { flex: 1; }
-.arena-vs { font-size: 48px; color: var(--text-muted); text-shadow: 0 0 20px rgba(255, 51, 102, 0); transition: all 0.3s ease; }
-.arena-vs.simulating { color: var(--accent-pink); text-shadow: 0 0 20px rgba(255, 51, 102, 0.6); animation: pulse 1s infinite alternate; }
-
-@keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.1); opacity: 1; } }
-.pulse-text { animation: pulse 1s infinite alternate; }
-
-
-/* --- LE THÈME BRUTALISTE MSI 2026 --- */
-.msi-theme-container {
-  background: #EAEAEA; /* Fond clair granuleux comme l'affiche */
+/* L'effet MSI brut reste en CSS classique */
+.msi-theme-bg {
   background-image: radial-gradient(#d3d3d3 1px, transparent 1px);
   background-size: 20px 20px;
-  position: relative;
-  min-height: 100vh;
-  padding: 40px;
-  overflow: hidden;
 }
 
-/* L'effet de fissure rouge éclatée en arrière-plan */
-.msi-theme-container::before {
+.msi-theme-bg::before {
   content: '';
   position: absolute;
   top: 50%; left: 50%;
@@ -99,79 +62,4 @@ body { margin: 0; background: var(--bg-base); color: var(--text-main); font-fami
   opacity: 0.15;
   pointer-events: none;
   filter: contrast(200%) blur(10px);
-}
-
-.msi-title-banner {
-  font-family: 'Arial Black', sans-serif;
-  color: #000;
-  font-size: 56px;
-  text-transform: uppercase;
-  margin-bottom: 40px;
-  display: inline-block;
-  background: #E6192B;
-  padding: 5px 30px;
-  transform: skew(-5deg);
-  box-shadow: 10px 10px 0px #FFEA00; /* L'accent jaune de l'image */
-}
-
-/* --- LE NOUVEAU LAYOUT MSI --- */
-/* Ceci place les brackets à gauche, la finale à droite */
-.msi-layout-grid {
-  display: grid;
-  grid-template-columns: 1fr 400px; /* 400px pour la colonne de Grande Finale */
-  gap: 60px;
-  align-items: center;
-}
-
-.msi-brackets-col {
-  display: flex;
-  flex-direction: column;
-  gap: 50px; /* Sépare le Winner du Loser bracket */
-}
-
-/* La Grande Finale est centrée dans sa colonne de droite */
-.msi-grand-final-col {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0,0,0,0.05);
-  border: 4px solid #E6192B;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: inset 0 0 50px rgba(230, 25, 43, 0.1);
-}
-
-/* Le bouton de contrôle fixé en bas à droite (comme sur votre dessin) */
-.msi-control-panel {
-  position: fixed;
-  bottom: 40px;
-  right: 40px;
-  background: #000;
-  border: 3px solid #E6192B;
-  padding: 24px;
-  box-shadow: 8px 8px 0px #FFEA00;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.msi-btn {
-  background: #FFEA00;
-  color: #000;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 20px;
-  font-weight: 900;
-  text-transform: uppercase;
-  border: none;
-  padding: 16px 32px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.msi-btn:hover {
-  background: #E6192B;
-  color: #FFF;
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0px #000;
 }
