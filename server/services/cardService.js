@@ -14,14 +14,14 @@ export const PACK_TYPES = {
   },
   elite: {
     name: "Pack Élite",
-    price: 250,
+    price: 200,
     size: 5,
     // Chances x2 sur les cartes Rares et supérieures
     weights: { Commune: 459, Rare: 435, 'Épique': 80, 'Légendaire': 20, WANTED: 6 }
   },
   legendary: {
     name: "Pack Légende",
-    price: 500,
+    price: 400,
     size: 5,
     // Chances x5 sur les cartes Épiques, Légendaires et WANTED
     weights: { Commune: 155, Rare: 580, 'Épique': 200, 'Légendaire': 50, WANTED: 15 }

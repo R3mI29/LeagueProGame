@@ -135,10 +135,11 @@ export const CARD_POOL = [
   {
     "id": "369-lpl-champion",
     "baseName": "369",
-    "variant": "LPL Champion 369",
+    "variant": "2023 MSI Champion",
     "role": "Top",
-    "rating": 86,
-    "rarity": "Épique"
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/msi_jdg_369.jpg"
   },
   {
     "id": "bro-morgan",
@@ -161,10 +162,11 @@ export const CARD_POOL = [
   {
     "id": "kiin-lck-mvp",
     "baseName": "Kiin",
-    "variant": "LCK Finals MVP Kiin",
+    "variant": "LCK Finals MVP",
     "role": "Top",
-    "rating": 88,
-    "rarity": "Épique"
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/geng_kiin_lck.jpg"
   },
   {
     "id": "gx-odoamne",
@@ -384,9 +386,9 @@ export const CARD_POOL = [
   {
     "id": "oner-lck",
     "baseName": "Oner",
-    "variant": "LCK Champ Oner",
+    "variant": "LCK 2022 Spring Champion",
     "role": "Jungle",
-    "rating": 87,
+    "rating": 84,
     "rarity": "Épique",
     "image": "/cardsImg/others/Oner_blondie.jpg"
   },
@@ -781,10 +783,11 @@ export const CARD_POOL = [
   {
     "id": "bdd-lck-mvp",
     "baseName": "Bdd",
-    "variant": "LCK MVP Bdd",
+    "variant": "2025 Worlds finalist",
     "role": "Mid",
     "rating": 87,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/world_finalist_bdd_2025.jpg"
   },
   {
     "id": "larssen-RGE",
@@ -1035,7 +1038,7 @@ export const CARD_POOL = [
     "baseName": "Caliste",
     "variant": "EWC 2026 Caliste",
     "role": "ADC",
-    "rating": 87,
+    "rating": 86,
     "rarity": "Épique",
     "image": "/cardsImg/fullart/caliste_star.jpg"
   },
@@ -1201,10 +1204,11 @@ export const CARD_POOL = [
   {
     "id": "delight-hle-2024",
     "baseName": "Delight",
-    "variant": "HLE Delight",
+    "variant": "2025 First Stand Champion",
     "role": "Support",
     "rating": 85,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "image": "/cardsImg/others/delight_firststand_2025.jpg"
   },
   {
     "id": "th-way",
