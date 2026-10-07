@@ -6,7 +6,7 @@ import { EVENTS } from './constants/seasonConfig';
 import { TEAMS_DB } from './constants/teams'; // IMPORT AJOUTÉ
 
 import LobbyView from './views/LobbyView';
-import CardsView from './views/CardsView';
+import CardsView from './views/CardsView/CardsView';
 import ArenaView from './views/ArenaView';
 import BracketView from './views/BracketView';
 import DevCardsView from './views/DevCardView'; 

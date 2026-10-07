@@ -31,7 +31,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 68,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/EDG_zdz.webp"
+    "image": "/cardsImg/2026-players/EDG_zdz.webp",
+    "nationality": "CN",
+    "teamTag": "EDG",
+    "league": "LPL"
   },
   {
     "id": "t1-zeus",
@@ -40,7 +43,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 83,
     "rarity": "Rare",
-    "image": "/cardsImg/others/T1_zeus.png"
+    "image": "/cardsImg/others/T1_zeus.png",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "hle-zeus",
@@ -49,7 +55,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/hle_zeus.webp"
+    "image": "/cardsImg/2026-players/hle_zeus.webp",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "zeus-lck",
@@ -58,7 +67,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 85,
     "rarity": "Épique",
-    "image": "/cardsImg/others/zeus_lck_2022.jpg"
+    "image": "/cardsImg/others/zeus_lck_2022.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "zeus-mvp-msi",
@@ -67,7 +79,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/MSI_MVP_zeus.jpg"
+    "image": "/cardsImg/others/MSI_MVP_zeus.jpg",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "zeus-mvp-2023",
@@ -76,7 +91,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 94,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_legend_zeus.jpg"
+    "image": "/cardsImg/others/T1_legend_zeus.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "NAVI-adam",
@@ -85,7 +103,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 69,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/NAVI_adam.webp"
+    "image": "/cardsImg/2026-players/NAVI_adam.webp",
+    "nationality": "FR",
+    "teamTag": "NAVI",
+    "league": "LEC"
   },
   {
     "id": "blg-bin",
@@ -94,7 +115,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 83,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/BLG_bin.webp"
+    "image": "/cardsImg/2026-players/BLG_bin.webp",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "bin-FirstStand-2026",
@@ -103,7 +127,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 89,
     "rarity": "Épique",
-    "image": "/cardsImg/others/BLG-Bin-FST.jpg"
+    "image": "/cardsImg/others/BLG-Bin-FST.jpg",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "bin-lpl-mvp",
@@ -112,7 +139,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 93,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/BLG_bin.jpg"
+    "image": "/cardsImg/others/BLG_bin.jpg",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "szygenda",
@@ -121,7 +151,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 51,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/szygenda.webp"
+    "image": "/cardsImg/2026-players/szygenda.webp",
+    "nationality": "DK",
+    "teamTag": "RGE",
+    "league": "LEC"
   },
   {
     "id": "tes-369",
@@ -130,7 +163,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/TES_369.webp"
+    "image": "/cardsImg/2026-players/TES_369.webp",
+    "nationality": "CN",
+    "teamTag": "TES",
+    "league": "LPL"
   },
   {
     "id": "369-lpl-champion",
@@ -139,7 +175,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/msi_jdg_369.jpg"
+    "image": "/cardsImg/others/msi_jdg_369.jpg",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "bro-morgan",
@@ -148,7 +187,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 63,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/BRO_morgan.webp"
+    "image": "/cardsImg/2026-players/BRO_morgan.webp",
+    "nationality": "KR",
+    "teamTag": "BRO",
+    "league": "LCK"
   },
   {
     "id": "gen-kiin",
@@ -157,7 +199,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/GENG_kiin.webp"
+    "image": "/cardsImg/2026-players/GENG_kiin.webp",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "kiin-lck-mvp",
@@ -166,7 +211,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/geng_kiin_lck.jpg"
+    "image": "/cardsImg/others/geng_kiin_lck.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "gx-odoamne",
@@ -175,7 +223,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 66,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/GX_odoamne.webp"
+    "image": "/cardsImg/2026-players/GX_odoamne.webp",
+    "nationality": "RO",
+    "teamTag": "GX",
+    "league": "LEC"
   },
   {
     "id": "brokenblade-g2",
@@ -184,7 +235,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/g2_brokenblade.webp"
+    "image": "/cardsImg/2026-players/g2_brokenblade.webp",
+    "nationality": "DE",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "NAVI-maynter",
@@ -193,7 +247,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 62,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/NAVI_maynter.webp"
+    "image": "/cardsImg/2026-players/NAVI_maynter.webp",
+    "nationality": "UA",
+    "teamTag": "NAVI",
+    "league": "LEC"
   },
   {
     "id": "fnc-oscarinin",
@@ -202,7 +259,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 75,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/FNC_oscarinin.webp"
+    "image": "/cardsImg/2026-players/FNC_oscarinin.webp",
+    "nationality": "ES",
+    "teamTag": "FNC",
+    "league": "LEC"
   },
   {
     "id": "sen-impact",
@@ -211,7 +271,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 70,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SEN_impact.webp"
+    "image": "/cardsImg/2026-players/SEN_impact.webp",
+    "nationality": "KR",
+    "teamTag": "SEN",
+    "league": "LCS"
   },
   {
     "id": "fly-bwipo",
@@ -220,7 +283,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 76,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/FLY_bwipo.webp"
+    "image": "/cardsImg/2026-players/FLY_bwipo.webp",
+    "nationality": "BE",
+    "teamTag": "FLY",
+    "league": "LCS"
   },
   {
     "id": "dns-dudu",
@@ -229,7 +295,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 61,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DNS_dudu.webp"
+    "image": "/cardsImg/2026-players/DNS_dudu.webp",
+    "nationality": "KR",
+    "teamTag": "DNS",
+    "league": "LCK"
   },
   {
     "id": "t1-doran",
@@ -238,7 +307,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 78,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_doran.webp"
+    "image": "/cardsImg/2026-players/T1_doran.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "doran-lck-champ",
@@ -246,7 +318,10 @@ export const CARD_POOL = [
     "variant": "LCK Champion Doran",
     "role": "Top",
     "rating": 84,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "sk-wunder",
@@ -255,7 +330,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 67,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SK_wunder.webp"
+    "image": "/cardsImg/2026-players/SK_wunder.webp",
+    "nationality": "DK",
+    "teamTag": "SK",
+    "league": "LEC"
   },
   {
     "id": "g2-wunder-2019",
@@ -264,7 +342,10 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 79,
     "rarity": "Rare",
-    "image": "/cardsImg/others/G2_wunder.png"
+    "image": "/cardsImg/others/G2_wunder.png",
+    "nationality": "DK",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "theshy-legend",
@@ -273,9 +354,15 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 97,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/TheShy_legend.jpg"
+    "image": "/cardsImg/others/TheShy_legend.jpg",
+    "nationality": "KR",
+    "teamTag": "IG",
+    "league": "LPL"
   },
 
+  // ==========================================
+  // --- JUNGLE ---
+  // ==========================================
   {
     "id": "bro-gideon",
     "baseName": "Gideon",
@@ -283,7 +370,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 64,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/BRO_gideon.webp"
+    "image": "/cardsImg/2026-players/BRO_gideon.webp",
+    "nationality": "KR",
+    "teamTag": "BRO",
+    "league": "LCK"
   },
   {
     "id": "gen-canyon",
@@ -292,7 +382,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 83,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/GENG_canyon.webp"
+    "image": "/cardsImg/2026-players/GENG_canyon.webp",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "canyon-ewc",
@@ -301,7 +394,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 89,
     "rarity": "Épique",
-    "image": "/cardsImg/others/GenG_Canyon.jpg"
+    "image": "/cardsImg/others/GenG_Canyon.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "canyon-lck-champion",
@@ -310,7 +406,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/LCK_geng_canyon.jpg"
+    "image": "/cardsImg/others/LCK_geng_canyon.jpg",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
   },
   {
     "id": "canyon-mvp-2020",
@@ -319,7 +418,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 96,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/DWG_canyon_WORLDS.jpeg"
+    "image": "/cardsImg/others/DWG_canyon_WORLDS.jpeg",
+    "nationality": "KR",
+    "teamTag": "DWG",
+    "league": "LCK"
   },
   {
     "id": "gx-isma",
@@ -328,7 +430,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 65,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/GX_isma.webp"
+    "image": "/cardsImg/2026-players/GX_isma.webp",
+    "nationality": "FR",
+    "teamTag": "GX",
+    "league": "LEC"
   },
   {
     "id": "jdg-kanavi",
@@ -337,7 +442,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/others/JDG_kanavi.png"
+    "image": "/cardsImg/others/JDG_kanavi.png",
+    "nationality": "KR",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "kanavi-msi-2023",
@@ -345,7 +453,10 @@ export const CARD_POOL = [
     "variant": "MSI Champion Kanavi",
     "role": "Jungle",
     "rating": 89,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "nationality": "KR",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "kanavi-lpl-mvp",
@@ -354,7 +465,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 91,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/JDG_kanavi.jpg"
+    "image": "/cardsImg/others/JDG_kanavi.jpg",
+    "nationality": "KR",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "painter-t1-2026-sub",
@@ -363,7 +477,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 56,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/T1_Painter.webp"
+    "image": "/cardsImg/2026-players/T1_Painter.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "frx-raptor",
@@ -372,7 +489,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 64,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/FRX_raptor.webp"
+    "image": "/cardsImg/2026-players/FRX_raptor.webp",
+    "nationality": "KR",
+    "teamTag": "FRX",
+    "league": "LCK"
   },
   {
     "id": "t1-oner",
@@ -381,7 +501,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_oner.webp"
+    "image": "/cardsImg/2026-players/T1_oner.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "oner-lck",
@@ -390,7 +513,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 84,
     "rarity": "Épique",
-    "image": "/cardsImg/others/Oner_blondie.jpg"
+    "image": "/cardsImg/others/Oner_blondie.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "DKC-sharvel",
@@ -399,7 +525,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 68,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DKC_sharvel.webp"
+    "image": "/cardsImg/2026-players/DKC_sharvel.webp",
+    "nationality": "KR",
+    "teamTag": "DK.C",
+    "league": "LCK"
   },
   {
     "id": "hle-peanut",
@@ -408,7 +537,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 79,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/HLE_peanut.webp"
+    "image": "/cardsImg/2026-players/HLE_peanut.webp",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "peanut-lck-mvp",
@@ -416,7 +548,10 @@ export const CARD_POOL = [
     "variant": "LCK MVP Peanut",
     "role": "Jungle",
     "rating": 86,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "C9-blaber",
@@ -425,7 +560,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 71,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/C9_blaber.webp"
+    "image": "/cardsImg/2026-players/C9_blaber.webp",
+    "nationality": "US",
+    "teamTag": "C9",
+    "league": "LCS"
   },
   {
     "id": "tes-tian",
@@ -434,15 +572,22 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/TES_tian.webp"
+    "image": "/cardsImg/2026-players/TES_tian.webp",
+    "nationality": "CN",
+    "teamTag": "TES",
+    "league": "LPL"
   },
   {
-    "id": "tian-mvp",
+    "id": "tian-lpl-champ",
     "baseName": "Tian",
-    "variant": "Worlds MVP Tian",
+    "variant": "LPL Champion",
     "role": "Jungle",
-    "rating": 89,
-    "rarity": "Épique"
+    "rating": 85,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/FPX_Tian_LPL.jpg",
+    "nationality": "CN",
+    "teamTag": "FPX",
+    "league": "LPL"
   },
   {
     "id": "mad-elyoya",
@@ -451,7 +596,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 77,
     "rarity": "Rare",
-    "image": "/cardsImg/others/MAD_elyoya.png"
+    "image": "/cardsImg/others/MAD_elyoya.png",
+    "nationality": "ES",
+    "teamTag": "MAD",
+    "league": "LEC"
   },
   {
     "id": "th-sheo",
@@ -460,7 +608,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 64,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_sheo.webp"
+    "image": "/cardsImg/2026-players/TH_sheo.webp",
+    "nationality": "FR",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "kc-yike",
@@ -469,7 +620,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 78,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/KC_yike.webp"
+    "image": "/cardsImg/2026-players/KC_yike.webp",
+    "nationality": "SE",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "blg-xun",
@@ -478,7 +632,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/blg_xun.webp"
+    "image": "/cardsImg/2026-players/blg_xun.webp",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "vit-lyncas",
@@ -487,7 +644,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 66,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/VIT_lyncas.webp"
+    "image": "/cardsImg/2026-players/VIT_lyncas.webp",
+    "nationality": "LT",
+    "teamTag": "VIT",
+    "league": "LEC"
   },
   {
     "id": "g2-jankos",
@@ -496,7 +656,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 79,
     "rarity": "Rare",
-    "image": "/cardsImg/others/G2_jankos.png"
+    "image": "/cardsImg/others/G2_jankos.png",
+    "nationality": "PL",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "th-daglas",
@@ -505,7 +668,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 62,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_daglas.webp"
+    "image": "/cardsImg/2026-players/TH_daglas.webp",
+    "nationality": "PL",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "fnc-razork",
@@ -514,7 +680,10 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 75,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/FNC_razork.webp"
+    "image": "/cardsImg/2026-players/FNC_razork.webp",
+    "nationality": "ES",
+    "teamTag": "FNC",
+    "league": "LEC"
   },
 
   // ==========================================
@@ -527,7 +696,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 59,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SK_serin.webp"
+    "image": "/cardsImg/2026-players/SK_serin.webp",
+    "nationality": "TR",
+    "teamTag": "SK",
+    "league": "LEC"
   },
   {
     "id": "faker-t1-2022",
@@ -536,7 +708,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 85,
     "rarity": "Rare",
-    "image": "/cardsImg/others/faker_T1.png"
+    "image": "/cardsImg/others/faker_T1.png",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "faker-6x-champ",
@@ -545,7 +720,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 95,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_faker.jpg"
+    "image": "/cardsImg/others/T1_faker.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "faker-hall-of-legends",
@@ -554,7 +732,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 99,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/faker_UDK2.jpg"
+    "image": "/cardsImg/others/faker_UDK2.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "nongshim-scout",
@@ -563,7 +744,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 73,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/NS_scout.webp"
+    "image": "/cardsImg/2026-players/NS_scout.webp",
+    "nationality": "KR",
+    "teamTag": "NS",
+    "league": "LCK"
   },
   {
     "id": "chovy-geng-2023",
@@ -572,7 +756,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 85,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/geng_chovy.webp"
+    "image": "/cardsImg/2026-players/geng_chovy.webp",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "chovy-msi-2024",
@@ -580,7 +767,10 @@ export const CARD_POOL = [
     "variant": "MSI Champion Chovy",
     "role": "Mid",
     "rating": 91,
-    "rarity": "Épique"
+    "rarity": "Épique",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "chovy-4peat",
@@ -589,7 +779,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 93,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/GENG_chovy_leg.jpg"
+    "image": "/cardsImg/others/GENG_chovy_leg.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "zeka-FST-mvp",
@@ -598,7 +791,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 88,
     "rarity": "Épique",
-    "image": "/cardsImg/others/FST_MVP_ZEKA.jpg"
+    "image": "/cardsImg/others/FST_MVP_ZEKA.jpg",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "GX-jackies",
@@ -607,7 +803,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 69,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/GX_jackies.webp"
+    "image": "/cardsImg/2026-players/GX_jackies.webp",
+    "nationality": "CZ",
+    "teamTag": "GX",
+    "league": "LEC"
   },
   {
     "id": "showmaker-dk-2024",
@@ -616,7 +815,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/dk_showmaker.webp"
+    "image": "/cardsImg/2026-players/dk_showmaker.webp",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
   },
   {
     "id": "showmaker-worlds-2020",
@@ -625,7 +827,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/DK_2026_showmaker.jpg"
+    "image": "/cardsImg/others/DK_2026_showmaker.jpg",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
   },
   {
     "id": "showmaker-prime",
@@ -634,7 +839,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 97,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/showmaker_prime.jpg"
+    "image": "/cardsImg/others/showmaker_prime.jpg",
+    "nationality": "KR",
+    "teamTag": "DWG",
+    "league": "LCK"
   },
   {
     "id": "showmaker-DK-mentor",
@@ -643,7 +851,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 94,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/showmaker_mentor.jpg"
+    "image": "/cardsImg/others/showmaker_mentor.jpg",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
   },
   {
     "id": "shifters-nuc",
@@ -652,7 +863,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 65,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SHFT_nuc.webp"
+    "image": "/cardsImg/2026-players/SHFT_nuc.webp",
+    "nationality": "FR",
+    "teamTag": "SHFT",
+    "league": "LEC"
   },
   {
     "id": "knight-blg-2024",
@@ -661,7 +875,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 85,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/blg_knight.webp"
+    "image": "/cardsImg/2026-players/blg_knight.webp",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "kc-kyeahoo-2026",
@@ -670,15 +887,22 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 75,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/kc_kyeahoo.webp"
+    "image": "/cardsImg/2026-players/kc_kyeahoo.webp",
+    "nationality": "KR",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "knight-msi-2023",
     "baseName": "Knight",
-    "variant": "MSI Champion Knight",
+    "variant": "FST Champion",
     "role": "Mid",
-    "rating": 90,
-    "rarity": "Épique"
+    "rating": 88,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/FST_knight.jpg",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "knight-lpl-legend",
@@ -687,7 +911,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 93,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/JDG_knight_msi.png"
+    "image": "/cardsImg/others/JDG_knight_msi.png",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "DRX_ucal",
@@ -696,7 +923,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 69,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DRX_ucal.webp"
+    "image": "/cardsImg/2026-players/DRX_ucal.webp",
+    "nationality": "KR",
+    "teamTag": "DRX",
+    "league": "LCK"
   },
   {
     "id": "rookie-ig",
@@ -705,7 +935,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/IG_rookie.webp"
+    "image": "/cardsImg/2026-players/IG_rookie.webp",
+    "nationality": "KR",
+    "teamTag": "IG",
+    "league": "LPL"
   },
   {
     "id": "rookie-IG_2019",
@@ -714,7 +947,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 86,
     "rarity": "Épique",
-    "image": "/cardsImg/others/IG_Rookie_2019.jpg"
+    "image": "/cardsImg/others/IG_Rookie_2019.jpg",
+    "nationality": "KR",
+    "teamTag": "IG",
+    "league": "LPL"
   },
   {
     "id": "fnc-vladi",
@@ -723,7 +959,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 71,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/FNC_vladi.webp"
+    "image": "/cardsImg/2026-players/FNC_vladi.webp",
+    "nationality": "CZ",
+    "teamTag": "FNC",
+    "league": "LEC"
   },
   {
     "id": "caps-g2-2024",
@@ -732,7 +971,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/g2_caps.webp"
+    "image": "/cardsImg/2026-players/g2_caps.webp",
+    "nationality": "DK",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "caps-msi-mvp",
@@ -741,7 +983,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/CAPS-MSI.avif"
+    "image": "/cardsImg/others/CAPS-MSI.avif",
+    "nationality": "DK",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "FEARX-vicla",
@@ -750,7 +995,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 70,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/FEARX_vicla.webp"
+    "image": "/cardsImg/2026-players/FEARX_vicla.webp",
+    "nationality": "KR",
+    "teamTag": "FRX",
+    "league": "LCK"
   },
   {
     "id": "nisqy-c9",
@@ -759,7 +1007,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating":78,
     "rarity": "Rare",
-    "image": "/cardsImg/others/cloud9_nisqy.png"
+    "image": "/cardsImg/others/cloud9_nisqy.png",
+    "nationality": "BE",
+    "teamTag": "C9",
+    "league": "LCS"
 
   },
   {
@@ -769,7 +1020,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 65,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/navi_poby.webp"
+    "image": "/cardsImg/2026-players/navi_poby.webp",
+    "nationality": "KR",
+    "teamTag": "NAVI",
+    "league": "LEC"
   },
   {
     "id": "bdd-kt",
@@ -778,7 +1032,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/KT_bdd.webp"
+    "image": "/cardsImg/2026-players/KT_bdd.webp",
+    "nationality": "KR",
+    "teamTag": "KT",
+    "league": "LCK"
   },
   {
     "id": "bdd-lck-mvp",
@@ -787,7 +1044,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/world_finalist_bdd_2025.jpg"
+    "image": "/cardsImg/others/world_finalist_bdd_2025.jpg",
+    "nationality": "KR",
+    "teamTag": "KT",
+    "league": "LCK"
   },
   {
     "id": "larssen-RGE",
@@ -796,7 +1056,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 78,
     "rarity": "Rare",
-    "image": "/cardsImg/others/larssen_lec_champ.png"
+    "image": "/cardsImg/others/larssen_lec_champ.png",
+    "nationality": "SE",
+    "teamTag": "RGE",
+    "league": "LEC"
   },
   {
     "id": "BRO-roamer",
@@ -805,7 +1068,10 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 63,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/BRO_roamer.webp"
+    "image": "/cardsImg/2026-players/BRO_roamer.webp",
+    "nationality": "KR",
+    "teamTag": "BRO",
+    "league": "LCK"
   },
   {
     "id": "DNS_clozer",
@@ -814,10 +1080,15 @@ export const CARD_POOL = [
     "role": "Mid",
     "rating": 64,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DNS_clozer.webp"
+    "image": "/cardsImg/2026-players/DNS_clozer.webp",
+    "nationality": "KR",
+    "teamTag": "DNS",
+    "league": "LCK"
   },
 
- // ADC
+ // ==========================================
+ // --- ADC ---
+ // ==========================================
   {
     "id": "ruler-ssg",
     "baseName": "Ruler",
@@ -825,7 +1096,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/others/ssg_ruler.png"
+    "image": "/cardsImg/others/ssg_ruler.png",
+    "nationality": "KR",
+    "teamTag": "SSG",
+    "league": "LCK"
   },
   {
     "id": "FLY-massu",
@@ -834,17 +1108,11 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 76,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/FLY_massu.webp"
-  },/* garder pr autre pack
-  {
-    "id": "jdg-ruler-fa",
-    "baseName": "Ruler",
-    "variant": "JDG Ruler",
-    "role": "ADC",
-    "rating": 88,
-    "rarity": "Épique",
-    "image": "/cardsImg/fullart/JDG_ruler.png"
-  },*/
+    "image": "/cardsImg/2026-players/FLY_massu.webp",
+    "nationality": "CA",
+    "teamTag": "FLY",
+    "league": "LCS"
+  },
   {
     "id": "ruler-msi-2023",
     "baseName": "Ruler",
@@ -852,7 +1120,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 88,
     "rarity": "Épique",
-    "image": "/cardsImg/others/jdg_ruler_msi.jpg"
+    "image": "/cardsImg/others/jdg_ruler_msi.jpg",
+    "nationality": "KR",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "ruler-worlds-mvp",
@@ -861,7 +1132,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 95,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/GENG_ruler.jpg"
+    "image": "/cardsImg/others/GENG_ruler.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "drx-jiwoo",
@@ -870,7 +1144,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 69,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DRX_jiwoo.webp"
+    "image": "/cardsImg/2026-players/DRX_jiwoo.webp",
+    "nationality": "KR",
+    "teamTag": "DRX",
+    "league": "LCK"
   },
   {
     "id": "hle-viper",
@@ -879,7 +1156,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/others/HLE_viper.png"
+    "image": "/cardsImg/others/HLE_viper.png",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "blg-viper",
@@ -888,7 +1168,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 83,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/BLG_viper.webp"
+    "image": "/cardsImg/2026-players/BLG_viper.webp",
+    "nationality": "KR",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "viper-worlds-2021",
@@ -897,7 +1180,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 88,
     "rarity": "Épique",
-    "image": "/cardsImg/others/blg_viper_lpl.jpg"
+    "image": "/cardsImg/others/blg_viper_lpl.jpg",
+    "nationality": "KR",
+    "teamTag": "EDG",
+    "league": "LPL"
   },
   {
     "id": "viper-lpl-mvp",
@@ -906,7 +1192,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 90,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/BLG_viper_leg.jpg"
+    "image": "/cardsImg/others/BLG_viper_leg.jpg",
+    "nationality": "KR",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "bro-teddy",
@@ -915,7 +1204,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 70,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/BRO_teddy.webp"
+    "image": "/cardsImg/2026-players/BRO_teddy.webp",
+    "nationality": "KR",
+    "teamTag": "BRO",
+    "league": "LCK"
   },
   {
     "id": "gumayusi-t1-2022",
@@ -924,7 +1216,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/webp/t1_gumayusi.webp"
+    "image": "/cardsImg/webp/t1_gumayusi.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "gumayusi-T1-legend",
@@ -933,7 +1228,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 93,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_gumayusi.jpg"
+    "image": "/cardsImg/others/T1_gumayusi.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "th-flakked",
@@ -942,7 +1240,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 65,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_flakked.webp"
+    "image": "/cardsImg/2026-players/TH_flakked.webp",
+    "nationality": "ES",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "blg-elk",
@@ -951,7 +1252,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/others/BLG_elk.png"
+    "image": "/cardsImg/others/BLG_elk.png",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "elk-lpl-mvp",
@@ -960,7 +1264,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 86,
     "rarity": "Épique",
-    "image": "/cardsImg/others/elk_lpl_mvp.jpg"
+    "image": "/cardsImg/others/elk_lpl_mvp.jpg",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
   },
   {
     "id": "sen-rahel",
@@ -969,7 +1276,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 61,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SEN_rahel.webp"
+    "image": "/cardsImg/2026-players/SEN_rahel.webp",
+    "nationality": "KR",
+    "teamTag": "SEN",
+    "league": "LCS"
   },
   {
     "id": "tes-jackeylove",
@@ -978,7 +1288,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/TES_jackeylove.webp"
+    "image": "/cardsImg/2026-players/TES_jackeylove.webp",
+    "nationality": "CN",
+    "teamTag": "TES",
+    "league": "LPL"
   },
   {
     "id": "DNS-deokdam",
@@ -987,7 +1300,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 67,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DNS_deokdam.webp"
+    "image": "/cardsImg/2026-players/DNS_deokdam.webp",
+    "nationality": "KR",
+    "teamTag": "DNS",
+    "league": "LCK"
   },
   {
     "id": "T1-peyz",
@@ -996,15 +1312,22 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 84,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_peyz.webp"
+    "image": "/cardsImg/2026-players/T1_peyz.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "peyz-finals-mvp",
     "baseName": "Peyz",
     "variant": "LCK Finals MVP Peyz",
     "role": "ADC",
-    "rating": 87,
-    "rarity": "Épique"
+    "rating": 89,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/peyz_lck_mvp.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "GenG-ruler",
@@ -1013,7 +1336,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 82,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/GENG_ruler.webp"
+    "image": "/cardsImg/2026-players/GENG_ruler.webp",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "caliste-kcorp-2024",
@@ -1022,17 +1348,11 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 77,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/kc_caliste.webp"
-  },/* à garder pour futur pack différent ...
-  {
-    "id": "caliste-firststand-2025",
-    "baseName": "Caliste",
-    "variant": "FST 2025 Caliste",
-    "role": "ADC",
-    "rating": 83,
-    "rarity": "Rare",
-    "image": "/cardsImg/fullart/caliste_firststand.jpg"
-  },*/
+    "image": "/cardsImg/2026-players/kc_caliste.webp",
+    "nationality": "FR",
+    "teamTag": "KC",
+    "league": "LEC"
+  },
   {
     "id": "caliste-2026",
     "baseName": "Caliste",
@@ -1040,7 +1360,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 86,
     "rarity": "Épique",
-    "image": "/cardsImg/fullart/caliste_star.jpg"
+    "image": "/cardsImg/fullart/caliste_star.jpg",
+    "nationality": "FR",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "caliste-prodige",
@@ -1049,7 +1372,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 89,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/caliste_prodigy.jpg"
+    "image": "/cardsImg/others/caliste_prodigy.jpg",
+    "nationality": "FR",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "th-ice",
@@ -1058,7 +1384,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 71,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_ice.webp"
+    "image": "/cardsImg/2026-players/TH_ice.webp",
+    "nationality": "KR",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "g2-hanssama",
@@ -1067,7 +1396,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 79,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/G2_hans-sama.webp"
+    "image": "/cardsImg/2026-players/G2_hans-sama.webp",
+    "nationality": "FR",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "kc-upset",
@@ -1076,7 +1408,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 61,
     "rarity": "Commune",
-    "image": "/cardsImg/others/KC_upset.png"
+    "image": "/cardsImg/others/KC_upset.png",
+    "nationality": "DE",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "uzi-msi-2018",
@@ -1085,7 +1420,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/uzi_msi.webp"
+    "image": "/cardsImg/others/uzi_msi.webp",
+    "nationality": "CN",
+    "teamTag": "RNG",
+    "league": "LPL"
   },
   {
     "id": "uzi-adc-god",
@@ -1094,7 +1432,10 @@ export const CARD_POOL = [
     "role": "ADC",
     "rating": 95,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/uzi_adc_god.png"
+    "image": "/cardsImg/others/uzi_adc_god.png",
+    "nationality": "CN",
+    "teamTag": "RNG",
+    "league": "LPL"
   },
 
 
@@ -1109,7 +1450,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 66,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/DNS_peter.webp"
+    "image": "/cardsImg/2026-players/DNS_peter.webp",
+    "nationality": "KR",
+    "teamTag": "DNS",
+    "league": "LCK"
   },
   {
     "id": "t1-keria",
@@ -1118,7 +1462,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 84,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_keria.webp"
+    "image": "/cardsImg/2026-players/T1_keria.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "keria-lck-mvp",
@@ -1127,7 +1474,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 88,
     "rarity": "Épique",
-    "image": "/cardsImg/others/T1_keria_2022.jpg"
+    "image": "/cardsImg/others/T1_keria_2022.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "keria-worlds-2023",
@@ -1136,7 +1486,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_keria.jpg"
+    "image": "/cardsImg/others/T1_keria.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "keria-3PEAT-WC",
@@ -1145,7 +1498,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 97,
     "rarity": "WANTED",
-    "image": "/cardsImg/others/3PEAT_keria.jpg"
+    "image": "/cardsImg/others/3PEAT_keria.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
   },
   {
     "id": "kt-effort",
@@ -1154,7 +1510,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 71,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/KT_effort.webp"
+    "image": "/cardsImg/2026-players/KT_effort.webp",
+    "nationality": "KR",
+    "teamTag": "KT",
+    "league": "LCK"
   },
   {
     "id": "jdg-missing",
@@ -1163,7 +1522,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/others/JDG_missing.png"
+    "image": "/cardsImg/others/JDG_missing.png",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "3LPL-missing",
@@ -1172,7 +1534,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 85,
     "rarity": 'Épique',
-    "image": "/cardsImg/others/JDG_missing.jpg"
+    "image": "/cardsImg/others/JDG_missing.jpg",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "missing-msi-2023",
@@ -1181,7 +1546,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/MSI_MISSING.jpeg"
+    "image": "/cardsImg/others/MSI_MISSING.jpeg",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
   {
     "id": "gx-jun",
@@ -1190,7 +1558,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 65,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/GX_jun.webp"
+    "image": "/cardsImg/2026-players/GX_jun.webp",
+    "nationality": "KR",
+    "teamTag": "GX",
+    "league": "LEC"
   },
   {
     "id": "hle-delight",
@@ -1199,7 +1570,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/HLE_delight.webp"
+    "image": "/cardsImg/2026-players/HLE_delight.webp",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "delight-hle-2024",
@@ -1208,7 +1582,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 85,
     "rarity": "Épique",
-    "image": "/cardsImg/others/delight_firststand_2025.jpg"
+    "image": "/cardsImg/others/delight_firststand_2025.jpg",
+    "nationality": "KR",
+    "teamTag": "HLE",
+    "league": "LCK"
   },
   {
     "id": "th-way",
@@ -1217,7 +1594,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 60,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_way.webp"
+    "image": "/cardsImg/2026-players/TH_way.webp",
+    "nationality": "KR",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "ns-lehends",
@@ -1226,7 +1606,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 74,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/NS_lehends.webp"
+    "image": "/cardsImg/2026-players/NS_lehends.webp",
+    "nationality": "KR",
+    "teamTag": "NS",
+    "league": "LCK"
   },
   {
     "id": "lehends-lck-2x",
@@ -1235,7 +1618,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/lck_lehends_geng.jpg"
+    "image": "/cardsImg/others/lck_lehends_geng.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "lehends-msi_mvp",
@@ -1244,7 +1630,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/msi_mvp_lehends.jpg"
+    "image": "/cardsImg/others/msi_mvp_lehends.jpg",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "sk-mikyx",
@@ -1253,7 +1642,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 63,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/SK_mikyx.webp"
+    "image": "/cardsImg/2026-players/SK_mikyx.webp",
+    "nationality": "SI",
+    "teamTag": "SK",
+    "league": "LEC"
   },
   {
     "id": "geng-duro",
@@ -1262,7 +1654,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 84,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/GENG_duro.webp"
+    "image": "/cardsImg/2026-players/GENG_duro.webp",
+    "nationality": "KR",
+    "teamTag": "GEN",
+    "league": "LCK"
   },
   {
     "id": "mikyx-msi-2019",
@@ -1271,7 +1666,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 86,
     "rarity": "Épique",
-    "image": "/cardsImg/others/MSI_2019_mikyx.jpg"
+    "image": "/cardsImg/others/MSI_2019_mikyx.jpg",
+    "nationality": "SI",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "th-stend",
@@ -1280,7 +1678,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 58,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/TH_stend.webp"
+    "image": "/cardsImg/2026-players/TH_stend.webp",
+    "nationality": "FR",
+    "teamTag": "TH",
+    "league": "LEC"
   },
   {
     "id": "kc-targamas",
@@ -1289,7 +1690,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 76,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/KC_targamas.webp"
+    "image": "/cardsImg/2026-players/KC_targamas.webp",
+    "nationality": "BE",
+    "teamTag": "KC",
+    "league": "LEC"
   },
   {
     "id": "g2-labrov",
@@ -1298,7 +1702,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 80,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/G2_labrov.webp"
+    "image": "/cardsImg/2026-players/G2_labrov.webp",
+    "nationality": "GR",
+    "teamTag": "G2",
+    "league": "LEC"
   },
   {
     "id": "vit-hylissang",
@@ -1307,7 +1714,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 55,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/VIT_hylissang.webp"
+    "image": "/cardsImg/2026-players/VIT_hylissang.webp",
+    "nationality": "BG",
+    "teamTag": "VIT",
+    "league": "LEC"
   },
   {
     "id": "mdk-alvaro",
@@ -1316,7 +1726,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 69,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/MDK_alvaro.webp"
+    "image": "/cardsImg/2026-players/MDK_alvaro.webp",
+    "nationality": "ES",
+    "teamTag": "MDK",
+    "league": "LEC"
   },
   {
     "id": "tl-corejj",
@@ -1325,7 +1738,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 76,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/TL_corejj.webp"
+    "image": "/cardsImg/2026-players/TL_corejj.webp",
+    "nationality": "KR",
+    "teamTag": "TL",
+    "league": "LCS"
   },
   {
     "id": "frx-kellin",
@@ -1334,7 +1750,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 67,
     "rarity": "Commune",
-    "image": "/cardsImg/2026-players/FRX_kellin.webp"
+    "image": "/cardsImg/2026-players/FRX_kellin.webp",
+    "nationality": "KR",
+    "teamTag": "FRX",
+    "league": "LCK"
   },
   {
     "id": "meiko-tes",
@@ -1343,7 +1762,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 81,
     "rarity": "Rare",
-    "image": "/cardsImg/others/tes_meiko.png"
+    "image": "/cardsImg/others/tes_meiko.png",
+    "nationality": "CN",
+    "teamTag": "TES",
+    "league": "LPL"
   },
   {
     "id": "meiko-edg-msi",
@@ -1352,8 +1774,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 87,
     "rarity": "Épique",
-    "image": "/cardsImg/others/EDG_meiko_MSI.png"
-    
+    "image": "/cardsImg/others/EDG_meiko_MSI.png",
+    "nationality": "CN",
+    "teamTag": "EDG",
+    "league": "LPL"
   },
   {
     "id": "meiko-LPL-Legend",
@@ -1362,7 +1786,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/legend_MEIKO.jpg"
+    "image": "/cardsImg/others/legend_MEIKO.jpg",
+    "nationality": "CN",
+    "teamTag": "EDG",
+    "league": "LPL"
   },
   {
     "id": "JDG-2026-vampire",
@@ -1371,7 +1798,10 @@ export const CARD_POOL = [
     "role": "Support",
     "rating": 78,
     "rarity": "Rare",
-    "image": "/cardsImg/2026-players/JDG_vampire.webp"
+    "image": "/cardsImg/2026-players/JDG_vampire.webp",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
   },
 
 
@@ -1383,8 +1813,11 @@ export const CARD_POOL = [
     "variant": "La Rédemption",
     "role": "Support", 
     "rating": 96,
-    themeColor: '#E5142E',
+    "themeColor": '#E5142E',
     "rarity": "SECRET", 
-    "image": "/cardsImg/others/ruler_missing_DUO.jpg"
-  },
+    "image": "/cardsImg/others/ruler_missing_DUO.jpg",
+    "nationality": "CN",
+    "teamTag": "JDG",
+    "league": "LPL"
+  }
 ];

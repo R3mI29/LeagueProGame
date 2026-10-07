@@ -88,10 +88,22 @@ export default function CardIllustration({ card, width = 140 }) {
 
           {(isLegendary || isSecret || isWanted) && (
             <pattern id="rays" width="200" height="280" patternUnits="userSpaceOnUse">
-              <g stroke={isSecret ? themeColor : (isWanted ? "#ffffff" : "#ffd700")} strokeWidth={isWanted ? "1" : (isLegendary ? "2.5" : "2")} strokeOpacity={isSecret ? "0.15" : (isWanted ? "0.1" : (isLegendary ? "0.3" : "0.2"))}>
+              <g 
+                stroke={isSecret ? themeColor : (isWanted ? "#ffffff" : "#ffd700")} 
+                // 1. On augmente fortement l'épaisseur pour WANTED (passé de 1 à 4)
+                strokeWidth={isWanted ? "4" : (isLegendary ? "2.5" : "2")} 
+                strokeOpacity={isSecret ? "0.15" : (isWanted ? "0.1" : (isLegendary ? "0.3" : "0.2"))}
+              >
                 <animateTransform attributeName="transform" type="rotate" from="0 100 140" to="360 100 140" dur={isLegendary ? "14s" : "25s"} repeatCount="indefinite" />
                 {[...Array(12)].map((_, i) => (
-                  <line key={i} x1="100" y1="140" x2={100 + Math.cos(i * 30 * Math.PI / 180) * 200} y2={140 + Math.sin(i * 30 * Math.PI / 180) * 200} />
+                  // 2. On allonge drastiquement la ligne (* 500 au lieu de * 200) pour qu'elle ne soit jamais coupée dans les angles lors de la rotation
+                  <line 
+                    key={i} 
+                    x1="100" 
+                    y1="140" 
+                    x2={100 + Math.cos(i * 30 * Math.PI / 180) * 500} 
+                    y2={140 + Math.sin(i * 30 * Math.PI / 180) * 500} 
+                  />
                 ))}
               </g>
             </pattern>
