@@ -319,8 +319,9 @@ export const CARD_POOL = [
     "role": "Top",
     "rating": 84,
     "rarity": "Épique",
+    "image": "/cardsImg/others/doran_lck_hle.jpg",
     "nationality": "KR",
-    "teamTag": "GEN",
+    "teamTag": "HLE",
     "league": "LCK"
   },
   {
@@ -454,6 +455,7 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 89,
     "rarity": "Épique",
+    "image": "/cardsImg/others/JDG_kanavi.jpg",
     "nationality": "KR",
     "teamTag": "JDG",
     "league": "LPL"
@@ -461,11 +463,11 @@ export const CARD_POOL = [
   {
     "id": "kanavi-lpl-mvp",
     "baseName": "Kanavi",
-    "variant": "LPL MVP",
+    "variant": "LPL 5x Champion",
     "role": "Jungle",
     "rating": 91,
     "rarity": "Légendaire",
-    "image": "/cardsImg/others/JDG_kanavi.jpg",
+    "image": "/cardsImg/others/kanavi_chinese.jpg",
     "nationality": "KR",
     "teamTag": "JDG",
     "league": "LPL"
@@ -549,8 +551,9 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 86,
     "rarity": "Épique",
+    "image": "/cardsImg/others/SKT_peanut.jpg",
     "nationality": "KR",
-    "teamTag": "GEN",
+    "teamTag": "SKT",
     "league": "LCK"
   },
   {
@@ -764,10 +767,11 @@ export const CARD_POOL = [
   {
     "id": "chovy-msi-2024",
     "baseName": "Chovy",
-    "variant": "MSI Champion Chovy",
+    "variant": "2025 EWC Champion",
     "role": "Mid",
-    "rating": 91,
+    "rating": 89,
     "rarity": "Épique",
+    "image": "/cardsImg/others/chovy_epic.jpg",
     "nationality": "KR",
     "teamTag": "GEN",
     "league": "LCK"

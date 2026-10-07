@@ -13,6 +13,7 @@ export const state = {
   cardCollections: {}, 
   activeLineups: {}, 
   economy: {}, 
+  lockedCards: {},
   cardStats: {}, 
   globalSecrets: {}, 
   lastOpenedPack: {}, 

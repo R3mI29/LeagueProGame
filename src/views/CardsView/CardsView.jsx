@@ -128,6 +128,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             myCollection={myCollection} 
             myLineup={myLineup} 
             myEconomy={myEconomy} 
+            lockedCards={state.lockedCards?.[myId] || []}
             isReady={isReady} 
           />
         )}

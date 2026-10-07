@@ -23,7 +23,7 @@ export function registerSocketHandlers(io, socket) {
         if (mapObj && mapObj[oldId] !== undefined) { mapObj[newId] = mapObj[oldId]; delete mapObj[oldId]; }
     };
 
-    transferMap(state.cardCollections); transferMap(state.activeLineups); transferMap(state.economy); transferMap(state.cardStats); transferMap(state.lastOpenedPack); transferMap(state.starterPackClaimed);
+    transferMap(state.cardCollections); transferMap(state.activeLineups); transferMap(state.economy); transferMap(state.cardStats); transferMap(state.lastOpenedPack); transferMap(state.starterPackClaimed); transferMap(state.lockedCards);
     if (state.seasonScores) transferMap(state.seasonScores);
 
     const replaceIdInMatch = (match) => {
@@ -72,9 +72,9 @@ export function registerSocketHandlers(io, socket) {
 
   socket.on('start-draft', () => {
     if (state.phase === 'lobby' && state.participants.length >= 1) {
-        state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.readyPlayers = []; state.history = []; state.eventIndex = 0; state.year = 1;
+        state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.readyPlayers = []; state.history = []; state.eventIndex = 0; state.year = 1; state.lockedCards = {};
         state.participants.forEach(p => {
-          state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.pendingPacks[p.id] = 1; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; state.economy[p.id] = 100; 
+          state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.pendingPacks[p.id] = 1; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; state.economy[p.id] = 100; state.lockedCards[p.id] = [];
         });
         state.phase = 'cards';
         io.emit('draft-update', state);
@@ -182,6 +182,66 @@ export function registerSocketHandlers(io, socket) {
     }
   });
 
+  socket.on('toggle-lock-card', (cardId) => {
+    if (state.phase !== 'cards') return;
+    const id = socket.id;
+    
+    if (!state.lockedCards) state.lockedCards = {};
+    if (!state.lockedCards[id]) state.lockedCards[id] = [];
+
+    const locked = state.lockedCards[id];
+    if (locked.includes(cardId)) {
+      state.lockedCards[id] = locked.filter(cId => cId !== cardId);
+    } else {
+      state.lockedCards[id].push(cardId);
+    }
+    
+    io.emit('draft-update', state);
+  });
+
+  socket.on('sell-all-unlocked', () => {
+    if (state.phase !== 'cards') return;
+    const id = socket.id;
+    if (!state.participants.some(p => p.id === id)) return;
+
+    const collection = state.cardCollections[id];
+    const lineup = state.activeLineups[id] || {};
+    const lockedCards = state.lockedCards?.[id] || [];
+    
+    if (!collection) return;
+
+    let totalEarned = 0;
+
+    Object.keys(collection).forEach(cardId => {
+      // Vérifier si la carte est vendable
+      if (
+        collection[cardId] !== 0 && 
+        collection[cardId] !== 'LIFETIME' && 
+        !Object.values(lineup).includes(cardId) &&
+        !lockedCards.includes(cardId)
+      ) {
+        const card = getCardById(cardId);
+        if (card) {
+          let price = 5; 
+          if (card.rarity === 'Rare') price = 15;
+          else if (card.rarity === 'Épique') price = 100;
+          else if (card.rarity === 'Légendaire') price = 500;
+          else if (card.rarity === 'WANTED') price = 1400;
+
+          totalEarned += price;
+          delete collection[cardId]; // Retirer la carte de la collection
+        }
+      }
+    });
+
+    if (totalEarned > 0) {
+      if (state.economy[id] === undefined) state.economy[id] = 0;
+      state.economy[id] += totalEarned;
+    }
+
+    io.emit('draft-update', state);
+  });
+
   socket.on('sell-card', (cardId) => {
     if (state.phase !== 'cards') return;
     const id = socket.id;
@@ -196,10 +256,11 @@ export function registerSocketHandlers(io, socket) {
     const card = getCardById(cardId);
     if (!card) return;
 
-    let price = 10; 
-    if (card.rarity === 'Rare') price = 25;
-    else if (card.rarity === 'Épique') price = 50;
-    else if (card.rarity === 'Légendaire' || card.rarity === 'WANTED') price = 100;
+    let price = 5; 
+    if (card.rarity === 'Rare') price = 15;
+    else if (card.rarity === 'Épique') price = 100;
+    else if (card.rarity === 'Légendaire') price = 500;
+    else if (card.rarity === 'WANTED') price = 1400;
 
     delete collection[cardId];
     if (state.economy[id] === undefined) state.economy[id] = 0;
@@ -426,7 +487,7 @@ export function registerSocketHandlers(io, socket) {
 
     if (humanCount === 0 || state.resetPlayers.length >= humanCount) {
       state.participants = state.participants.filter(p => !isBotCheck(p)); state.participants.forEach(p => p.roster = []);
-      state.phase = 'lobby'; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; state.history = []; state.eventIndex = 0; state.year = 1; state.seasonScores = null; state.groups = null; state.swissTeams = null;
+      state.phase = 'lobby'; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.lockedCards = {}; state.seasonRound = 0; state.continueSeasonVotes = []; state.history = []; state.eventIndex = 0; state.year = 1; state.seasonScores = null; state.groups = null; state.swissTeams = null;
     }
     io.emit('draft-update', state);
   });

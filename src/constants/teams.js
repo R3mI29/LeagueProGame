@@ -36,6 +36,7 @@ export const TEAMS_DB = [
   { name: "Shifters", tag: "SHF", logo: "/equipes/shifters.webp" },
   { name: "Shopify Rebellion", tag: "SR", logo: "/equipes/shopify-rebellion.webp" },
   { name: "SK Gaming", tag: "SK", logo: "/equipes/sk.webp" },
+  { name: "SK Telecom T1", tag: "SKT", logo: "/equipes/SKT.png" },
   { name: "Solary", tag: "SLY", logo: "/equipes/solary.webp" },
   { name: "Soopers", tag: "SPR", logo: "/equipes/soopers.webp" },
   { name: "T1", tag: "T1", logo: "/equipes/t1.webp" },
