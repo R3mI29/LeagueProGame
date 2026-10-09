@@ -323,4 +323,86 @@ export const CUSTOM_CARD_EVENTS = [
       }
     }
   },
+  {
+    id: 'kanavi-CARRY',
+    uniquePerBO: false, 
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const results = [];
+      const CHANCE = 0.15;
+
+      // Test pour l'équipe A
+      const aPlayer = teamA.roster.find(p => p.id.includes("kanavi-lpl-WANTED"));
+      if (aPlayer && Math.random() <= CHANCE) {
+        const rand = Math.random();
+        if (rand <= 0.15){
+          results.push({
+            side: 'A',
+            ratingDelta:25,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `KANAVI FLASH IN AVEC SON GRAVES ET RETOURNE LE TEAMFIGHT EN 1 V 4 !!!`,
+            image: "/champions/Graves.jpg" 
+          });
+        }
+        else if(rand <= 0.5){
+          results.push({
+            side: 'A',
+            ratingDelta:15,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `La Bel'Veth R5 de Kanavi s'empare de toute la jungle adverse !`,
+            image: "/champions/Belveth.jpg" 
+          });
+        }
+        else{
+          results.push({
+            side: 'A',
+            ratingDelta:10,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `Le Wukong de Kanavi trouve un 3-man flank au drake !`,
+            image: "/champions/wukong.jpg" 
+          });
+        }
+      }
+
+      // Test pour l'équipe B
+      const bPlayer = teamB.roster.find(p => p.id.includes("kanavi-lpl-WANTED"));
+      if (bPlayer && Math.random() <= CHANCE) {
+        const rand = Math.random();
+        if (rand <= 0.15){
+          results.push({
+            side: 'B',
+            ratingDelta:25,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `KANAVI FLASH IN AVEC SON GRAVES ET RETOURNE LE TEAMFIGHT EN 1 V 4 !!!`,
+            image: "/cardsImg/champions/Graves.webp" 
+          });
+        }
+        else if(rand <= 0.5){
+          results.push({
+            side: 'B',
+            ratingDelta:15,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `La Bel'Veth R5 de Kanavi s'empare de toute la jungle adverse !`,
+            image: "/cardsImg/champions/Belveth.webp" 
+          });
+        }
+        else{
+          results.push({
+            side: 'B',
+            ratingDelta:10,
+            persistentBO: false,
+            targetRoles: ['Jungle'], 
+            label: `Le Wukong de Kanavi trouve un 3-man flank au drake !`,
+            image: "/cardsImg/champions/wukong.webp" 
+          });
+        }
+      }
+
+      return results.length > 0 ? results : null;
+    }
+  },
 ];

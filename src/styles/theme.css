@@ -63,3 +63,29 @@ body {
   pointer-events: none;
   filter: contrast(200%) blur(10px);
 }
+
+/* === Cinématique secret === */
+@keyframes su-fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes su-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes su-reveal   { from { filter: blur(14px) brightness(0.25); } to { filter: blur(0) brightness(0.95); } }
+@keyframes su-kenburns { from { transform: scale(1.06); } to { transform: scale(1); } }
+@keyframes su-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes su-sweep    { from { transform: translateX(-60%); } to { transform: translateX(60%); } }
+@keyframes su-pulse    { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes su-rise {
+  0%   { transform: translate(0, 0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.8; }
+  100% { transform: translate(var(--drift), -105vh); opacity: 0; }
+}
+@keyframes su-title {
+  from { opacity: 0; letter-spacing: 0.7em; transform: translateY(14px); filter: blur(8px); }
+  to   { opacity: 1; letter-spacing: 0.18em; transform: translateY(0); filter: blur(0); }
+}
+@keyframes su-text-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

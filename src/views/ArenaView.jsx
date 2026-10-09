@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import { socket } from '../api/socket';
 import { ORDERED_ROLES } from '../constants/roles';
 import { CARD_POOL } from '../constants/cardPlayers';
 import CardIllustration from '../components/CardIllustration';
-
+import SynergyGauges from '../components/SynergyGauges';
+import TeamSkinFrame from '../components/TeamSkinFrame';
+import { getSynergy } from '../constants/synergy';
+import { getEquippedSkinId } from '../constants/teamSkins';
 export default function ArenaView({ match, matchReady, dismissMatch, state, isSpectator = false }) {
-  const [secretUnlock, setSecretUnlock] = useState(null);
-
-  useEffect(() => {
-    socket.on('secret-unlocked', (data) => {
-      setSecretUnlock(data);
-      setTimeout(() => setSecretUnlock(null), 10000); 
-    });
-    return () => socket.off('secret-unlocked');
-  }, []);
 
   const isReady = match.ready.includes(socket.id);
   const isFinished = match.status === 'finished';
@@ -60,7 +54,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
         return acc + (ev.ratingDelta * multiplier);
       }, 0);
     }
-    return Math.round(baseAvg + (totalBuffsForTeam / 5));
+    return Math.round(baseAvg + (totalBuffsForTeam / 5) + getSynergy(team.roster).bonus);
   };
 
   const renderRoster = (team, teamSide) => {
@@ -99,6 +93,36 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
     );
   };
 
+    const renderTeamPanel = (team, side) => {
+    const synergy = getSynergy(team.roster);
+    const rawAvg = team.roster.reduce((a, b) => a + (b.rating || b.overall || 0), 0) / 5;
+    const avg = getTeamAvg(team, side);
+
+    return (
+      <TeamSkinFrame
+        skinId={getEquippedSkinId(state, team.id)}
+        highlight={isFinished && match.winner?.id === team.id}
+        className="flex-1 p-8"
+      >
+        <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
+          <div className="flex flex-col items-center gap-2">
+            {team.logo ? (
+              <img src={team.logo} className="w-[60px] h-[60px] object-contain" alt={`logo ${side}`} />
+            ) : (
+              <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
+            )}
+            <span className="text-[26px]">{team.name}</span>
+          </div>
+          <div className="text-base text-text-muted">
+            MOYENNE : <span className={avg > rawAvg ? 'text-[#00e676]' : ''}>{avg}</span>
+          </div>
+          <SynergyGauges synergy={synergy} compact />
+        </h2>
+        {renderRoster(team, side)}
+      </TeamSkinFrame>
+    );
+  };
+
   const getMatchTitle = (id) => {
     if (id.includes('gf')) return 'GRANDE FINALE';
     if (id.includes('sw')) return "SWISS STAGE";
@@ -126,28 +150,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
       
       <div className="flex w-full max-w-[1300px] gap-10 items-center mt-10">
         
-        {/* EQUIPE A */}
-        <div 
-          className="flex-1 bg-bg-panel border border-white/15 rounded-xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]" 
-          style={{ borderTop: isFinished && match.winner?.id === match.teamA.id ? '3px solid var(--accent-cyan)' : '' }}
-        >
-          <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
-            <div className="flex flex-col items-center gap-2">
-                {match.teamA?.logo ? (
-                  <img src={match.teamA.logo} className="w-[60px] h-[60px] object-contain" alt="logo A" />
-                ) : (
-                  <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
-                )}
-                <span className="text-[26px]">{match.teamA.name}</span>
-            </div>
-            <div className="text-base text-text-muted">
-              MOYENNE : <span className={getTeamAvg(match.teamA, 'A') > (match.teamA.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? 'text-[#00e676]' : ''}>
-                {getTeamAvg(match.teamA, 'A')}
-              </span>
-            </div>
-          </h2>
-          {renderRoster(match.teamA, 'A')}
-        </div>
+        {renderTeamPanel(match.teamA, 'A')}
 
         {/* SIMULATION AU CENTRE */}
         <div className="text-center w-[380px] shrink-0 flex flex-col justify-center px-5 relative">
@@ -242,28 +245,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
           </div>
         </div>
 
-        {/* EQUIPE B */}
-        <div 
-          className="flex-1 bg-bg-panel border border-white/15 rounded-xl p-8 shadow-[0_10px_30px_rgba(0,0,0,0.5)]" 
-          style={{ borderTop: isFinished && match.winner?.id === match.teamB.id ? '3px solid var(--accent-cyan)' : '' }}
-        >
-          <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
-            <div className="flex flex-col items-center gap-2">
-                {match.teamB?.logo ? (
-                  <img src={match.teamB.logo} className="w-[60px] h-[60px] object-contain" alt="logo B" />
-                ) : (
-                  <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
-                )}
-                <span className="text-[26px]">{match.teamB.name}</span>
-            </div>
-            <div className="text-base text-text-muted">
-              MOYENNE : <span className={getTeamAvg(match.teamB, 'B') > (match.teamB.roster.reduce((a,b)=>a+(b.rating||b.overall||0),0)/5) ? 'text-[#00e676]' : ''}>
-                {getTeamAvg(match.teamB, 'B')}
-              </span>
-            </div>
-          </h2>
-          {renderRoster(match.teamB, 'B')}
-        </div>
+        {renderTeamPanel(match.teamB, 'B')}
 
       </div>
     </div>

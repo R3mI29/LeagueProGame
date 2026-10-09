@@ -467,6 +467,18 @@ export const CARD_POOL = [
     "role": "Jungle",
     "rating": 91,
     "rarity": "Légendaire",
+    "image": "/cardsImg/others/kanavi_lpl_flag.jpg",
+    "nationality": "KR",
+    "teamTag": "JDG",
+    "league": "LPL"
+  },
+  {
+    "id": "kanavi-lpl-WANTED",
+    "baseName": "Kanavi",
+    "variant": "Insatiable",
+    "role": "Jungle",
+    "rating": 95,
+    "rarity": "WANTED",
     "image": "/cardsImg/others/kanavi_chinese.jpg",
     "nationality": "KR",
     "teamTag": "JDG",
@@ -897,7 +909,7 @@ export const CARD_POOL = [
     "league": "LEC"
   },
   {
-    "id": "knight-msi-2023",
+    "id": "knight-fst-2026",
     "baseName": "Knight",
     "variant": "FST Champion",
     "role": "Mid",
@@ -905,7 +917,7 @@ export const CARD_POOL = [
     "rarity": "Épique",
     "image": "/cardsImg/others/FST_knight.jpg",
     "nationality": "CN",
-    "teamTag": "JDG",
+    "teamTag": "BLG",
     "league": "LPL"
   },
   {
@@ -917,7 +929,7 @@ export const CARD_POOL = [
     "rarity": "Légendaire",
     "image": "/cardsImg/others/JDG_knight_msi.png",
     "nationality": "CN",
-    "teamTag": "BLG",
+    "teamTag": "JDG",
     "league": "LPL"
   },
   {

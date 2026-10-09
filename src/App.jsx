@@ -5,6 +5,7 @@ import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import { EVENTS } from './constants/seasonConfig';
 import { TEAMS_DB } from './constants/teams'; // IMPORT AJOUTÉ
 
+import SecretUnlockOverlay from './components/SecretUnlockOverlay';
 import LobbyView from './views/LobbyView';
 import CardsView from './views/CardsView/CardsView';
 import ArenaView from './views/ArenaView';
@@ -45,7 +46,7 @@ function TakeoverView({ state, socket }) {
     if (newTag.length < 2 || newTag.length > 4) return alert("Le TAG doit faire entre 2 et 4 caractères.");
     socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo);
   };
-
+  socket.onAny((e) => console.log('[socket]', e))
   return (
     <div className="min-h-screen bg-[#0A0D14] text-white flex flex-col items-center justify-center font-sans p-10">
       <div className="bg-[#151923] p-[50px_60px] rounded-2xl border border-[#2B3040] max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
@@ -264,6 +265,8 @@ export default function App() {
 
       {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
       {state && <SeasonRecapCinematic state={state} />}
+      <SecretUnlockOverlay />
+      
     </>
   );
 }

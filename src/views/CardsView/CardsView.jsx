@@ -3,12 +3,15 @@ import { socket } from '../../api/socket';
 import { ORDERED_ROLES } from '../../constants/roles';
 import { CARD_POOL } from '../../constants/cardPlayers';
 
+
 // Import des sous-composants (les onglets)
 import RosterTab from './Tabs/RosterTab';
 import ShopTab from './Tabs/ShopTab';
 import SellTab from './Tabs/SellTab';
 import CircuitTab from './Tabs/CircuitTab';
 import HallOfFameTab from './Tabs/HallOfFameTab';
+import SkinsTab from './Tabs/SkinsTab';
+
 
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
@@ -82,6 +85,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
               { id: 'shop', label: 'Boutique' },
               { id: 'sell', label: 'Revente' },
               { id: 'circuit', label: 'Compétitions' },
+              { id: 'skins', label: 'Casier' },
               { id: 'halloffame', label: 'Classement' }
             ].map(tab => (
               <button
@@ -114,6 +118,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             teamPower={teamPower}
           />
         )}
+
+        {activeTab === 'skins' && <SkinsTab state={state} myId={myId} />}
 
         {activeTab === 'shop' && (
           <ShopTab 

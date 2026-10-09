@@ -53,13 +53,7 @@ export default function BracketView({ state, event }) {
       };
   }
 
-  const [secretUnlock, setSecretUnlock] = useState(null);
-  useEffect(() => {
-    socket.on('secret-unlocked', (data) => {
-      setSecretUnlock(data); setTimeout(() => setSecretUnlock(null), 10000); 
-    });
-    return () => socket.off('secret-unlocked');
-  }, []);
+  
 
   const toggleReady = () => socket.emit('toggle-ready');
   const advanceRound = () => socket.emit('advance-round');
@@ -363,14 +357,6 @@ export default function BracketView({ state, event }) {
       </div>
 
       {renderFooter()}
-
-      {secretUnlock && (
-        <div className="fixed inset-0 w-screen h-screen bg-[#050508] z-[9999] flex flex-col justify-center items-center animate-[fadeIn_2s_forwards]">
-          <div className="relative z-[2] shadow-[0_0_50px_rgba(255,61,129,0.3)] border border-[#332918]">
-            <img src={secretUnlock.image} alt="" className="max-h-[60vh] block rounded" />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

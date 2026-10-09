@@ -3,6 +3,7 @@ import { GAMES_TO_WIN, SIMULATION_DELAYS } from '../config/constants.js';
 import { CUSTOM_CARD_EVENTS } from '../../src/constants/cardEvents.js';
 import { SECRET_UNLOCKS } from '../../src/constants/secretUnlocks.js';
 import { isBotCheck, advanceTeam } from './playerService.js';
+import { getSynergy } from '../../src/constants/synergy.js';
 
 export function getTeamRating(team) {
   if (!team || !team.roster || team.roster.length === 0) return 0;
@@ -12,8 +13,8 @@ export function getTeamRating(team) {
 export function simulateGame(match, state) {
   const teamA = match.teamA;
   const teamB = match.teamB;
-  let ratingA = getTeamRating(teamA) + (match.boBuffA || 0);
-  let ratingB = getTeamRating(teamB) + (match.boBuffB || 0);
+  let ratingA = getTeamRating(teamA) + getSynergy(teamA.roster).bonus + (match.boBuffA || 0);
+  let ratingB = getTeamRating(teamB) + getSynergy(teamB.roster).bonus + (match.boBuffB || 0);
   const triggeredEvents = [];
   const ALL_EVENTS = [...CUSTOM_CARD_EVENTS];
 

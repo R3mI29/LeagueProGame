@@ -7,6 +7,7 @@ import { GAMES_TO_WIN } from '../config/constants.js';
 import { isBotCheck, findMatchById, advanceTeam, getAliveHumans } from '../services/playerService.js';
 import { startCardTournament, startCurrentEvent, awardSeasonRewards, buildPlayoffsFromGroups, buildPlayoffsFromSwiss } from '../services/tournamentService.js';
 import { simulateGame, tryStartMatch, startAllBotMatchesInCurrentRound } from '../services/matchService.js';
+import { SKINS, SKIN_BY_ID, canUseSkin, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
 
 export function registerSocketHandlers(io, socket) {
   
@@ -34,6 +35,25 @@ export function registerSocketHandlers(io, socket) {
 
     if (state.bracket) state.bracket.flat().forEach(replaceIdInMatch);
     if (state.groups) state.groups.forEach(g => g.matches.forEach(replaceIdInMatch));
+
+    io.emit('draft-update', state);
+  });
+
+  socket.on('equip-skin', (skinId) => {
+    if (!SKIN_BY_ID[skinId] || !canUseSkin(state, socket.id, skinId)) return;
+    if (!state.teamSkins) state.teamSkins = {};
+    state.teamSkins[socket.id] = { ...(state.teamSkins[socket.id] || {}), equipped: skinId };
+    io.emit('draft-update', state);
+  });
+
+  socket.on('dev-skin', ({ action, skinId } = {}) => {
+    const valid = SKIN_BY_ID[skinId];
+
+    if (action === 'unlock' && valid) grantSkin(state, socket.id, skinId);
+    else if (action === 'lock' && valid) revokeSkin(state, socket.id, skinId);
+    else if (action === 'unlock-all') SKINS.forEach(s => grantSkin(state, socket.id, s.id));
+    else if (action === 'lock-all') SKINS.forEach(s => revokeSkin(state, socket.id, s.id));
+    else return;
 
     io.emit('draft-update', state);
   });

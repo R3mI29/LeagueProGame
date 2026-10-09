@@ -3,10 +3,13 @@ import { socket } from '../../../api/socket';
 import { ORDERED_ROLES } from '../../../constants/roles';
 import { CARD_POOL } from '../../../constants/cardPlayers';
 import CardIllustration from '../../../components/CardIllustration';
+import SynergyGauges from '../../../components/SynergyGauges';
+import { computeSynergy } from '../../../constants/synergy';
 
 export default function RosterTab({ state, myId, isReady, myLineup, myCollection, myEconomy, getDynamicCard, setActiveTab, setLineupCard, toggleLineupReady, lineupComplete, teamPower }) {
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
   const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
+  const synergy = computeSynergy(ORDERED_ROLES.map(r => myLineup[r]).filter(Boolean));
 
   return (
     <div className="grid grid-cols-[1fr_380px] gap-8 animate-[fadeIn_0.3s]">
@@ -83,7 +86,13 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
           <div className={`text-[56px] font-['Oswald'] font-semibold ${teamPower > 0 ? 'text-[#D4AF37]' : 'text-[#768196]'}`}>
             {teamPower > 0 ? Math.round(teamPower) : '-'}
           </div>
+          {synergy.bonus > 0 && (
+            <div className="text-xs font-bold text-[#00e676]">+{synergy.bonus} synergie</div>
+          )}
         </div>
+
+        <SynergyGauges synergy={synergy} />
+        
 
         <div className="bg-[#131621] border border-[#222838] rounded-lg p-6 text-center">
           <h3 className="m-0 mb-4 font-['Oswald'] text-white text-[18px] font-medium tracking-[0.5px]">TRÉSORERIE</h3>
