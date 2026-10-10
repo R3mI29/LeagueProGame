@@ -4,8 +4,8 @@ import { useDraftSocket } from './hooks/useDraftSocket';
 import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import { EVENTS } from './constants/seasonConfig';
 import { TEAMS_DB } from './constants/teams'; // IMPORT AJOUTÉ
+import { savePlayerSessionToken } from './api/playerSession';
 
-import './styles/theme.css';
 import SecretUnlockOverlay from './components/SecretUnlockOverlay';
 import LobbyView from './views/LobbyView';
 import CardsView from './views/CardsView/CardsView';
@@ -19,6 +19,8 @@ import SeasonRecapCinematic from './components/SeasonRecapCinematic';
 import SwissStageView from './views/formats/SwissStageView';
 import GslGroupView from './views/formats/GslGroupView';
 import DoubleElimView from './views/formats/DoubleElimView';
+
+import './styles/theme.css';
 
 function TakeoverView({ state, socket }) {
   const [selectedBot, setSelectedBot] = useState(null);
@@ -46,7 +48,13 @@ function TakeoverView({ state, socket }) {
   const handleTakeover = () => {
     if (!selectedBot || !selectedLogo) return alert("Sélectionnez une équipe et un logo.");
     if (newTag.length < 2 || newTag.length > 4) return alert("Le TAG doit faire entre 2 et 4 caractères.");
-    socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo);
+    socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo, (response) => {
+      if (!response?.ok) {
+        alert(response?.error || "Impossible de reprendre cette équipe.");
+        return;
+      }
+      savePlayerSessionToken(response.playerToken);
+    });
   };
   return (
     <div className="min-h-screen bg-[#0A0D14] text-white flex flex-col items-center justify-center font-sans p-10">

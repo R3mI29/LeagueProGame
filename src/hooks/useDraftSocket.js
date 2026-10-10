@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../api/socket';
+import { clearPlayerSessionToken, getPlayerSessionToken } from '../api/playerSession';
 
 const INITIAL_STATE = {
   phase: 'lobby', participants: [], bracket: [], groups: null, swissTeams: null,
@@ -23,9 +24,26 @@ export function useDraftSocket() {
     const handleUpdate = (newState) => {
       setState(newState);
     };
+    const reconnectPlayer = () => {
+      const token = getPlayerSessionToken();
+      if (!token) return;
+
+      socket.timeout(5000).emit('reconnect-player', token, (error, response) => {
+        if (error) return;
+        if (!response?.ok && response?.error === 'Cette ancienne session n’existe plus.') {
+          clearPlayerSessionToken();
+        }
+      });
+    };
 
     socket.on('draft-update', handleUpdate);
-    return () => socket.off('draft-update', handleUpdate);
+    socket.on('connect', reconnectPlayer);
+    if (socket.connected) reconnectPlayer();
+
+    return () => {
+      socket.off('draft-update', handleUpdate);
+      socket.off('connect', reconnectPlayer);
+    };
   }, []);
 
   return {

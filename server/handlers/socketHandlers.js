@@ -12,6 +12,11 @@ import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { PACK_TYPES, openPack, openStarterPack, getCardById } from '../services/cardService.js';
 import { GAMES_TO_WIN } from '../config/constants.js';
 import { isBotCheck, findMatchById, advanceTeam, getAliveHumans } from '../services/playerService.js';
+import {
+  createPlayerSession,
+  reconnectPlayer,
+  transferPlayerIdentity,
+} from '../services/playerSessionService.js';
 import { startCardTournament, startCurrentEvent, awardSeasonRewards, buildPlayoffsFromGroups, buildPlayoffsFromSwiss } from '../services/tournamentService.js';
 import {
   finalizeMatch,
@@ -24,32 +29,33 @@ import { SKINS, SKIN_BY_ID, canUseSkin, grantSkin, revokeSkin } from '../../src/
 
 export function registerSocketHandlers(io, socket) {
   socket.emit('draft-update', state);
+
+  socket.on('reconnect-player', (token, acknowledge = () => {}) => {
+    const result = reconnectPlayer(state, token, socket.id);
+    acknowledge(result);
+    if (result.ok) io.emit('draft-update', state);
+  });
   
-  socket.on('takeover-bot', (botId, newName, newTag, newLogo) => {
+  socket.on('takeover-bot', (botId, newName, newTag, newLogo, acknowledge = () => {}) => {
     const bot = state.participants.find(p => p.id === botId);
-    if (!bot) return;
+    if (!bot || !isBotCheck(bot)) return acknowledge({ ok: false, error: "Cette équipe n'est pas disponible." });
+    if (state.participants.some(participant => participant.id === socket.id)) {
+      return acknowledge({ ok: false, error: "Vous contrôlez déjà une équipe." });
+    }
 
     const oldId = bot.id;
     const newId = socket.id;
 
-    bot.id = newId; bot.name = newName.trim() || bot.name; bot.tag = newTag ? newTag.trim().toUpperCase() : bot.tag; bot.logo = newLogo || bot.logo; bot.isBot = false; 
+    transferPlayerIdentity(state, oldId, newId);
+    bot.id = newId;
+    bot.name = typeof newName === 'string' && newName.trim() ? newName.trim() : bot.name;
+    bot.tag = typeof newTag === 'string' && newTag.trim() ? newTag.trim().toUpperCase() : bot.tag;
+    bot.logo = typeof newLogo === 'string' && newLogo ? newLogo : bot.logo;
+    bot.isBot = false;
+    bot.isDisconnected = false;
 
-    const transferMap = (mapObj) => {
-        if (mapObj && mapObj[oldId] !== undefined) { mapObj[newId] = mapObj[oldId]; delete mapObj[oldId]; }
-    };
-
-    transferMap(state.cardCollections); transferMap(state.activeLineups); transferMap(state.economy); transferMap(state.cardStats); transferMap(state.lastOpenedPack); transferMap(state.starterPackClaimed); transferMap(state.lockedCards);
-    if (state.seasonScores) transferMap(state.seasonScores);
-
-    const replaceIdInMatch = (match) => {
-        if (!match) return;
-        if (match.ready && match.ready.includes(oldId)) match.ready = match.ready.map(id => id === oldId ? newId : id);
-        if (match.dismissedBy && match.dismissedBy.includes(oldId)) match.dismissedBy = match.dismissedBy.map(id => id === oldId ? newId : id);
-    };
-
-    if (state.bracket) state.bracket.flat().forEach(replaceIdInMatch);
-    if (state.groups) state.groups.forEach(g => g.matches.forEach(replaceIdInMatch));
-
+    const playerToken = createPlayerSession(newId);
+    acknowledge({ ok: true, playerToken });
     io.emit('draft-update', state);
   });
 
@@ -109,11 +115,13 @@ export function registerSocketHandlers(io, socket) {
       return acknowledge({ ok: false, error: "Cette équipe est déjà utilisée." });
     }
     
+    let playerToken = null;
     if (!state.participants.find(p => p.id === socket.id)) {
       state.participants.push({ id: socket.id, name: cleanName, tag: cleanTag, logo: logo, roster: [] });
+      playerToken = createPlayerSession(socket.id);
       io.emit('draft-update', state);
     }
-    acknowledge({ ok: true });
+    acknowledge({ ok: true, playerToken });
   });
 
   socket.on('start-draft', () => {
@@ -506,8 +514,12 @@ export function registerSocketHandlers(io, socket) {
 
     if (humanCount === 0 || state.resetPlayers.length >= humanCount) {
       const participants = state.participants
-        .filter(participant => !isBotCheck(participant))
-        .map(participant => ({ ...participant, roster: [], isBot: false }));
+        .filter(participant => !participant.id.startsWith('bot-'))
+        .map(participant => ({
+          ...participant,
+          roster: [],
+          isBot: Boolean(participant.isDisconnected),
+        }));
       resetGameState({ participants });
     }
     io.emit('draft-update', state);
@@ -517,22 +529,14 @@ export function registerSocketHandlers(io, socket) {
 
   socket.on('disconnect', () => {
     const player = state.participants.find(p => p.id === socket.id);
-    const humansBefore = state.participants.filter(p => !isBotCheck(p)).length;
 
     if (player) {
-        if (state.phase === 'lobby') {
-            state.participants = state.participants.filter(p => p.id !== socket.id);
-            delete state.cardCollections[socket.id]; delete state.activeLineups[socket.id]; delete state.economy[socket.id]; delete state.cardStats?.[socket.id]; delete state.lastOpenedPack[socket.id]; delete state.starterPackClaimed[socket.id];
-        } else {
-            player.isBot = true; 
-            state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id); state.roundReady = state.roundReady.filter(id => id !== socket.id); state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id); state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
-        }
-    }
-
-    const humansAfter = state.participants.filter(p => !isBotCheck(p)).length;
-
-    if (humansAfter === 0 && humansBefore > 0 && state.phase !== 'lobby') {
-      resetGameState();
+      player.isBot = true;
+      player.isDisconnected = true;
+      state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
+      state.roundReady = state.roundReady.filter(id => id !== socket.id);
+      state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
+      state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
     }
     io.emit('draft-update', state);
   });

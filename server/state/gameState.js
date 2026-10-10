@@ -97,7 +97,7 @@ export function prepareNewGame(participants = state.participants) {
   const activeParticipants = participants.map(participant => ({
     ...participant,
     roster: [],
-    isBot: false,
+    isBot: Boolean(participant.isBot),
   }));
 
   resetGameState({ participants: activeParticipants });
