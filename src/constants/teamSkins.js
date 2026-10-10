@@ -1,6 +1,6 @@
 
 import { EVENTS } from './seasonConfig.js';
-
+import { MSI_ART, MSI_PAPER } from './skinArt.js';
 // frame : styles appliqués au rectangle de l'équipe (fond, bordure, ombre)
 // effect : { type: 'sweep' | 'pulse', color } réutilise les keyframes su-sweep / su-pulse de theme.css
 // free : possédé d'office. Sinon il faut un grantSkin() côté serveur.
@@ -46,30 +46,32 @@ export const SKINS = [
     },
     effect: { type: 'sweep', color: 'rgba(255,90,120,0.14)' },
   },
-    {
+  {
     id: 'msi-clash', name: 'MSI Clash', rarity: 'Légendaire', free: false,
-    hint: 'Remporter le MSI',
+    hint: 'Remporter 2x le MSI',
     frame: {
-      background:
-        // lueur rouge, coin haut-gauche
-        'radial-gradient(120% 80% at 0% 0%, rgba(230,25,43,0.38) 0%, transparent 55%), ' +
-        // lueur dorée discrète, coin bas-droit
-        'radial-gradient(90% 70% at 100% 100%, rgba(255,234,0,0.12) 0%, transparent 60%), ' +
-        // grille fine type HUD
-        'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 36px 36px, ' +
-        'linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 36px 36px, ' +
-        // fond de base
-        'linear-gradient(160deg, #14070c 0%, #090a12 55%, #0a0a0f 100%)',
-      borderWidth: '2px',
-      borderColor: 'rgba(230,25,43,0.9)',
-      borderRadius: '6px',
-      boxShadow: '6px 6px 0px #FFEA00, 0 0 40px rgba(230,25,43,0.25)',
+      background: `${MSI_ART} center top / 420px auto no-repeat, ${MSI_PAPER}`,
+      borderWidth: '3px',
+      borderColor: '#0a0a0a',
+      borderRadius: '0px',
+      boxShadow: '7px 7px 0px #E6192B',
+      color: '#0a0a0a',
+      '--sk-muted': '#2a2a2a',
+      '--sk-good': '#0a6b3c',
+      '--sk-track': 'rgba(0,0,0,0.16)',
+      // Étiquettes de synergie : plaque noire, traits clairs, bonus jaune
+      '--sk-plate': '#0a0a0a',
+      '--sk-pip': 'rgba(255,255,255,0.2)',
+      '--sk-dim': '#9aa3b2',
+      '--sk-chip-lit': '#FFEA00',
+      '--sk-logo-filter':
+        'drop-shadow(1.5px 0 0 #0a0a0a) drop-shadow(-1.5px 0 0 #0a0a0a) drop-shadow(0 1.5px 0 #0a0a0a) drop-shadow(0 -1.5px 0 #0a0a0a)',
     },
-    effect: { type: 'sweep', color: 'rgba(255,234,0,0.10)' },
+    effect: null,
     decor: {
-      logo: { src: MSI_LOGO, opacity: 0.14, size: '65%' },
-      topLine: ['#E6192B', '#FFEA00'],
-      corners: '#FFEA00',
+      tags: [
+        { src: MSI_LOGO, pos: 'tl', bg: '#0a0a0a', accent: '#FFEA00', mono: 'light' },
+      ],
     },
   },
 ];

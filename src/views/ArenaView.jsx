@@ -94,33 +94,39 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
   };
 
     const renderTeamPanel = (team, side) => {
-    const synergy = getSynergy(team.roster);
-    const rawAvg = team.roster.reduce((a, b) => a + (b.rating || b.overall || 0), 0) / 5;
-    const avg = getTeamAvg(team, side);
+      const synergy = getSynergy(team.roster);
+      const rawAvg = team.roster.reduce((a, b) => a + (b.rating || b.overall || 0), 0) / 5;
+      const avg = getTeamAvg(team, side);
 
-    return (
-      <TeamSkinFrame
-        skinId={getEquippedSkinId(state, team.id)}
-        highlight={isFinished && match.winner?.id === team.id}
-        className="flex-1 p-8"
-      >
-        <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
-          <div className="flex flex-col items-center gap-2">
-            {team.logo ? (
-              <img src={team.logo} className="w-[60px] h-[60px] object-contain" alt={`logo ${side}`} />
-            ) : (
-              <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
-            )}
-            <span className="text-[26px]">{team.name}</span>
-          </div>
-          <div className="text-base text-text-muted">
-            MOYENNE : <span className={avg > rawAvg ? 'text-[#00e676]' : ''}>{avg}</span>
-          </div>
-          <SynergyGauges synergy={synergy} compact />
-        </h2>
-        {renderRoster(team, side)}
-      </TeamSkinFrame>
-    );
+      return (
+        <TeamSkinFrame
+          skinId={getEquippedSkinId(state, team.id)}
+          highlight={isFinished && match.winner?.id === team.id}
+          className="flex-1 p-8"
+        >
+          <h2 className="font-rajdhani mb-6 text-center flex flex-col items-center gap-3 uppercase">
+            <div className="flex flex-col items-center gap-2">
+              {team.logo ? (
+                <img
+                  src={team.logo}
+                  className="w-[60px] h-[60px] object-contain"
+                  style={{ filter: 'var(--sk-logo-filter, none)' }}
+                  alt={`logo ${side}`}
+                />
+              ) : (
+                <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
+              )}
+              <span className="text-[26px]">{team.name}</span>
+            </div>
+            <div className="text-base text-[color:var(--sk-muted,#8b9bb4)]">
+              MOYENNE : <span className={avg > rawAvg ? 'text-[color:var(--sk-good,#00e676)]' : ''}>{avg}</span>
+            </div>
+            <SynergyGauges synergy={synergy} compact />
+          </h2>
+          {renderRoster(team, side)}
+        </TeamSkinFrame>
+      );
+    
   };
 
   const getMatchTitle = (id) => {
