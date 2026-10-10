@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-10-10T18:02:41.992Z",
+  "label": null,
+  "gameState": {
+    "phase": "cards",
+    "participants": [
+      {
+        "id": "aFoIhjEmQ4EFW9vQAAAC",
+        "name": "GiantX",
+        "tag": "GX",
+        "logo": "/equipes/giantx.webp",
+        "roster": [],
+        "isHost": false,
+        "isDisconnected": false,
+        "isBot": false
+      },
+      {
+        "id": "VURnmlTq_MfpsQfRAAAF",
+        "name": "Dplus KIA",
+        "tag": "DK",
+        "logo": "/equipes/dplus.webp",
+        "roster": [],
+        "isHost": true,
+        "isDisconnected": false,
+        "isBot": false
+      }
+    ],
+    "bracket": [],
+    "groups": null,
+    "swissTeams": null,
+    "tournamentPhase": null,
+    "readyPlayers": [],
+    "resetPlayers": [],
+    "champion": null,
+    "currentRound": 0,
+    "roundComplete": false,
+    "roundReady": [],
+    "cardCollections": {
+      "VURnmlTq_MfpsQfRAAAF": {
+        "sen-rahel": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "sen-impact": "LIFETIME",
+        "C9-blaber": "LIFETIME",
+        "kt-effort": "LIFETIME"
+      },
+      "aFoIhjEmQ4EFW9vQAAAC": {
+        "vit-hylissang": "LIFETIME",
+        "dns-dudu": "LIFETIME",
+        "frx-raptor": "LIFETIME",
+        "DKC-sharvel": "LIFETIME",
+        "DRX_ucal": "LIFETIME",
+        "bro-teddy": "LIFETIME"
+      }
+    },
+    "activeLineups": {
+      "VURnmlTq_MfpsQfRAAAF": {},
+      "aFoIhjEmQ4EFW9vQAAAC": {}
+    },
+    "economy": {
+      "VURnmlTq_MfpsQfRAAAF": 100,
+      "aFoIhjEmQ4EFW9vQAAAC": 100
+    },
+    "lockedCards": {
+      "VURnmlTq_MfpsQfRAAAF": [],
+      "aFoIhjEmQ4EFW9vQAAAC": []
+    },
+    "cardStats": {},
+    "globalSecrets": {},
+    "pendingPacks": {
+      "VURnmlTq_MfpsQfRAAAF": 1,
+      "aFoIhjEmQ4EFW9vQAAAC": 1
+    },
+    "pendingPackResults": {},
+    "lastOpenedPack": {
+      "VURnmlTq_MfpsQfRAAAF": [],
+      "aFoIhjEmQ4EFW9vQAAAC": []
+    },
+    "starterPackClaimed": {
+      "VURnmlTq_MfpsQfRAAAF": true,
+      "aFoIhjEmQ4EFW9vQAAAC": true
+    },
+    "teamSkins": {},
+    "seasonRound": 1,
+    "continueSeasonVotes": [],
+    "year": 1,
+    "eventIndex": 0,
+    "history": [],
+    "seasonScores": null,
+    "endOfYearRecap": null,
+    "awaitingResumeDecision": false
+  },
+  "playerSessions": [
+    {
+      "token": "acde4155-6cfb-4ecf-85c0-1574c2118a10",
+      "playerId": "VURnmlTq_MfpsQfRAAAF"
+    },
+    {
+      "token": "a52e7dbb-46f8-4bd6-adb5-37d8d7455899",
+      "playerId": "aFoIhjEmQ4EFW9vQAAAC"
+    }
+  ]
+}

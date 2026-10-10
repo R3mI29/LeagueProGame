@@ -131,9 +131,6 @@ export default function LobbyView({ state, socket }) {
                 onClick={() => { setSelectedLogo(team.logo); setName(team.name); setTag(team.tag); }}
                 className={`relative aspect-square p-2.5 rounded-lg border flex items-center justify-center cursor-pointer transition-colors ${selectedLogo === team.logo ? 'border-[#4C60D2] bg-[#1C212E]' : 'border-[#2B3040] bg-[#151923] hover:border-[#4C60D2]/50'}`}
             >
-                <span className="absolute font-rajdhani text-xs font-bold tracking-wider text-[#8C9AD6]">
-                  {team.tag}
-                </span>
                 <img
                   src={team.logo}
                   alt={team.name}

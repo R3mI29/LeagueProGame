@@ -13,7 +13,12 @@ import { PACK_TYPES, openPack, openStarterPack, getCardById } from '../services/
 import { GAMES_TO_WIN } from '../config/constants.js';
 import { isBotCheck, findMatchById, advanceTeam, getAliveHumans } from '../services/playerService.js';
 import {
+  assignHost,
+  clearPlayerSessions,
   createPlayerSession,
+  ensureConnectedHost,
+  getConnectedPlayers,
+  invalidatePlayerSession,
   reconnectPlayer,
   transferPlayerIdentity,
 } from '../services/playerSessionService.js';
@@ -27,11 +32,35 @@ import {
 } from '../services/matchService.js';
 import { SKINS, SKIN_BY_ID, canUseSkin, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
 
-export function registerSocketHandlers(io, socket) {
+import { rm } from 'node:fs/promises';
+import path from 'node:path';
+import { DEFAULT_SAVES_DIRECTORY } from '../services/gamePersistenceService.js';
+
+const defaultGameManager = {
+  async archive() {
+    return { saveId: null };
+  },
+  async list() {
+    return [];
+  },
+  async load() {
+    return { restored: false };
+  },
+};
+
+export function registerSocketHandlers(io, socket, { gameManager = defaultGameManager } = {}) {
   socket.emit('draft-update', state);
 
+  const getCurrentPlayer = () => state.participants.find(participant => participant.id === socket.id);
+  const isCurrentPlayerHost = () => Boolean(getCurrentPlayer()?.isHost);
+
   socket.on('reconnect-player', (token, acknowledge = () => {}) => {
+    const hadConnectedPlayers = getConnectedPlayers(state).length > 0;
     const result = reconnectPlayer(state, token, socket.id);
+    if (result.ok) {
+      if (!hadConnectedPlayers) assignHost(state, socket.id);
+      else ensureConnectedHost(state, socket.id);
+    }
     acknowledge(result);
     if (result.ok) io.emit('draft-update', state);
   });
@@ -55,6 +84,7 @@ export function registerSocketHandlers(io, socket) {
     bot.isDisconnected = false;
 
     const playerToken = createPlayerSession(newId);
+    ensureConnectedHost(state, newId);
     acknowledge({ ok: true, playerToken });
     io.emit('draft-update', state);
   });
@@ -117,11 +147,137 @@ export function registerSocketHandlers(io, socket) {
     
     let playerToken = null;
     if (!state.participants.find(p => p.id === socket.id)) {
-      state.participants.push({ id: socket.id, name: cleanName, tag: cleanTag, logo: logo, roster: [] });
+      state.participants.push({
+        id: socket.id,
+        name: cleanName,
+        tag: cleanTag,
+        logo: logo,
+        roster: [],
+        isHost: false,
+        isDisconnected: false,
+      });
       playerToken = createPlayerSession(socket.id);
+      ensureConnectedHost(state, socket.id);
       io.emit('draft-update', state);
     }
     acknowledge({ ok: true, playerToken });
+  });
+
+  socket.on('resume-game', (acknowledge = () => {}) => {
+    if (!isCurrentPlayerHost()) return acknowledge({ ok: false, error: "Seul l'hôte peut reprendre la partie." });
+    state.awaitingResumeDecision = false;
+    io.emit('draft-update', state);
+    acknowledge({ ok: true });
+  });
+
+  socket.on('list-game-saves', async (acknowledge = () => {}) => {
+    if (!isCurrentPlayerHost()) return acknowledge({ ok: false, error: "Seul l'hôte peut consulter les sauvegardes." });
+    try {
+      acknowledge({ ok: true, saves: await gameManager.list() });
+    } catch (error) {
+      acknowledge({ ok: false, error: error.message });
+    }
+  });
+
+  socket.on('save-game', async (label, acknowledge = () => {}) => {
+    if (!isCurrentPlayerHost()) return acknowledge({ ok: false, error: "Seul l'hôte peut sauvegarder la partie." });
+    try {
+      const save = await gameManager.archive(label || `Saison ${state.year}`);
+      acknowledge({ ok: true, save });
+    } catch (error) {
+      acknowledge({ ok: false, error: error.message });
+    }
+  });
+  
+  socket.on('delete-game-save', async (saveId, callback) => {
+    if (!isCurrentPlayerHost()) {
+      if (callback) callback({ ok: false, error: "Seul l'hôte peut supprimer les sauvegardes." });
+      return;
+    }
+    try {
+      // Vérification de sécurité simple pour éviter de supprimer n'importe quoi
+      if (!/^[a-zA-Z0-9._-]+\.json$/.test(saveId)) {
+        throw new Error('ID de sauvegarde invalide');
+      }
+      const filePath = path.join(DEFAULT_SAVES_DIRECTORY, saveId);
+      await rm(filePath, { force: true });
+      if (callback) callback({ ok: true });
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la sauvegarde:', error);
+      if (callback) callback({ ok: false, error: 'Impossible de supprimer la sauvegarde.' });
+    }
+  });
+
+  socket.on('new-game', async (acknowledge = () => {}) => {
+    if (!isCurrentPlayerHost()) return acknowledge({ ok: false, error: "Seul l'hôte peut créer une nouvelle partie." });
+    try {
+      await gameManager.archive(`Archive saison ${state.year}`);
+      clearPlayerSessions();
+      resetGameState();
+      io.emit('game-reset');
+      io.emit('draft-update', state);
+      acknowledge({ ok: true });
+    } catch (error) {
+      acknowledge({ ok: false, error: error.message });
+    }
+  });
+
+  socket.on('load-game', async ({ saveId, playerToken } = {}, acknowledge = () => {}) => {
+    if (!isCurrentPlayerHost()) return acknowledge({ ok: false, error: "Seul l'hôte peut charger une partie." });
+    try {
+      const result = await gameManager.load(saveId);
+      const reconnectResult = reconnectPlayer(state, playerToken, socket.id);
+      if (reconnectResult.ok) {
+        assignHost(state, socket.id);
+      }
+      state.awaitingResumeDecision = false;
+      io.emit('game-loaded');
+      io.emit('draft-update', state);
+      acknowledge({
+        ok: true,
+        result,
+        reconnected: reconnectResult.ok,
+      });
+    } catch (error) {
+      acknowledge({ ok: false, error: error.message });
+    }
+  });
+
+  socket.on('leave-game', (acknowledge = () => {}) => {
+    const player = getCurrentPlayer();
+    if (!player) return acknowledge({ ok: false, error: "Vous ne contrôlez aucune équipe." });
+
+    invalidatePlayerSession(player.id);
+    player.isHost = false;
+
+    if (state.phase === 'lobby') {
+      state.participants = state.participants.filter(participant => participant.id !== player.id);
+      [
+        state.cardCollections,
+        state.activeLineups,
+        state.economy,
+        state.cardStats,
+        state.lastOpenedPack,
+        state.starterPackClaimed,
+        state.lockedCards,
+        state.pendingPacks,
+        state.pendingPackResults,
+        state.teamSkins,
+        state.seasonScores,
+      ].forEach(map => {
+        if (map) delete map[player.id];
+      });
+    } else {
+      player.isBot = true;
+      player.isDisconnected = false;
+      player.isPermanentBot = true;
+    }
+
+    const nextHost = ensureConnectedHost(state);
+    if (!nextHost) state.awaitingResumeDecision = true;
+    socket.emit('player-session-cleared');
+    io.emit('draft-update', state);
+    acknowledge({ ok: true });
   });
 
   socket.on('start-draft', () => {
@@ -538,6 +694,11 @@ export function registerSocketHandlers(io, socket) {
       state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
       state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
     }
+    const nextHost = ensureConnectedHost(state);
+    if (!nextHost && state.participants.length > 0) {
+      state.awaitingResumeDecision = true;
+    }
+    if (state.phase === 'simulation') startAllBotMatchesInCurrentRound(io);
     io.emit('draft-update', state);
   });
 }

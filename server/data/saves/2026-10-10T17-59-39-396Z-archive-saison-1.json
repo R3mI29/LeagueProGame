@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-10-10T17:59:39.396Z",
+  "label": "Archive saison 1",
+  "gameState": {
+    "phase": "cards",
+    "participants": [
+      {
+        "id": "A84PVvTzIPvkNHteAAAA",
+        "name": "dev",
+        "tag": "FPX",
+        "logo": "equipes/funplus-phoenix.webp",
+        "roster": [],
+        "isHost": true,
+        "isDisconnected": false,
+        "isBot": false
+      }
+    ],
+    "bracket": [],
+    "groups": null,
+    "swissTeams": null,
+    "tournamentPhase": null,
+    "readyPlayers": [],
+    "resetPlayers": [],
+    "champion": null,
+    "currentRound": 0,
+    "roundComplete": false,
+    "roundReady": [],
+    "cardCollections": {
+      "A84PVvTzIPvkNHteAAAA": {}
+    },
+    "activeLineups": {
+      "A84PVvTzIPvkNHteAAAA": {}
+    },
+    "economy": {
+      "A84PVvTzIPvkNHteAAAA": 100
+    },
+    "lockedCards": {
+      "A84PVvTzIPvkNHteAAAA": []
+    },
+    "cardStats": {},
+    "globalSecrets": {},
+    "pendingPacks": {
+      "A84PVvTzIPvkNHteAAAA": 1
+    },
+    "pendingPackResults": {},
+    "lastOpenedPack": {
+      "A84PVvTzIPvkNHteAAAA": []
+    },
+    "starterPackClaimed": {
+      "A84PVvTzIPvkNHteAAAA": false
+    },
+    "teamSkins": {},
+    "seasonRound": 1,
+    "continueSeasonVotes": [],
+    "year": 1,
+    "eventIndex": 0,
+    "history": [],
+    "seasonScores": null,
+    "endOfYearRecap": null,
+    "awaitingResumeDecision": true
+  },
+  "playerSessions": [
+    {
+      "token": "01353392-a640-400d-ae37-ca4a42b6d254",
+      "playerId": "A84PVvTzIPvkNHteAAAA"
+    }
+  ]
+}

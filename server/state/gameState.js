@@ -30,6 +30,7 @@ export function createInitialGameState(overrides = {}) {
     history: [],
     seasonScores: null,
     endOfYearRecap: null,
+    awaitingResumeDecision: false,
     ...overrides,
   };
 }
@@ -90,6 +91,18 @@ export function resetGameState({ participants = [] } = {}) {
 
   Object.keys(state).forEach(key => delete state[key]);
   Object.assign(state, nextState);
+  return state;
+}
+
+export function restoreGameState(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
+    throw new Error('Invalid game state snapshot');
+  }
+
+  clearAllGameTimeouts();
+  const restoredState = createInitialGameState(snapshot);
+  Object.keys(state).forEach(key => delete state[key]);
+  Object.assign(state, restoredState);
   return state;
 }
 

@@ -1,1 +1,4 @@
 node_modules/
+#sauvegardes locales du jeu
+data/*.json
+data/*.tmp

@@ -15,6 +15,7 @@ import DevCardsView from './views/DevCardView';
 import PackOpener from './components/PackOpener'; 
 import SeasonHub from './components/SeasonHub';
 import SeasonRecapCinematic from './components/SeasonRecapCinematic';
+import GameManagementOverlay from './components/GameManagementOverlay';
 
 import SwissStageView from './views/formats/SwissStageView';
 import GslGroupView from './views/formats/GslGroupView';
@@ -275,6 +276,7 @@ export default function App() {
       {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
       {state && <SeasonRecapCinematic state={state} />}
       <SecretUnlockOverlay />
+      <GameManagementOverlay socket={socket} state={state} />
       
     </>
   );

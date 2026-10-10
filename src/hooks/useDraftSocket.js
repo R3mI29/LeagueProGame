@@ -10,7 +10,7 @@ const INITIAL_STATE = {
   lastOpenedPack: {}, starterPackClaimed: {}, economy: {}, lockedCards: {},
   cardStats: {}, globalSecrets: {}, teamSkins: {}, seasonScores: null,
   seasonRound: 0, continueSeasonVotes: [], year: 1, eventIndex: 0, history: [],
-  endOfYearRecap: null,
+  endOfYearRecap: null, awaitingResumeDecision: false,
 };
 
 /**
@@ -38,11 +38,17 @@ export function useDraftSocket() {
 
     socket.on('draft-update', handleUpdate);
     socket.on('connect', reconnectPlayer);
+    socket.on('game-loaded', reconnectPlayer);
+    socket.on('game-reset', clearPlayerSessionToken);
+    socket.on('player-session-cleared', clearPlayerSessionToken);
     if (socket.connected) reconnectPlayer();
 
     return () => {
       socket.off('draft-update', handleUpdate);
       socket.off('connect', reconnectPlayer);
+      socket.off('game-loaded', reconnectPlayer);
+      socket.off('game-reset', clearPlayerSessionToken);
+      socket.off('player-session-cleared', clearPlayerSessionToken);
     };
   }, []);
 

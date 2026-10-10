@@ -50,15 +50,20 @@ export function buildPlayoffsFromGroups() {
 
 export function startCardTournament(io) {
   const TOTAL_TEAMS = 16;
-  const humanParticipants = state.participants.filter(p => !isBotCheck(p));
-  const existingBots = state.participants.filter(p => isBotCheck(p));
+  const isGeneratedBot = participant => participant.id.startsWith('bot-') || participant.isPermanentBot;
+  const playerTeams = state.participants.filter(participant => !isGeneratedBot(participant));
+  const existingBots = state.participants.filter(isGeneratedBot);
 
-  humanParticipants.forEach(p => {
+  playerTeams.forEach(p => {
     const lineup = state.activeLineups[p.id] || {};
+    const fallbackRoster = generateBotRosterFromCards();
     p.roster = ORDERED_ROLES.map(role => {
       const cardId = lineup[role];
       const baseCard = getCardById(cardId);
-      const rosterEntry = cardToRosterEntry(baseCard);
+      const previousEntry = p.roster?.find(player => player.role === role);
+      const rosterEntry = cardToRosterEntry(baseCard)
+        || previousEntry
+        || fallbackRoster.find(player => player.role === role);
 
       if (baseCard && baseCard.id.toLowerCase().includes('caliste') && baseCard.rarity === 'WANTED') {
         const played = state.cardStats?.[p.id]?.[cardId] || 0;
@@ -69,7 +74,7 @@ export function startCardTournament(io) {
   });
 
   if (existingBots.length === 0) {
-    const numBots = TOTAL_TEAMS - humanParticipants.length;
+    const numBots = TOTAL_TEAMS - playerTeams.length;
     const bots = [];
     for (let i = 1; i <= numBots; i++) {
       const botId = `bot-${i}`;
@@ -87,9 +92,9 @@ export function startCardTournament(io) {
 
       bots.push({ id: botId, name: botTeam.name, tag: botTeam.tag, logo: botTeam.logo, roster: botRoster, isBot: true });
     }
-    state.participants = [...humanParticipants, ...bots];
+    state.participants = [...playerTeams, ...bots];
   } else {
-    state.participants = [...humanParticipants, ...existingBots];
+    state.participants = [...playerTeams, ...existingBots];
   }
 
   if (!state.seasonScores) {

@@ -32,6 +32,42 @@ export function invalidatePlayerSession(playerId) {
   return true;
 }
 
+export function clearPlayerSessions() {
+  sessionsByToken.clear();
+  tokenByPlayerId.clear();
+}
+
+export function assignHost(gameState, playerId) {
+  let assigned = false;
+  gameState.participants.forEach(participant => {
+    const isHost = participant.id === playerId;
+    participant.isHost = isHost;
+    if (isHost) assigned = true;
+  });
+  return assigned;
+}
+
+export function getConnectedPlayers(gameState) {
+  return gameState.participants.filter(participant =>
+    !participant.id.startsWith('bot-') &&
+    !participant.isPermanentBot &&
+    !participant.isDisconnected &&
+    !participant.isBot
+  );
+}
+
+export function ensureConnectedHost(gameState, preferredPlayerId = null) {
+  const connectedPlayers = getConnectedPlayers(gameState);
+  const currentHost = connectedPlayers.find(participant => participant.isHost);
+  if (currentHost) return currentHost;
+
+  const nextHost = connectedPlayers.find(participant => participant.id === preferredPlayerId)
+    || connectedPlayers[0];
+  if (!nextHost) return null;
+  assignHost(gameState, nextHost.id);
+  return nextHost;
+}
+
 export function transferPlayerIdentity(gameState, oldId, newId) {
   if (!oldId || !newId || oldId === newId) return;
 
@@ -56,12 +92,26 @@ export function transferPlayerIdentity(gameState, oldId, newId) {
 
   const replaceIdInMatch = (match) => {
     if (!match) return;
+    if (match.teamA?.id === oldId) match.teamA.id = newId;
+    if (match.teamB?.id === oldId) match.teamB.id = newId;
     match.ready = replaceId(match.ready, oldId, newId);
     match.dismissedBy = replaceId(match.dismissedBy, oldId, newId);
   };
 
   gameState.bracket?.flat().forEach(replaceIdInMatch);
-  gameState.groups?.forEach(group => group.matches.forEach(replaceIdInMatch));
+  gameState.groups?.forEach(group => {
+    group.teams?.forEach(team => {
+      if (team?.id === oldId) team.id = newId;
+    });
+    group.qualified?.forEach(team => {
+      if (team?.id === oldId) team.id = newId;
+    });
+    group.matches.forEach(replaceIdInMatch);
+  });
+  gameState.swissTeams?.forEach(entry => {
+    if (entry.team?.id === oldId) entry.team.id = newId;
+  });
+  if (gameState.champion?.id === oldId) gameState.champion.id = newId;
 
   const token = tokenByPlayerId.get(oldId);
   if (token) {
@@ -69,6 +119,24 @@ export function transferPlayerIdentity(gameState, oldId, newId) {
     tokenByPlayerId.set(newId, token);
     sessionsByToken.set(token, newId);
   }
+}
+
+export function exportPlayerSessions(validPlayerIds = null) {
+  const allowedIds = validPlayerIds ? new Set(validPlayerIds) : null;
+  return [...sessionsByToken.entries()]
+    .filter(([, playerId]) => !allowedIds || allowedIds.has(playerId))
+    .map(([token, playerId]) => ({ token, playerId }));
+}
+
+export function restorePlayerSessions(sessions = []) {
+  sessionsByToken.clear();
+  tokenByPlayerId.clear();
+
+  sessions.forEach(session => {
+    if (typeof session?.token !== 'string' || typeof session?.playerId !== 'string') return;
+    sessionsByToken.set(session.token, session.playerId);
+    tokenByPlayerId.set(session.playerId, session.token);
+  });
 }
 
 export function reconnectPlayer(gameState, token, socketId) {
