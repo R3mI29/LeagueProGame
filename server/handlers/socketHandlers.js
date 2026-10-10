@@ -1,15 +1,29 @@
-import { state, matchTimeouts } from '../state/gameState.js';
+import {
+  clearGameTimeout,
+  clearMatchTimeout,
+  prepareNewGame,
+  resetGameState,
+  resetTournamentState,
+  scheduleGameTimeout,
+  state,
+} from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
-import { SECRET_UNLOCKS } from '../../src/constants/secretUnlocks.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { PACK_TYPES, openPack, openStarterPack, getCardById } from '../services/cardService.js';
 import { GAMES_TO_WIN } from '../config/constants.js';
 import { isBotCheck, findMatchById, advanceTeam, getAliveHumans } from '../services/playerService.js';
 import { startCardTournament, startCurrentEvent, awardSeasonRewards, buildPlayoffsFromGroups, buildPlayoffsFromSwiss } from '../services/tournamentService.js';
-import { simulateGame, tryStartMatch, startAllBotMatchesInCurrentRound } from '../services/matchService.js';
+import {
+  finalizeMatch,
+  recordCompletedGame,
+  simulateGame,
+  startAllBotMatchesInCurrentRound,
+  tryStartMatch,
+} from '../services/matchService.js';
 import { SKINS, SKIN_BY_ID, canUseSkin, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
 
 export function registerSocketHandlers(io, socket) {
+  socket.emit('draft-update', state);
   
   socket.on('takeover-bot', (botId, newName, newTag, newLogo) => {
     const bot = state.participants.find(p => p.id === botId);
@@ -78,26 +92,34 @@ export function registerSocketHandlers(io, socket) {
     if (eventIndex >= 0 && eventIndex < EVENTS.length) { state.eventIndex = eventIndex; io.emit('draft-update', state); }
   });
 
-  socket.on('join-lobby', (name, tag, logo) => {
-    if (state.phase !== 'lobby' || state.participants.length >= 16) return;
+  socket.on('join-lobby', (name, tag, logo, acknowledge = () => {}) => {
+    if (state.phase !== 'lobby') return acknowledge({ ok: false, error: "La saison a déjà commencé." });
+    if (state.participants.length >= 16) return acknowledge({ ok: false, error: "Le lobby est complet." });
+    if (typeof name !== 'string' || typeof tag !== 'string' || typeof logo !== 'string') {
+      return acknowledge({ ok: false, error: "Les informations de l'équipe sont invalides." });
+    }
     const cleanName = name.trim();
     const cleanTag = tag.trim().toUpperCase();
-    if (state.participants.some(p => p.logo === logo && p.id !== socket.id)) return;
+    if (!cleanName || cleanName.length > 40) return acknowledge({ ok: false, error: "Le nom doit contenir entre 1 et 40 caractères." });
+    if (cleanTag.length < 2 || cleanTag.length > 4) return acknowledge({ ok: false, error: "Le TAG doit contenir entre 2 et 4 caractères." });
+    if (!/^\/?equipes\/[a-zA-Z0-9._-]+$/.test(logo)) {
+      return acknowledge({ ok: false, error: "Cette identité visuelle n'existe pas." });
+    }
+    if (state.participants.some(p => p.logo === logo && p.id !== socket.id)) {
+      return acknowledge({ ok: false, error: "Cette équipe est déjà utilisée." });
+    }
     
     if (!state.participants.find(p => p.id === socket.id)) {
       state.participants.push({ id: socket.id, name: cleanName, tag: cleanTag, logo: logo, roster: [] });
       io.emit('draft-update', state);
     }
+    acknowledge({ ok: true });
   });
 
   socket.on('start-draft', () => {
     if (state.phase === 'lobby' && state.participants.length >= 1) {
-        state.cardCollections = {}; state.activeLineups = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 1; state.continueSeasonVotes = []; state.seasonScores = null; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.readyPlayers = []; state.history = []; state.eventIndex = 0; state.year = 1; state.lockedCards = {};
-        state.participants.forEach(p => {
-          state.cardCollections[p.id] = {}; state.activeLineups[p.id] = {}; state.pendingPacks[p.id] = 1; state.lastOpenedPack[p.id] = []; state.starterPackClaimed[p.id] = false; state.economy[p.id] = 100; state.lockedCards[p.id] = [];
-        });
-        state.phase = 'cards';
-        io.emit('draft-update', state);
+      prepareNewGame(state.participants);
+      io.emit('draft-update', state);
     }
   });
 
@@ -105,48 +127,17 @@ export function registerSocketHandlers(io, socket) {
     const match = findMatchById(matchId);
     if (!match || (match.status !== 'simulating_events' && match.status !== 'simulating_result')) return;
 
-    if (matchTimeouts[match.id]) {
-      clearTimeout(matchTimeouts[match.id]); delete matchTimeouts[match.id];
-    }
+    clearMatchTimeout(match.id);
 
-    if (match.winnerSidePending === 'A') match.scoreA++; else match.scoreB++;
-    match.games.push({ gameNumber: match.games.length + 1, winnerSide: match.winnerSidePending, events: (match.currentEvents || []).concat(match.pendingEvents || []) });
+    const currentGameEvents = (match.currentEvents || []).concat(match.pendingEvents || []);
+    recordCompletedGame(match, match.winnerSidePending, currentGameEvents);
 
     while (match.scoreA < GAMES_TO_WIN && match.scoreB < GAMES_TO_WIN) {
       const { winnerSide, events } = simulateGame(match, state);
-      if (winnerSide === 'A') match.scoreA++; else match.scoreB++;
-      match.games.push({ gameNumber: match.games.length + 1, winnerSide, events });
+      recordCompletedGame(match, winnerSide, events);
     }
 
-    match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
-    match.status = 'finished';
-    SECRET_UNLOCKS.forEach(secret => { secret.checkAndApply(match, state, io); });
-    match.currentEvents = []; match.pendingEvents = [];
-    
-    if (state.tournamentPhase === 'swiss') {
-      const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
-      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-      const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
-      if (wTeam) wTeam.wins += 1; if (lTeam) lTeam.losses += 1;
-      if (state.bracket[state.currentRound].every(m => m.status === 'finished')) state.roundComplete = true;
-    } 
-    else if (state.tournamentPhase === 'groups') {
-      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-      const groupIndex = match.id.match(/g(\d)/)[1];
-      const group = state.groups[groupIndex];
-      if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
-      else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
-      else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
-      else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
-      else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
-      if (state.groups.every(g => g.qualified.length === 2)) state.roundComplete = true;
-    } 
-    else {
-      advanceTeam(match.winner, match.nextId, match.nextSlot);
-      const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-      if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
-      if (state.bracket[state.currentRound]?.every(m => m.status === 'finished') && !state.champion) state.roundComplete = true;
-    }
+    finalizeMatch(match, io);
     io.emit('draft-update', state);
   });
 
@@ -386,11 +377,17 @@ export function registerSocketHandlers(io, socket) {
          state.eventIndex = 0; state.year += 1; 
       }
 
-      state.continueSeasonVotes = []; state.readyPlayers = []; state.champion = null; state.bracket = []; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.seasonRound += 1; state.phase = 'cards';
+      resetTournamentState();
+      state.seasonRound += 1;
+      state.phase = 'cards';
 
       if (endOfYearRecap) {
-         state.endOfYearRecap = endOfYearRecap;
-         setTimeout(() => { state.endOfYearRecap = null; io.emit('draft-update', state); }, 16000);
+        clearGameTimeout('season-recap');
+        state.endOfYearRecap = endOfYearRecap;
+        scheduleGameTimeout('season-recap', () => {
+          state.endOfYearRecap = null;
+          io.emit('draft-update', state);
+        }, 16000);
       }
     }
     io.emit('draft-update', state);
@@ -500,14 +497,18 @@ export function registerSocketHandlers(io, socket) {
   });
 
   socket.on('toggle-reset', () => {
+    if (!state.participants.some(participant => participant.id === socket.id && !isBotCheck(participant))) return;
+
     if (state.resetPlayers.includes(socket.id)) state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
     else state.resetPlayers.push(socket.id);
 
     const humanCount = state.participants.filter(p => !isBotCheck(p)).length;
 
     if (humanCount === 0 || state.resetPlayers.length >= humanCount) {
-      state.participants = state.participants.filter(p => !isBotCheck(p)); state.participants.forEach(p => p.roster = []);
-      state.phase = 'lobby'; state.bracket = []; state.champion = null; state.readyPlayers = []; state.resetPlayers = []; state.turnIndex = 0; state.currentRound = 0; state.roundComplete = false; state.roundReady = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.lockedCards = {}; state.seasonRound = 0; state.continueSeasonVotes = []; state.history = []; state.eventIndex = 0; state.year = 1; state.seasonScores = null; state.groups = null; state.swissTeams = null;
+      const participants = state.participants
+        .filter(participant => !isBotCheck(participant))
+        .map(participant => ({ ...participant, roster: [], isBot: false }));
+      resetGameState({ participants });
     }
     io.emit('draft-update', state);
   });
@@ -531,7 +532,7 @@ export function registerSocketHandlers(io, socket) {
     const humansAfter = state.participants.filter(p => !isBotCheck(p)).length;
 
     if (humansAfter === 0 && humansBefore > 0 && state.phase !== 'lobby') {
-        state.phase = 'lobby'; state.champion = null; state.participants = []; state.resetPlayers = []; state.readyPlayers = []; state.roundReady = []; state.cardCollections = {}; state.activeLineups = {}; state.economy = {}; state.cardStats = {}; state.globalSecrets = {}; state.pendingPacks = {}; state.lastOpenedPack = {}; state.starterPackClaimed = {}; state.seasonRound = 0; state.continueSeasonVotes = []; state.history = []; state.eventIndex = 0; state.year = 1; state.seasonScores = null; state.bracket = []; state.groups = null; state.swissTeams = null;
+      resetGameState();
     }
     io.emit('draft-update', state);
   });

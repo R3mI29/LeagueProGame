@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { socket } from './api/socket'; 
 import { useDraftSocket } from './hooks/useDraftSocket';
 import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import { EVENTS } from './constants/seasonConfig';
 import { TEAMS_DB } from './constants/teams'; // IMPORT AJOUTÉ
 
+import './styles/theme.css';
 import SecretUnlockOverlay from './components/SecretUnlockOverlay';
 import LobbyView from './views/LobbyView';
 import CardsView from './views/CardsView/CardsView';
@@ -19,15 +20,16 @@ import SwissStageView from './views/formats/SwissStageView';
 import GslGroupView from './views/formats/GslGroupView';
 import DoubleElimView from './views/formats/DoubleElimView';
 
-import './styles/theme.css'; // Ton futur global.css
-
 function TakeoverView({ state, socket }) {
   const [selectedBot, setSelectedBot] = useState(null);
   const [newName, setNewName] = useState('');
   const [newTag, setNewTag] = useState('');
   const [selectedLogo, setSelectedLogo] = useState('');
 
-  const bots = state.participants.filter(p => p.id.startsWith('bot-') || p.isBot);
+  const bots = useMemo(
+    () => state.participants.filter(p => p.id.startsWith('bot-') || p.isBot),
+    [state.participants],
+  );
 
   useEffect(() => {
       if (selectedBot) {
@@ -46,7 +48,6 @@ function TakeoverView({ state, socket }) {
     if (newTag.length < 2 || newTag.length > 4) return alert("Le TAG doit faire entre 2 et 4 caractères.");
     socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo);
   };
-  socket.onAny((e) => console.log('[socket]', e))
   return (
     <div className="min-h-screen bg-[#0A0D14] text-white flex flex-col items-center justify-center font-sans p-10">
       <div className="bg-[#151923] p-[50px_60px] rounded-2xl border border-[#2B3040] max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
@@ -140,7 +141,7 @@ function TakeoverView({ state, socket }) {
 
 export default function App() {
   const draft = useDraftSocket();
-  const { state, showBracket } = draft;
+  const { state } = draft;
   const [showDevMode, setShowDevMode] = useState(false);
   const [spectatedMatchId, setSpectatedMatchId] = useState(null);
 
@@ -194,7 +195,7 @@ export default function App() {
     if (!myPlayerInfo && state.phase !== 'lobby') return <TakeoverView state={state} socket={socket} />;
     
     if (state.phase === 'season_hub') return <SeasonHub state={state} />;
-    if (state.phase === 'cards') return <CardsView state={state} openPack={draft.openPack} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
+    if (state.phase === 'cards') return <CardsView state={state} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
 
     const myActiveMatch = getMyActiveMatch(state, socket.id);
 
@@ -218,7 +219,7 @@ export default function App() {
       return <ArenaView match={myActiveMatch} matchReady={draft.matchReady} dismissMatch={draft.dismissMatch} state={state} />;
     }
 
-    if (state.phase === 'tournament' || state.phase === 'simulation' || (isTournamentPhase(state) && showBracket)) {
+    if (isTournamentPhase(state)) {
       const currentEvent = EVENTS[state.eventIndex || 0];
       let TournamentComponent = null;
 
