@@ -581,6 +581,18 @@ export const CARD_POOL = [
     "league": "LCS"
   },
   {
+    "id": "blaber-c9-lcs",
+    "baseName": "Blaber",
+    "variant": "4x LCS champion",
+    "role": "Jungle",
+    "rating": 86,
+    "rarity": 'Épique',
+    "image": "/cardsImg/others/C9_blaber_lcs.jpg",
+    "nationality": "US",
+    "teamTag": "C9",
+    "league": "LCS"
+  },
+  {
     "id": "tes-tian",
     "baseName": "Tian",
     "variant": "TES Tian",
@@ -1805,6 +1817,18 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/legend_MEIKO.jpg",
     "nationality": "CN",
     "teamTag": "EDG",
+    "league": "LPL"
+  },
+  {
+    "id": "blg-on-lpl",
+    "baseName": "ON",
+    "variant": "5x LPL champion",
+    "role": "Support",
+    "rating": 88,
+    "rarity": 'Épique',
+    "image": "/cardsImg/others/BLG-ON-LPL.jpg",
+    "nationality": "CN",
+    "teamTag": "BLG",
     "league": "LPL"
   },
   {

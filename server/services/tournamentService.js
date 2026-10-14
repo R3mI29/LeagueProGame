@@ -1,6 +1,7 @@
 import { state } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
+import { grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
 
@@ -124,6 +125,11 @@ export function startCardTournament(io) {
     state.participants.forEach(p => { state.recentPlacements[p.id] = []; });
   }
 
+  // S'assurer que les bots équipent leur skin le plus rare
+  state.participants.forEach(p => {
+    if (isBotCheck(p)) equipRarestSkin(state, p.id);
+  });
+
   state.phase = 'season_hub';
   if (state.eventIndex === undefined) state.eventIndex = 0;
   io.emit('draft-update', state);
@@ -132,6 +138,11 @@ export function startCardTournament(io) {
 export function startCurrentEvent(io) {
   // Met à jour p.roster avec les cartes sélectionnées dans activeLineups avant chaque tournoi
   syncPlayerRosters();
+
+  // S'assurer que chaque bot équipe son skin le plus rare avant le début du tournoi
+  state.participants.forEach(p => {
+    if (isBotCheck(p)) equipRarestSkin(state, p.id);
+  });
 
   const currentEvent = EVENTS[state.eventIndex];
   state.phase = 'tournament';
@@ -230,6 +241,15 @@ export function awardSeasonRewards() {
   if (!state.seasonScores) state.seasonScores = {};
   if (!state.recentPlacements) state.recentPlacements = {};
 
+  // Récompense du skin MSI Clash au vainqueur du MSI
+  if (eventConfig.id === 'msi' && championId) {
+    grantSkin(state, championId, 'msi-clash');
+  }
+
+  if (eventConfig.id === 'worlds' && championId) {
+    grantSkin(state, championId, 'worlds-sovereign');
+  }
+
   const catchupBonuses = {};
 
   state.participants.forEach(p => {
@@ -305,6 +325,7 @@ export function awardSeasonRewards() {
       });
       p.roster = upgradeBotRoster(p.roster, Math.floor(moneyEarned / 100));
       p.roster.forEach(c => { if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {}; state.activeLineups[p.id][c.role] = c.id; });
+      equipRarestSkin(state, p.id);
     }
   });
 }
