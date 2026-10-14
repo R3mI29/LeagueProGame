@@ -38,10 +38,10 @@ export const SKINS = [
   },
   {
     id: 'worlds-sovereign',
-    name: 'Souverain des Worlds',
+    name: 'World Champion',
     rarity: 'Légendaire',
     free: false,
-    hint: 'Remporter le World Championship',
+    hint: 'Remporter les Worlds',
     frame: {
       // Uniquement un fondu noir en bas pour lire le texte, le haut de l'image reste 100% brut et net
       background: "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(5,6,10,0.92) 100%), url('/assets/worlds_sober.png') center top / cover no-repeat",
