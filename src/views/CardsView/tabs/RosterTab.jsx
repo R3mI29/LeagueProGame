@@ -6,10 +6,35 @@ import CardIllustration from '../../../components/CardIllustration';
 import SynergyGauges from '../../../components/SynergyGauges';
 import { computeSynergy } from '../../../constants/synergy';
 
-export default function RosterTab({ state, myId, isReady, myLineup, myCollection, myEconomy, getDynamicCard, setActiveTab, setLineupCard, toggleLineupReady, lineupComplete, teamPower }) {
+const CATCHUP_VALUES = {
+  'N/A': 100,
+  'TOP8': 50,
+  'TOP4': 25,
+  'TOP2': 0,
+  'TOP1': 0
+};
+
+export default function RosterTab({ 
+  state, 
+  myId, 
+  isReady, 
+  myLineup, 
+  myCollection, 
+  myEconomy, 
+  getDynamicCard, 
+  setActiveTab, 
+  setLineupCard, 
+  toggleLineupReady, 
+  lineupComplete, 
+  teamPower 
+}) {
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
   const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
   const synergy = computeSynergy(ORDERED_ROLES.map(r => myLineup[r]).filter(Boolean));
+
+  // Récupération sécurisée de l'historique des 4 derniers tournois
+  const myHistory = state?.recentPlacements?.[myId] || [];
+  const currentCatchupBonus = myHistory.reduce((total, res) => total + (CATCHUP_VALUES[res] || 0), 0);
 
   return (
     <div className="grid grid-cols-[1fr_380px] gap-8 animate-[fadeIn_0.3s]">
@@ -70,7 +95,7 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
                       boxShadow: `0 4px 15px ${isLifetime ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0,0,0,0.6)'}`
                     }}
                   >
-                    {isLifetime ? '♾️️ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span className="text-[11px] opacity-80">✍️️</span> {contract} TRN</>}
+                    {isLifetime ? '♾ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span className="text-[11px] opacity-80">✍</span> {contract} TRN</>}
                   </div>
                 </div>
               );
@@ -92,13 +117,41 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
         </div>
 
         <SynergyGauges synergy={synergy} />
-        
 
         <div className="bg-[#131621] border border-[#222838] rounded-lg p-6 text-center">
           <h3 className="m-0 mb-4 font-['Oswald'] text-white text-[18px] font-medium tracking-[0.5px]">TRÉSORERIE</h3>
-          <div className="text-[24px] font-bold text-[#00e676] mb-5">
+          <div className="text-[24px] font-bold text-[#00e676] mb-4">
             {myEconomy} 💲 CRÉDITS
           </div>
+
+          {/* Historique des 4 derniers tournois (Système de rattrapage) */}
+          <div className="mb-5 bg-[#0C0E14] p-3 rounded border border-[#1F2433]">
+            <div className="text-[10px] text-[#768196] uppercase tracking-[1px] mb-2">
+              4 Derniers Tournois (Rattrapage)
+            </div>
+            <div className="flex justify-center gap-2 mb-2">
+              {[0, 1, 2, 3].map(idx => {
+                const res = myHistory[idx] || '-';
+                const isNA = res === 'N/A';
+                return (
+                  <span 
+                    key={idx} 
+                    className={`px-2.5 py-1 rounded text-xs font-bold ${
+                      isNA ? 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/40' 
+                      : res === '-' ? 'bg-[#1A1E2C] text-[#768196]' 
+                      : 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40'
+                    }`}
+                  >
+                    {res}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="text-[11px] text-[#768196]">
+              Bonus actuel : <span className="text-[#00e676] font-bold">+{currentCatchupBonus} 💲</span>
+            </div>
+          </div>
+
           <button 
             onClick={() => !isReady && setActiveTab('shop')} 
             disabled={isReady}

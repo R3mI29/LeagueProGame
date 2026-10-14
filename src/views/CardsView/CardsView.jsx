@@ -116,6 +116,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             toggleLineupReady={handleToggleReady}
             lineupComplete={lineupComplete}
             teamPower={teamPower}
+            state={state}
           />
         )}
 

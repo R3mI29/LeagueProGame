@@ -4,6 +4,40 @@ import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
 
+// Barème de rattrapage sur les 4 derniers tournois (Max = 4 x 100$= 400$)
+const CATCHUP_VALUES = {
+  'N/A': 100,
+  'TOP8': 50,
+  'TOP4': 25,
+  'TOP2': 0,
+  'TOP1': 0
+};
+
+// Synchronise activeLineups vers p.roster pour tous les vrais joueurs (même repris d'une sauvegarde)
+export function syncPlayerRosters() {
+  const isGeneratedBot = participant => participant.id.startsWith('bot-') || participant.isPermanentBot;
+  const playerTeams = state.participants.filter(participant => !isGeneratedBot(participant));
+
+  playerTeams.forEach(p => {
+    const lineup = state.activeLineups[p.id] || {};
+    const fallbackRoster = generateBotRosterFromCards();
+    p.roster = ORDERED_ROLES.map(role => {
+      const cardId = lineup[role];
+      const baseCard = getCardById(cardId);
+      const previousEntry = p.roster?.find(player => player.role === role);
+      const rosterEntry = cardToRosterEntry(baseCard)
+        || previousEntry
+        || fallbackRoster.find(player => player.role === role);
+
+      if (baseCard && baseCard.id.toLowerCase().includes('caliste') && baseCard.rarity === 'WANTED') {
+        const played = state.cardStats?.[p.id]?.[cardId] || 0;
+        rosterEntry.rating += played; 
+      }
+      return rosterEntry;
+    });
+  });
+}
+
 export function buildPlayoffsFromSwiss() {
   const qualified = state.swissTeams.filter(t => t.wins === 3).sort((a, b) => a.losses - b.losses).map(t => t.team);
   
@@ -54,24 +88,7 @@ export function startCardTournament(io) {
   const playerTeams = state.participants.filter(participant => !isGeneratedBot(participant));
   const existingBots = state.participants.filter(isGeneratedBot);
 
-  playerTeams.forEach(p => {
-    const lineup = state.activeLineups[p.id] || {};
-    const fallbackRoster = generateBotRosterFromCards();
-    p.roster = ORDERED_ROLES.map(role => {
-      const cardId = lineup[role];
-      const baseCard = getCardById(cardId);
-      const previousEntry = p.roster?.find(player => player.role === role);
-      const rosterEntry = cardToRosterEntry(baseCard)
-        || previousEntry
-        || fallbackRoster.find(player => player.role === role);
-
-      if (baseCard && baseCard.id.toLowerCase().includes('caliste') && baseCard.rarity === 'WANTED') {
-        const played = state.cardStats?.[p.id]?.[cardId] || 0;
-        rosterEntry.rating += played; 
-      }
-      return rosterEntry;
-    });
-  });
+  syncPlayerRosters();
 
   if (existingBots.length === 0) {
     const numBots = TOTAL_TEAMS - playerTeams.length;
@@ -102,12 +119,20 @@ export function startCardTournament(io) {
     state.participants.forEach(p => { state.seasonScores[p.id] = { points: 0, titles: 0 }; });
   }
 
+  if (!state.recentPlacements) {
+    state.recentPlacements = {};
+    state.participants.forEach(p => { state.recentPlacements[p.id] = []; });
+  }
+
   state.phase = 'season_hub';
   if (state.eventIndex === undefined) state.eventIndex = 0;
   io.emit('draft-update', state);
 }
 
 export function startCurrentEvent(io) {
+  // Met à jour p.roster avec les cartes sélectionnées dans activeLineups avant chaque tournoi
+  syncPlayerRosters();
+
   const currentEvent = EVENTS[state.eventIndex];
   state.phase = 'tournament';
   state.champion = null;
@@ -192,7 +217,9 @@ export function awardSeasonRewards() {
     const lbFinal = state.bracket[6][0]; const thirdPlaceId = getLoser(lbFinal); if (thirdPlaceId) top4Ids.push(thirdPlaceId);
     const lbSemi = state.bracket[5][0]; const fourthPlaceId = getLoser(lbSemi); if (fourthPlaceId) top4Ids.push(fourthPlaceId);
     const lb4_1 = state.bracket[4][0]; const lb4_2 = state.bracket[4][1];
-    if (lb4_1) top8Ids.push(getLoser(lb4_1)); if (lb4_2) top8Ids.push(getLoser(lb4_2)); 
+    if (lb4_1) top8Ids.push(getLoser(lb4_1)); if (lb4_2) top8Ids.push(getLoser(lb4_2));
+    const lb3_1 = state.bracket[3]?.[1]; const lb3_2 = state.bracket[3]?.[2];
+    if (lb3_1) top8Ids.push(getLoser(lb3_1)); if (lb3_2) top8Ids.push(getLoser(lb3_2));
   } else {
     const finalMatch = state.bracket[state.bracket.length - 1]?.[0]; finalistId = getLoser(finalMatch);
     const sfMatches = state.bracket[state.bracket.length - 2] || []; top4Ids = sfMatches.map(getLoser).filter(id => id);
@@ -201,41 +228,33 @@ export function awardSeasonRewards() {
 
   if (!state.economy) state.economy = {};
   if (!state.seasonScores) state.seasonScores = {};
+  if (!state.recentPlacements) state.recentPlacements = {};
+
+  const catchupBonuses = {};
+
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
     if (state.economy[p.id] === undefined) state.economy[p.id] = 0;
-  });
+    if (!state.recentPlacements[p.id]) state.recentPlacements[p.id] = [];
 
-  const catchupBonuses = {};
-  const totalTournamentsPlayed = state.history.length;
-  
-  if (totalTournamentsPlayed >= 3) {
-    const sortedPlayers = [...state.participants].sort((a, b) => {
-      const ptsA = state.seasonScores[a.id]?.points || 0;
-      const ptsB = state.seasonScores[b.id]?.points || 0;
-      if (ptsA !== ptsB) return ptsB - ptsA;
-      const titlesA = state.seasonScores[a.id]?.titles || 0;
-      const titlesB = state.seasonScores[b.id]?.titles || 0;
-      return titlesB - titlesA;
-    });
+    // 1. Enregistrer le placement du tournoi (Top 1 à 8, ou N/A)
+    let currentPlacement = 'N/A';
+    if (p.id === championId) currentPlacement = 'TOP1';
+    else if (p.id === finalistId) currentPlacement = 'TOP2';
+    else if (top4Ids.includes(p.id)) currentPlacement = 'TOP4';
+    else if (top8Ids.includes(p.id)) currentPlacement = 'TOP8';
 
-    const baseRewards = sortedPlayers.map((_, index) => {
-      const reverseRank = sortedPlayers.length - 1 - index; 
-      if (reverseRank === 0) return 400; if (reverseRank === 1) return 300; if (reverseRank === 2) return 200; if (reverseRank === 3) return 100; return 0; 
-    });
-
-    let currentRank = 0;
-    while (currentRank < sortedPlayers.length) {
-      let tieCount = 1;
-      const areTied = (p1, p2) => state.seasonScores[p1.id].points === state.seasonScores[p2.id].points && state.seasonScores[p1.id].titles === state.seasonScores[p2.id].titles;
-      while (currentRank + tieCount < sortedPlayers.length && areTied(sortedPlayers[currentRank], sortedPlayers[currentRank + tieCount])) tieCount++;
-      let totalPool = 0;
-      for (let i = 0; i < tieCount; i++) totalPool += baseRewards[currentRank + i];
-      const sharedReward = Math.floor(totalPool / tieCount);
-      for (let i = 0; i < tieCount; i++) catchupBonuses[sortedPlayers[currentRank + i].id] = sharedReward;
-      currentRank += tieCount;
+    // 2. Garder les 4 derniers tournois
+    state.recentPlacements[p.id].push(currentPlacement);
+    if (state.recentPlacements[p.id].length > 4) {
+      state.recentPlacements[p.id].shift();
     }
-  }
+
+    // 3. Calculer le bonus de rattrapage
+    catchupBonuses[p.id] = state.recentPlacements[p.id].reduce((total, placement) => {
+      return total + (CATCHUP_VALUES[placement] || 0);
+    }, 0);
+  });
 
   const rewards = eventConfig.rewards;
   state.participants.forEach(p => {

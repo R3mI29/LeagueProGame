@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "savedAt": "2026-10-10T18:01:30.269Z",
-  "label": "Saison 1",
+  "savedAt": "2026-10-12T10:45:04.114Z",
+  "label": "Archive saison 1",
   "gameState": {
     "phase": "cards",
     "participants": [
       {
-        "id": "LUDLyx3b1isF0EWNAAAE",
-        "name": "Gen.G",
-        "tag": "GEN",
-        "logo": "/equipes/geng.webp",
+        "id": "z6QJ6BvIf_cL7jfNAAAB",
+        "name": "Invictus Gaming",
+        "tag": "IG",
+        "logo": "/equipes/invictus-gaming.webp",
         "roster": [],
         "isHost": true,
         "isDisconnected": false,
         "isBot": false
       },
       {
-        "id": "aFoIhjEmQ4EFW9vQAAAC",
+        "id": "VURnmlTq_MfpsQfRAAAF",
         "name": "Dplus KIA",
         "tag": "DK",
         "logo": "/equipes/dplus.webp",
         "roster": [],
         "isHost": false,
-        "isDisconnected": false,
-        "isBot": false
+        "isDisconnected": true,
+        "isBot": true
       }
     ],
     "bracket": [],
@@ -37,48 +37,48 @@
     "roundComplete": false,
     "roundReady": [],
     "cardCollections": {
-      "LUDLyx3b1isF0EWNAAAE": {
+      "VURnmlTq_MfpsQfRAAAF": {
+        "sen-rahel": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "sen-impact": "LIFETIME",
+        "C9-blaber": "LIFETIME",
+        "kt-effort": "LIFETIME"
+      },
+      "z6QJ6BvIf_cL7jfNAAAB": {
         "vit-hylissang": "LIFETIME",
         "dns-dudu": "LIFETIME",
         "frx-raptor": "LIFETIME",
         "DKC-sharvel": "LIFETIME",
         "DRX_ucal": "LIFETIME",
         "bro-teddy": "LIFETIME"
-      },
-      "aFoIhjEmQ4EFW9vQAAAC": {
-        "sen-rahel": "LIFETIME",
-        "DNS_clozer": "LIFETIME",
-        "sen-impact": "LIFETIME",
-        "C9-blaber": "LIFETIME",
-        "kt-effort": "LIFETIME"
       }
     },
     "activeLineups": {
-      "LUDLyx3b1isF0EWNAAAE": {},
-      "aFoIhjEmQ4EFW9vQAAAC": {}
+      "VURnmlTq_MfpsQfRAAAF": {},
+      "z6QJ6BvIf_cL7jfNAAAB": {}
     },
     "economy": {
-      "LUDLyx3b1isF0EWNAAAE": 100,
-      "aFoIhjEmQ4EFW9vQAAAC": 100
+      "VURnmlTq_MfpsQfRAAAF": 100,
+      "z6QJ6BvIf_cL7jfNAAAB": 100
     },
     "lockedCards": {
-      "LUDLyx3b1isF0EWNAAAE": [],
-      "aFoIhjEmQ4EFW9vQAAAC": []
+      "VURnmlTq_MfpsQfRAAAF": [],
+      "z6QJ6BvIf_cL7jfNAAAB": []
     },
     "cardStats": {},
     "globalSecrets": {},
     "pendingPacks": {
-      "LUDLyx3b1isF0EWNAAAE": 1,
-      "aFoIhjEmQ4EFW9vQAAAC": 1
+      "VURnmlTq_MfpsQfRAAAF": 1,
+      "z6QJ6BvIf_cL7jfNAAAB": 1
     },
     "pendingPackResults": {},
     "lastOpenedPack": {
-      "LUDLyx3b1isF0EWNAAAE": [],
-      "aFoIhjEmQ4EFW9vQAAAC": []
+      "VURnmlTq_MfpsQfRAAAF": [],
+      "z6QJ6BvIf_cL7jfNAAAB": []
     },
     "starterPackClaimed": {
-      "LUDLyx3b1isF0EWNAAAE": true,
-      "aFoIhjEmQ4EFW9vQAAAC": true
+      "VURnmlTq_MfpsQfRAAAF": true,
+      "z6QJ6BvIf_cL7jfNAAAB": true
     },
     "teamSkins": {},
     "seasonRound": 1,
@@ -88,16 +88,16 @@
     "history": [],
     "seasonScores": null,
     "endOfYearRecap": null,
-    "awaitingResumeDecision": false
+    "awaitingResumeDecision": true
   },
   "playerSessions": [
     {
-      "token": "1f06f2a5-c5ef-41db-8548-ff3ab5ea97f1",
-      "playerId": "LUDLyx3b1isF0EWNAAAE"
+      "token": "acde4155-6cfb-4ecf-85c0-1574c2118a10",
+      "playerId": "VURnmlTq_MfpsQfRAAAF"
     },
     {
-      "token": "7b72e95b-9752-4b2f-91c5-d8906e79bf43",
-      "playerId": "aFoIhjEmQ4EFW9vQAAAC"
+      "token": "e0b3ba39-34f0-4fb5-bf00-fef4ca2fd8dd",
+      "playerId": "z6QJ6BvIf_cL7jfNAAAB"
     }
   ]
 }

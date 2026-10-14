@@ -83,6 +83,7 @@ export function transferPlayerIdentity(gameState, oldId, newId) {
     gameState.pendingPackResults,
     gameState.teamSkins,
     gameState.seasonScores,
+    gameState.recentPlacements,
   ].forEach(map => transferMapEntry(map, oldId, newId));
 
   gameState.readyPlayers = replaceId(gameState.readyPlayers, oldId, newId);

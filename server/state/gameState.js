@@ -29,6 +29,7 @@ export function createInitialGameState(overrides = {}) {
     eventIndex: 0,
     history: [],
     seasonScores: null,
+    recentPlacements: {},
     endOfYearRecap: null,
     awaitingResumeDecision: false,
     ...overrides,
@@ -126,6 +127,7 @@ export function prepareNewGame(participants = state.participants) {
     state.starterPackClaimed[id] = false;
     state.economy[id] = 100;
     state.lockedCards[id] = [];
+    state.recentPlacements[id] = [];
   });
 
   return state;
