@@ -63,3 +63,12 @@ export const TEAMS_DB = [
   { name: "Weibo Gaming", tag: "WBG", logo: "/equipes/weibo.webp" },
   { name: "ZyB", tag: "ZYB", logo: "/equipes/zyb.webp" }
 ];
+
+// Prix de revente des cartes par rareté
+export const SELL_PRICES = {
+  'Commune': 5,
+  'Rare': 15,
+  'Épique': 100,
+  'Légendaire': 500,
+  'WANTED': 1400,
+};

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "savedAt": "2026-10-14T21:24:47.757Z",
-  "label": "Saison 2",
+  "savedAt": "2026-10-15T14:17:57.436Z",
+  "label": "Archive saison 2",
   "gameState": {
     "phase": "simulation",
     "participants": [
       {
-        "id": "1T-TR4KHr-sDRSZsAAAC",
+        "id": "Znp4RFLNEr8khIDEAAAB",
         "name": "Bilibili Gaming",
         "tag": "BLG",
         "logo": "/equipes/bilibili-gaming.webp",
@@ -1018,60 +1018,9 @@
           "dismissedBy": [],
           "scoreA": 1,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 4,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -1195,7 +1144,7 @@
             "isHost": false
           },
           "teamB": {
-            "id": "1T-TR4KHr-sDRSZsAAAC",
+            "id": "Znp4RFLNEr8khIDEAAAB",
             "name": "Bilibili Gaming",
             "tag": "BLG",
             "logo": "/equipes/bilibili-gaming.webp",
@@ -1248,56 +1197,16 @@
           "status": "finished",
           "ready": [
             "bot-3",
-            "1T-TR4KHr-sDRSZsAAAC"
+            "Znp4RFLNEr8khIDEAAAB"
           ],
           "dismissedBy": [
-            "1T-TR4KHr-sDRSZsAAAC"
+            "Znp4RFLNEr8khIDEAAAB"
           ],
           "scoreA": 0,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -1305,7 +1214,7 @@
           "pendingEvents": [],
           "winnerSidePending": null,
           "winner": {
-            "id": "1T-TR4KHr-sDRSZsAAAC",
+            "id": "Znp4RFLNEr8khIDEAAAB",
             "name": "Bilibili Gaming",
             "tag": "BLG",
             "logo": "/equipes/bilibili-gaming.webp",
@@ -1477,65 +1386,9 @@
           ],
           "scoreA": 0,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                  "side": "B",
-                  "ratingDelta": 16,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                  "side": "B",
-                  "ratingDelta": 16,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                  "side": "B",
-                  "ratingDelta": 16,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-              "side": "B",
-              "ratingDelta": 16,
-              "targetRoles": [
-                "Jungle"
-              ],
-              "persistentBO": false
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -1717,71 +1570,9 @@
           "dismissedBy": [],
           "scoreA": 3,
           "scoreB": 2,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 4,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 5,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -1968,71 +1759,9 @@
           "dismissedBy": [],
           "scoreA": 2,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 4,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 5,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -2219,90 +1948,9 @@
           "dismissedBy": [],
           "scoreA": 2,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "🧲 AIMANT À JUNGLER : 4 joueurs viennent tuer TheShy au top... son équipe récupère le Dragon, une T2 et le contrôle total de la carte !",
-                  "side": "B",
-                  "ratingDelta": 7,
-                  "targetRoles": [
-                    "ADC",
-                    "Mid",
-                    "Jungle",
-                    "Support"
-                  ]
-                },
-                {
-                  "label": null,
-                  "side": "B",
-                  "ratingDelta": -5,
-                  "targetRoles": [
-                    "Top"
-                  ]
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "La Bel'Veth R5 de Kanavi s'empare de toute la jungle adverse !",
-                  "side": "A",
-                  "ratingDelta": 15,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false,
-                  "image": "/champions/Belveth.jpg"
-                }
-              ]
-            },
-            {
-              "gameNumber": 4,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 5,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -2489,49 +2137,9 @@
           "dismissedBy": [],
           "scoreA": 0,
           "scoreB": 3,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "Phase de lane très tactique, les deux équipes s'observent...",
-              "side": null,
-              "ratingDelta": 0
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -2718,83 +2326,9 @@
           "dismissedBy": [],
           "scoreA": 3,
           "scoreB": 2,
-          "games": [
-            {
-              "gameNumber": 1,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 2,
-              "winnerSide": "B",
-              "events": [
-                {
-                  "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-                  "side": "B",
-                  "ratingDelta": 10,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false
-                }
-              ]
-            },
-            {
-              "gameNumber": 3,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 4,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                  "side": null,
-                  "ratingDelta": 0
-                }
-              ]
-            },
-            {
-              "gameNumber": 5,
-              "winnerSide": "A",
-              "events": [
-                {
-                  "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-                  "side": "B",
-                  "ratingDelta": 10,
-                  "targetRoles": [
-                    "Jungle"
-                  ],
-                  "persistentBO": false
-                }
-              ]
-            }
-          ],
+          "games": [],
           "waveActive": true,
-          "lastGameEvents": [
-            {
-              "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-              "side": "B",
-              "ratingDelta": 10,
-              "targetRoles": [
-                "Jungle"
-              ],
-              "persistentBO": false
-            }
-          ],
+          "lastGameEvents": [],
           "triggeredUniqueEvents": [],
           "boBuffA": 0,
           "boBuffB": 0,
@@ -2977,7 +2511,7 @@
             "isHost": false
           },
           {
-            "id": "1T-TR4KHr-sDRSZsAAAC",
+            "id": "Znp4RFLNEr8khIDEAAAB",
             "name": "Bilibili Gaming",
             "tag": "BLG",
             "logo": "/equipes/bilibili-gaming.webp",
@@ -3209,60 +2743,9 @@
             "dismissedBy": [],
             "scoreA": 1,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 4,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -3386,7 +2869,7 @@
               "isHost": false
             },
             "teamB": {
-              "id": "1T-TR4KHr-sDRSZsAAAC",
+              "id": "Znp4RFLNEr8khIDEAAAB",
               "name": "Bilibili Gaming",
               "tag": "BLG",
               "logo": "/equipes/bilibili-gaming.webp",
@@ -3439,54 +2922,14 @@
             "status": "finished",
             "ready": [
               "bot-3",
-              "1T-TR4KHr-sDRSZsAAAC"
+              "Znp4RFLNEr8khIDEAAAB"
             ],
             "dismissedBy": [],
             "scoreA": 0,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -3494,7 +2937,7 @@
             "pendingEvents": [],
             "winnerSidePending": null,
             "winner": {
-              "id": "1T-TR4KHr-sDRSZsAAAC",
+              "id": "Znp4RFLNEr8khIDEAAAB",
               "name": "Bilibili Gaming",
               "tag": "BLG",
               "logo": "/equipes/bilibili-gaming.webp",
@@ -3605,7 +3048,7 @@
               "isHost": false
             },
             "teamB": {
-              "id": "1T-TR4KHr-sDRSZsAAAC",
+              "id": "Znp4RFLNEr8khIDEAAAB",
               "name": "Bilibili Gaming",
               "tag": "BLG",
               "logo": "/equipes/bilibili-gaming.webp",
@@ -4148,65 +3591,9 @@
             ],
             "scoreA": 0,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                    "side": "B",
-                    "ratingDelta": 16,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                    "side": "B",
-                    "ratingDelta": 16,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                    "side": "B",
-                    "ratingDelta": 16,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +16)",
-                "side": "B",
-                "ratingDelta": 16,
-                "targetRoles": [
-                  "Jungle"
-                ],
-                "persistentBO": false
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -4388,71 +3775,9 @@
             "dismissedBy": [],
             "scoreA": 3,
             "scoreB": 2,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 4,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 5,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -5126,71 +4451,9 @@
             "dismissedBy": [],
             "scoreA": 2,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 4,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 5,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -5377,90 +4640,9 @@
             "dismissedBy": [],
             "scoreA": 2,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "🧲 AIMANT À JUNGLER : 4 joueurs viennent tuer TheShy au top... son équipe récupère le Dragon, une T2 et le contrôle total de la carte !",
-                    "side": "B",
-                    "ratingDelta": 7,
-                    "targetRoles": [
-                      "ADC",
-                      "Mid",
-                      "Jungle",
-                      "Support"
-                    ]
-                  },
-                  {
-                    "label": null,
-                    "side": "B",
-                    "ratingDelta": -5,
-                    "targetRoles": [
-                      "Top"
-                    ]
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "La Bel'Veth R5 de Kanavi s'empare de toute la jungle adverse !",
-                    "side": "A",
-                    "ratingDelta": 15,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false,
-                    "image": "/champions/Belveth.jpg"
-                  }
-                ]
-              },
-              {
-                "gameNumber": 4,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 5,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -6138,49 +5320,9 @@
             "dismissedBy": [],
             "scoreA": 0,
             "scoreB": 3,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                "side": null,
-                "ratingDelta": 0
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -6367,83 +5509,9 @@
             "dismissedBy": [],
             "scoreA": 3,
             "scoreB": 2,
-            "games": [
-              {
-                "gameNumber": 1,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 2,
-                "winnerSide": "B",
-                "events": [
-                  {
-                    "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-                    "side": "B",
-                    "ratingDelta": 10,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false
-                  }
-                ]
-              },
-              {
-                "gameNumber": 3,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 4,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "Phase de lane très tactique, les deux équipes s'observent...",
-                    "side": null,
-                    "ratingDelta": 0
-                  }
-                ]
-              },
-              {
-                "gameNumber": 5,
-                "winnerSide": "A",
-                "events": [
-                  {
-                    "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-                    "side": "B",
-                    "ratingDelta": 10,
-                    "targetRoles": [
-                      "Jungle"
-                    ],
-                    "persistentBO": false
-                  }
-                ]
-              }
-            ],
+            "games": [],
             "waveActive": true,
-            "lastGameEvents": [
-              {
-                "label": "NOOB STOMP : Canyon repère une faiblesse chez le Jungler adverse et l'exploite. (Buff personnel : +10)",
-                "side": "B",
-                "ratingDelta": 10,
-                "targetRoles": [
-                  "Jungle"
-                ],
-                "persistentBO": false
-              }
-            ],
+            "lastGameEvents": [],
             "triggeredUniqueEvents": [],
             "boBuffA": 0,
             "boBuffB": 0,
@@ -6913,7 +5981,7 @@
         "bin-FirstStand-2026": 1,
         "caps-msi-mvp": 9
       },
-      "1T-TR4KHr-sDRSZsAAAC": {
+      "Znp4RFLNEr8khIDEAAAB": {
         "frx-raptor": "LIFETIME",
         "gx-jun": "LIFETIME",
         "gx-odoamne": "LIFETIME",
@@ -7042,7 +6110,7 @@
         "Support": "keria-worlds-2023",
         "Jungle": "canyon-mvp-2020"
       },
-      "1T-TR4KHr-sDRSZsAAAC": {
+      "Znp4RFLNEr8khIDEAAAB": {
         "Top": "t1-zeus",
         "Mid": "faker-6x-champ",
         "Support": "missing-msi-2023",
@@ -7066,10 +6134,10 @@
       "bot-14": 0,
       "bot-15": 0,
       "9L1iBoPGqRJLr9oPAAAC": 2030,
-      "1T-TR4KHr-sDRSZsAAAC": 550
+      "Znp4RFLNEr8khIDEAAAB": 550
     },
     "lockedCards": {
-      "1T-TR4KHr-sDRSZsAAAC": [
+      "Znp4RFLNEr8khIDEAAAB": [
         "rookie-ig"
       ]
     },
@@ -7086,7 +6154,7 @@
         "keria-worlds-2023": 2,
         "canyon-mvp-2020": 2
       },
-      "1T-TR4KHr-sDRSZsAAAC": {
+      "Znp4RFLNEr8khIDEAAAB": {
         "gx-odoamne": 1,
         "frx-raptor": 3,
         "zeka-FST-mvp": 2,
@@ -7106,16 +6174,16 @@
     },
     "globalSecrets": {},
     "pendingPacks": {
-      "1T-TR4KHr-sDRSZsAAAC": 1
+      "Znp4RFLNEr8khIDEAAAB": 1
     },
     "pendingPackResults": {},
     "lastOpenedPack": {
       "9L1iBoPGqRJLr9oPAAAC": [],
-      "1T-TR4KHr-sDRSZsAAAC": []
+      "Znp4RFLNEr8khIDEAAAB": []
     },
     "starterPackClaimed": {
       "9L1iBoPGqRJLr9oPAAAC": true,
-      "1T-TR4KHr-sDRSZsAAAC": true
+      "Znp4RFLNEr8khIDEAAAB": true
     },
     "teamSkins": {
       "bot-2": {
@@ -7132,7 +6200,7 @@
         ],
         "equipped": "worlds-sovereign"
       },
-      "1T-TR4KHr-sDRSZsAAAC": {
+      "Znp4RFLNEr8khIDEAAAB": {
         "equipped": "gold-circuit"
       }
     },
@@ -7233,7 +6301,7 @@
         "points": 17,
         "titles": 3
       },
-      "1T-TR4KHr-sDRSZsAAAC": {
+      "Znp4RFLNEr8khIDEAAAB": {
         "points": 12,
         "titles": 2
       }
@@ -7329,7 +6397,7 @@
         "TOP1",
         "TOP1"
       ],
-      "1T-TR4KHr-sDRSZsAAAC": [
+      "Znp4RFLNEr8khIDEAAAB": [
         "TOP2",
         "N/A",
         "N/A",
@@ -7337,7 +6405,7 @@
       ]
     },
     "endOfYearRecap": null,
-    "awaitingResumeDecision": true
+    "awaitingResumeDecision": false
   },
   "playerSessions": [
     {
@@ -7345,8 +6413,8 @@
       "playerId": "9L1iBoPGqRJLr9oPAAAC"
     },
     {
-      "token": "ddba76cb-9b62-4ca8-96b5-92eb10da1a70",
-      "playerId": "1T-TR4KHr-sDRSZsAAAC"
+      "token": "8b43e3b7-4c99-49a8-a2f0-b4677d8a7d62",
+      "playerId": "Znp4RFLNEr8khIDEAAAB"
     }
   ]
 }

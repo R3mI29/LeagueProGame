@@ -62,11 +62,30 @@ export function isGameStateStable(gameState) {
 }
 
 export function createGameSnapshot(gameState, { label = null } = {}) {
+  const cloned = structuredClone(gameState);
+
+  // Nettoyer les données d'animation des matchs terminés pour alléger les saves
+  const allMatches = [
+    ...(cloned.bracket?.flat() || []),
+    ...(cloned.groups?.flatMap(g => g.matches) || []),
+  ].filter(Boolean);
+
+  for (const match of allMatches) {
+    if (match.status === 'finished') {
+      match.games = [];
+      match.currentEvents = [];
+      match.pendingEvents = [];
+      match.lastGameEvents = [];
+      match.triggeredUniqueEvents = [];
+      match.winnerSidePending = null;
+    }
+  }
+
   return {
     schemaVersion: SAVE_SCHEMA_VERSION,
     savedAt: new Date().toISOString(),
     label,
-    gameState: structuredClone(gameState),
+    gameState: cloned,
     playerSessions: exportPlayerSessions(
       gameState.participants.map(participant => participant.id),
     ),
