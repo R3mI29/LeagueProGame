@@ -1,7 +1,7 @@
 import { CARD_POOL } from './cardPlayers.js';
 
 // Équipes historiques considérées comme la même organisation (à ajuster)
-export const TEAM_ALIASES = { SKT: 'T1', DWG: 'DK' };
+export const TEAM_ALIASES = { SKT: 'T1', DWG: 'DK', KCB: 'KC' };
 
 // Bonus ajouté à la MOYENNE de l'équipe (en points de rating).
 // Les paliers sont volontairement faibles : voir la note sur la sensibilité plus bas.
