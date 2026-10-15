@@ -1210,7 +1210,7 @@ export const CARD_POOL = [
     "rarity": "Épique",
     "image": "/cardsImg/others/blg_viper_lpl.jpg",
     "nationality": "KR",
-    "teamTag": "EDG",
+    "teamTag": "BLG",
     "league": "LPL"
   },
   {

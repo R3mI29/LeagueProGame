@@ -21,6 +21,7 @@ import {
   startAllBotMatchesInCurrentRound,
   tryStartMatch,
 } from '../services/matchService.js';
+import { shuffleArray } from '../utils/random.js';
 
 export function registerTournamentHandlers(io, socket, {
   state = defaultState,
@@ -127,7 +128,7 @@ export function registerTournamentHandlers(io, socket, {
             activeTeams.forEach(t => { const key = `${t.wins}-${t.losses}`; if (!pools[key]) pools[key] = []; pools[key].push(t); });
             for (const poolKey in pools) {
               const poolMatches = nextMatches.filter(m => m.pool === poolKey);
-              const teamsInPool = pools[poolKey].sort(() => 0.5 - Math.random());
+              const teamsInPool = shuffleArray(pools[poolKey]);
               for (let i = 0; i < poolMatches.length; i++) { poolMatches[i].teamA = teamsInPool[i*2].team; poolMatches[i].teamB = teamsInPool[i*2+1].team; }
             }
           }

@@ -4,6 +4,7 @@ import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
+import { shuffleArray, seedTeams } from '../utils/random.js';
 
 // Barème de rattrapage sur les 4 derniers tournois (Max = 4 x 100$= 400$)
 const CATCHUP_VALUES = {
@@ -151,13 +152,18 @@ export function startCurrentEvent(io) {
   state.readyPlayers = []; 
   state.roundComplete = false; 
 
-  const shuffledTeams = [...state.participants].sort(() => 0.5 - Math.random());
-
   if (currentEvent.format === 'gsl_to_single') {
     state.tournamentPhase = 'groups';
     state.groups = [];
+
+    const seeded = seedTeams(state.participants, state.seasonScores);
+    const pot1 = shuffleArray(seeded.slice(0, 4));
+    const pot2 = shuffleArray(seeded.slice(4, 8));
+    const pot3 = shuffleArray(seeded.slice(8, 12));
+    const pot4 = shuffleArray(seeded.slice(12, 16));
+
     for (let i = 0; i < 4; i++) {
-      const groupTeams = shuffledTeams.slice(i * 4, i * 4 + 4);
+      const groupTeams = [pot1[i], pot2[i], pot3[i], pot4[i]];
       state.groups.push({
         id: String.fromCharCode(65 + i),
         teams: groupTeams, qualified: [],
@@ -185,7 +191,7 @@ export function startCurrentEvent(io) {
     const r3 = [...Array(3).fill(null).map((_, i) => createMatch(`sw4-w${i+1}`, '2-1')), ...Array(3).fill(null).map((_, i) => createMatch(`sw4-l${i+1}`, '1-2'))];
     const r4 = Array(3).fill(null).map((_, i) => createMatch(`sw5-m${i+1}`, '2-2'));
 
-    const shuffled = [...state.participants].sort(() => 0.5 - Math.random());
+    const shuffled = shuffleArray(state.participants);
     for (let i = 0; i < 8; i++) {
       r0[i].teamA = shuffled[i*2]; r0[i].teamB = shuffled[i*2+1];
     }
@@ -198,7 +204,10 @@ export function startCurrentEvent(io) {
     });
     const r0 = [], r1 = [], r2 = [], r3 = [], r4 = [], r5 = [], r6 = [], r7 = [];
 
-    for (let i = 0; i < 8; i++) r0.push(createMatch(`ub1-${i+1}`, shuffledTeams[i*2], shuffledTeams[i*2+1], `ub2-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB', `lb1-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB'));
+    const seededTeams = seedTeams(state.participants, state.seasonScores);
+    for (let i = 0; i < 8; i++) {
+      r0.push(createMatch(`ub1-${i+1}`, seededTeams[i], seededTeams[15 - i], `ub2-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB', `lb1-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB'));
+    }
     r1.push(createMatch(`ub2-1`, null, null, `ub3-1`, 'teamA', `lb2-4`, 'teamA')); r1.push(createMatch(`ub2-2`, null, null, `ub3-1`, 'teamB', `lb2-3`, 'teamA')); r1.push(createMatch(`ub2-3`, null, null, `ub3-2`, 'teamA', `lb2-2`, 'teamA')); r1.push(createMatch(`ub2-4`, null, null, `ub3-2`, 'teamB', `lb2-1`, 'teamA'));
     for (let i = 0; i < 4; i++) r1.push(createMatch(`lb1-${i+1}`, null, null, `lb2-${i+1}`, 'teamB'));
     r2.push(createMatch(`ub3-1`, null, null, `ub4-1`, 'teamA', `lb4-2`, 'teamA')); r2.push(createMatch(`ub3-2`, null, null, `ub4-1`, 'teamB', `lb4-1`, 'teamA'));
