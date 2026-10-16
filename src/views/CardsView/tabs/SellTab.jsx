@@ -53,7 +53,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
         <h2 className="font-['Oswald'] text-[36px] m-0 mb-2.5 text-white">
           MARCHÉ DES TRANSFERTS
         </h2>
-        <p className="text-[#768196] text-[16px] max-w-2xl mx-auto">
+        <p className="text-text-faint text-[16px] max-w-2xl mx-auto">
           Revendez définitivement des joueurs qui ne figurent pas dans votre équipe titulaire pour récupérer des crédits. 
           <strong className="text-white"> Utilisez le cadenas pour protéger vos cartes préférées.</strong>
         </p>
@@ -98,7 +98,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
               <button
                 onClick={() => socket.emit('toggle-lock-card', cardId)}
                 className={`absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center text-xl transition-all shadow-lg z-10 border-2 cursor-pointer
-                  ${isLocked ? 'bg-[#11141E] border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black' : 'bg-[#11141E] border-[#444] text-[#768196] hover:border-white hover:text-white'}
+                  ${isLocked ? 'bg-[#11141E] border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black' : 'bg-[#11141E] border-[#444] text-text-faint hover:border-white hover:text-white'}
                 `}
               >
                 {isLocked ? '🔒' : '🔓'}
@@ -106,7 +106,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
 
               <CardIllustration card={card} width={140} />
               
-              <div className="text-xs text-[#768196] font-bold mt-2">
+              <div className="text-xs text-text-faint font-bold mt-2">
                 CONTRAT: {contract} TRN
               </div>
               
@@ -125,7 +125,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
         })}
         
         {sellableCards.length === 0 && (
-          <div className="w-full text-center text-[#768196] p-10 italic bg-[#11141E] rounded-lg border border-[#222838]">
+          <div className="w-full text-center text-text-faint p-10 italic bg-[#11141E] rounded-lg border border-[#222838]">
             Aucun joueur disponible à la vente.<br/>
             (Les joueurs de votre équipe titulaire et ceux sous contrat À VIE sont protégés par défaut).
           </div>

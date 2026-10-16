@@ -114,7 +114,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, isSp
                   alt={`logo ${side}`}
                 />
               ) : (
-                <div className="w-[60px] h-[60px] bg-[#2B3040] rounded-xl" />
+                <div className="w-[60px] h-[60px] bg-border rounded-xl" />
               )}
               <span className="text-[26px]">{team.name}</span>
             </div>

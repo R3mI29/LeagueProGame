@@ -66,7 +66,7 @@ export default function DoubleElimView({ state, event }) {
                     {match.teamA?.logo ? (
                       <img src={match.teamA.logo} alt="" className="object-contain drop-shadow-[0_1px_4px_rgba(255,255,255,0.25)]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
                     ) : (
-                      <div className="bg-[#2B3040]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                      <div className="bg-border" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
                     )}
                     <span style={{ fontSize: isFinal ? '18px' : '15px', color: teamAStyle.color, fontWeight: teamAStyle.weight }}>{match.teamA ? match.teamA.tag : 'TBD'}</span>
                 </div>
@@ -81,7 +81,7 @@ export default function DoubleElimView({ state, event }) {
                     {match.teamB?.logo ? (
                       <img src={match.teamB.logo} alt="" className="object-contain drop-shadow-[0_1px_4px_rgba(255,255,255,0.25)]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
                     ) : (
-                      <div className="bg-[#2B3040]" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
+                      <div className="bg-border" style={{ width: isFinal ? '36px' : '28px', height: isFinal ? '36px' : '28px' }} />
                     )}
                     <span style={{ fontSize: isFinal ? '18px' : '15px', color: teamBStyle.color, fontWeight: teamBStyle.weight }}>{match.teamB ? match.teamB.tag : 'TBD'}</span>
                 </div>

@@ -114,7 +114,7 @@ export default function GameManagementOverlay({ socket, state }) {
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="rounded-lg border border-[#4C60D2] bg-[#11141E]/95 px-4 py-2 text-xs font-bold tracking-wider text-[#AAB8F5] uppercase backdrop-blur"
+              className="rounded-lg border border-accent-blue bg-[#11141E]/95 px-4 py-2 text-xs font-bold tracking-wider text-[#AAB8F5] uppercase backdrop-blur"
             >
               Gérer la partie
             </button>
@@ -131,7 +131,7 @@ export default function GameManagementOverlay({ socket, state }) {
 
       {visible && (
         <div className="fixed inset-0 z-[20000] flex items-center justify-center overflow-y-auto bg-[#05070D]/95 p-5 font-sans backdrop-blur-xl">
-          <div className="w-full max-w-[900px] rounded-2xl border border-[#2B3040] bg-[#11141E] p-7 shadow-[0_25px_80px_rgba(0,0,0,0.7)]">
+          <div className="w-full max-w-[900px] rounded-2xl border border-border bg-[#11141E] p-7 shadow-[0_25px_80px_rgba(0,0,0,0.7)]">
             {!isHost ? (
               <div className="py-12 text-center">
                 <h2 className="font-rajdhani text-3xl font-bold text-white uppercase">
@@ -145,7 +145,7 @@ export default function GameManagementOverlay({ socket, state }) {
               <>
                 <div className="mb-7 flex items-start justify-between gap-5">
                   <div>
-                    <p className="mb-2 text-xs font-bold tracking-[3px] text-[#8C9AD6] uppercase">
+                    <p className="mb-2 text-xs font-bold tracking-[3px] text-accent-blue-light uppercase">
                       Contrôle de l’hôte
                     </p>
                     <h2 className="m-0 font-rajdhani text-4xl font-bold text-white uppercase">
@@ -159,7 +159,7 @@ export default function GameManagementOverlay({ socket, state }) {
                     <button
                       type="button"
                       onClick={() => setOpen(false)}
-                      className="rounded-lg border border-[#2B3040] px-4 py-2 text-sm text-[#8B9BB4]"
+                      className="rounded-lg border border-border px-4 py-2 text-sm text-[#8B9BB4]"
                     >
                       Fermer
                     </button>
@@ -171,13 +171,13 @@ export default function GameManagementOverlay({ socket, state }) {
                     type="button"
                     disabled={busy}
                     onClick={resume}
-                    className="mb-7 w-full rounded-xl bg-[#4C60D2] px-6 py-4 font-bold tracking-wider text-white uppercase disabled:opacity-50"
+                    className="mb-7 w-full rounded-xl bg-accent-blue px-6 py-4 font-bold tracking-wider text-white uppercase disabled:opacity-50"
                   >
                     Continuer la partie actuelle
                   </button>
                 )}
 
-                <div className="mb-7 rounded-xl border border-[#2B3040] bg-[#0A0D14] p-5">
+                <div className="mb-7 rounded-xl border border-border bg-bg-dark p-5">
                   <h3 className="m-0 mb-3 font-rajdhani text-lg font-bold text-white uppercase">
                     Créer une sauvegarde nommée
                   </h3>
@@ -186,13 +186,13 @@ export default function GameManagementOverlay({ socket, state }) {
                       value={saveName}
                       onChange={event => setSaveName(event.target.value)}
                       placeholder={`Saison ${state.year || 1}`}
-                      className="min-w-0 flex-1 rounded-lg border border-[#2B3040] bg-[#151923] px-4 py-3 text-white outline-none focus:border-[#4C60D2]"
+                      className="min-w-0 flex-1 rounded-lg border border-border bg-bg-card px-4 py-3 text-white outline-none focus:border-accent-blue"
                     />
                     <button
                       type="button"
                       disabled={busy}
                       onClick={saveCopy}
-                      className="rounded-lg border border-[#4C60D2] px-5 py-3 text-sm font-bold text-[#AAB8F5] disabled:opacity-50"
+                      className="rounded-lg border border-accent-blue px-5 py-3 text-sm font-bold text-[#AAB8F5] disabled:opacity-50"
                     >
                       Sauvegarder une copie
                     </button>
@@ -207,7 +207,7 @@ export default function GameManagementOverlay({ socket, state }) {
                     <button
                       type="button"
                       onClick={refreshSaves}
-                      className="text-xs font-bold tracking-wider text-[#8C9AD6] uppercase"
+                      className="text-xs font-bold tracking-wider text-accent-blue-light uppercase"
                     >
                       Actualiser
                     </button>
@@ -216,14 +216,14 @@ export default function GameManagementOverlay({ socket, state }) {
                     {saves.map(save => (
                       <div
                         key={save.id}
-                        className="flex items-center justify-between gap-4 rounded-lg border border-[#222838] bg-[#0A0D14] p-4"
+                        className="flex items-center justify-between gap-4 rounded-lg border border-[#222838] bg-bg-dark p-4"
                       >
                         <div className="min-w-0">
                           <div className="truncate font-semibold text-white">
                             {/* Modification ici : On affiche le label, SINON on affiche le nom du fichier (save.id) sans l'extension .json */}
                             {save.label || save.id.replace('.json', '')} 
                           </div>
-                          <div className="mt-1 text-xs text-[#768196]">
+                          <div className="mt-1 text-xs text-text-faint">
                             {save.players?.length > 0 ? save.players.join(', ') : 'Aucun joueur'} · {new Date(save.savedAt).toLocaleString()} · Année {save.year} · {save.phase}
                           </div>
                         </div>
@@ -232,7 +232,7 @@ export default function GameManagementOverlay({ socket, state }) {
                             type="button"
                             disabled={busy}
                             onClick={() => loadSave(save.id)}
-                            className="rounded-lg bg-[#1C212E] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[#2B3040] disabled:opacity-50"
+                            className="rounded-lg bg-bg-hover px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-border disabled:opacity-50"
                           >
                             Charger
                           </button>
@@ -249,7 +249,7 @@ export default function GameManagementOverlay({ socket, state }) {
                       </div>
                     ))}
                     {saves.length === 0 && (
-                      <div className="rounded-lg border border-dashed border-[#2B3040] p-6 text-center text-sm text-[#768196]">
+                      <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-text-faint">
                         Aucune archive enregistrée.
                       </div>
                     )}
@@ -282,7 +282,7 @@ export default function GameManagementOverlay({ socket, state }) {
                         <button
                           type="button"
                           onClick={() => setConfirmNewGame(false)}
-                          className="rounded-lg border border-[#2B3040] px-5 py-3 text-sm text-[#8B9BB4]"
+                          className="rounded-lg border border-border px-5 py-3 text-sm text-[#8B9BB4]"
                         >
                           Annuler
                         </button>

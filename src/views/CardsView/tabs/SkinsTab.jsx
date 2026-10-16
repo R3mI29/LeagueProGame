@@ -17,7 +17,7 @@ export default function SkinsTab({ state, myId }) {
     <div className="animate-[fadeIn_0.3s]">
       <div className="mb-8 flex items-end justify-between">
         <h2 className="m-0 font-['Oswald'] text-[24px] tracking-[0.5px] text-white">CASIER DE SKINS</h2>
-        <div className="text-sm text-[#768196]">
+        <div className="text-sm text-text-faint">
           {ownedSkins.length} / {SKINS.length} skin{ownedSkins.length > 1 ? 's' : ''} débloqué{ownedSkins.length > 1 ? 's' : ''} · Personnalise le cadre de ton équipe en match
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function SkinsTab({ state, myId }) {
                     <div className="flex h-[46px] w-[46px] items-center justify-center rounded-full border border-[#222838] bg-[#131722] text-xl shadow-md">
                       🔒
                     </div>
-                    <div className="text-[11px] font-bold uppercase tracking-[1.5px] text-[#768196]">
+                    <div className="text-[11px] font-bold uppercase tracking-[1.5px] text-text-faint">
                       Indice d'obtention
                     </div>
                     <div className="max-w-[210px] rounded bg-[#141824] border border-[#222838] px-3 py-1.5 text-xs font-medium text-[#D4AF37]">
@@ -51,13 +51,13 @@ export default function SkinsTab({ state, myId }) {
 
                 <div className="flex items-center justify-between gap-3 opacity-60">
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-[#768196]">???</div>
+                    <div className="truncate text-sm font-semibold text-text-faint">???</div>
                     <div className="text-[11px] font-bold uppercase tracking-[1px] text-[#4A5265]">
                       MYSTÈRE
                     </div>
                   </div>
 
-                  <span className="shrink-0 rounded border border-[#222838] bg-[#11141E] px-3 py-1.5 text-xs font-bold text-[#768196]">
+                  <span className="shrink-0 rounded border border-[#222838] bg-[#11141E] px-3 py-1.5 text-xs font-bold text-text-faint">
                     VERROUILLÉ
                   </span>
                 </div>
@@ -76,7 +76,7 @@ export default function SkinsTab({ state, myId }) {
                   {me?.logo ? (
                     <img src={me.logo} alt="" className="h-[48px] w-[48px] object-contain" />
                   ) : (
-                    <div className="h-[48px] w-[48px] rounded-xl bg-[#2B3040]" />
+                    <div className="h-[48px] w-[48px] rounded-xl bg-border" />
                   )}
                   <div className="font-rajdhani text-lg uppercase text-white">{me?.name || 'Mon équipe'}</div>
                   <div className="flex gap-1.5">

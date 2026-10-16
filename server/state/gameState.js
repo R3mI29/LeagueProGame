@@ -38,6 +38,12 @@ export function createInitialGameState(overrides = {}) {
 
 export const state = createInitialGameState();
 
+/**
+ * Snapshot de l'état initial sans objets partagés — à utiliser comme valeur
+ * de départ côté client (useDraftSocket) pour rester synchronisé avec le serveur.
+ */
+export const INITIAL_CLIENT_STATE = createInitialGameState();
+
 const gameTimeouts = new Map();
 
 export function scheduleGameTimeout(key, callback, delay) {

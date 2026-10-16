@@ -122,6 +122,7 @@ export function registerLobbyHandlers(io, socket, {
         state.pendingPackResults,
         state.teamSkins,
         state.seasonScores,
+        state.recentPlacements,
       ].forEach(map => {
         if (map) delete map[player.id];
       });

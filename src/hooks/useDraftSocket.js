@@ -1,24 +1,14 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../api/socket';
 import { clearPlayerSessionToken, getPlayerSessionToken } from '../api/playerSession';
-
-const INITIAL_STATE = {
-  phase: 'lobby', participants: [], bracket: [], groups: null, swissTeams: null,
-  tournamentPhase: null, readyPlayers: [], resetPlayers: [], champion: null,
-  currentRound: 0, roundComplete: false, roundReady: [],
-  cardCollections: {}, activeLineups: {}, pendingPacks: {}, pendingPackResults: {},
-  lastOpenedPack: {}, starterPackClaimed: {}, economy: {}, lockedCards: {},
-  cardStats: {}, globalSecrets: {}, teamSkins: {}, seasonScores: null,
-  seasonRound: 0, continueSeasonVotes: [], year: 1, eventIndex: 0, history: [],
-  endOfYearRecap: null, awaitingResumeDecision: false,
-};
+import { createInitialClientState } from '../constants/initialState';
 
 /**
  * Encapsule la connexion socket et expose l'état du jeu ainsi que
  * tous les émetteurs d'événements utilisés par les vues.
  */
 export function useDraftSocket() {
-  const [state, setState] = useState(INITIAL_STATE);
+  const [state, setState] = useState(createInitialClientState);
 
   useEffect(() => {
     const handleUpdate = (newState) => {
