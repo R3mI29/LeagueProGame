@@ -205,6 +205,7 @@ export default function App() {
     if (state.phase === 'season_hub') return <SeasonHub state={state} />;
     if (state.phase === 'cards') return <CardsView state={state} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
 
+    const currentEvent = EVENTS[state.eventIndex || 0];
     const myActiveMatch = getMyActiveMatch(state, socket.id);
 
     if (spectatedMatch && !myActiveMatch) {
@@ -218,13 +219,13 @@ export default function App() {
               ⬅ QUITTER SPECTATEUR
             </button>
           </div>
-          <ArenaView match={spectatedMatch} matchReady={() => {}} dismissMatch={() => setSpectatedMatchId(null)} state={state} isSpectator={true} />
+          <ArenaView match={spectatedMatch} matchReady={() => {}} dismissMatch={() => setSpectatedMatchId(null)} state={state} event={currentEvent} isSpectator={true} />
         </div>
       );
     }
 
     if (myActiveMatch) {
-      return <ArenaView match={myActiveMatch} matchReady={draft.matchReady} dismissMatch={draft.dismissMatch} state={state} />;
+      return <ArenaView match={myActiveMatch} matchReady={draft.matchReady} dismissMatch={draft.dismissMatch} state={state} event={currentEvent} />;
     }
 
     if (isTournamentPhase(state)) {

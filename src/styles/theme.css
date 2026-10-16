@@ -81,6 +81,9 @@ body {
   filter: contrast(200%) blur(10px);
 }
 
+
+@keyframes skillPopIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 /* === Cinématique secret === */
 @keyframes su-fade-in  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes su-fade-out { from { opacity: 1; } to { opacity: 0; } }
