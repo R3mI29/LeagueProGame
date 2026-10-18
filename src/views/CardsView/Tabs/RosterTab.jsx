@@ -6,10 +6,35 @@ import CardIllustration from '../../../components/CardIllustration';
 import SynergyGauges from '../../../components/SynergyGauges';
 import { computeSynergy } from '../../../constants/synergy';
 
-export default function RosterTab({ state, myId, isReady, myLineup, myCollection, myEconomy, getDynamicCard, setActiveTab, setLineupCard, toggleLineupReady, lineupComplete, teamPower }) {
+const CATCHUP_VALUES = {
+  'N/A': 100,
+  'TOP8': 50,
+  'TOP4': 25,
+  'TOP2': 0,
+  'TOP1': 0
+};
+
+export default function RosterTab({ 
+  state, 
+  myId, 
+  isReady, 
+  myLineup, 
+  myCollection, 
+  myEconomy, 
+  getDynamicCard, 
+  setActiveTab, 
+  setLineupCard, 
+  toggleLineupReady, 
+  lineupComplete, 
+  teamPower 
+}) {
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
   const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
   const synergy = computeSynergy(ORDERED_ROLES.map(r => myLineup[r]).filter(Boolean));
+
+  // Récupération sécurisée de l'historique des 4 derniers tournois
+  const myHistory = state?.recentPlacements?.[myId] || [];
+  const currentCatchupBonus = myHistory.reduce((total, res) => total + (CATCHUP_VALUES[res] || 0), 0);
 
   return (
     <div className="grid grid-cols-[1fr_380px] gap-8 animate-[fadeIn_0.3s]">
@@ -17,7 +42,7 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
       <div className="bg-[#11141E] border border-[#222838] rounded-lg p-8 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-['Oswald'] m-0 text-white text-[24px] tracking-[0.5px]">DRAFT D'ÉQUIPE</h2>
-          <div className="text-sm text-[#768196]">SÉLECTIONNEZ VOS 5 TITULAIRES</div>
+          <div className="text-sm text-text-faint">SÉLECTIONNEZ VOS 5 TITULAIRES</div>
         </div>
         
         {/* Barre de sélection des rôles */}
@@ -28,10 +53,10 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
               <button 
                 key={role} 
                 onClick={() => !isReady && setActiveRole(role)}
-                className={`flex-1 p-[12px_8px] rounded border-none flex flex-col items-center transition-colors ${activeRole === role ? 'bg-[#1A1E2C] text-white' : 'bg-transparent text-[#768196]'} ${isReady ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`flex-1 p-[12px_8px] rounded border-none flex flex-col items-center transition-colors ${activeRole === role ? 'bg-[#1A1E2C] text-white' : 'bg-transparent text-text-faint'} ${isReady ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <span className="text-[11px] font-semibold tracking-[1px] uppercase mb-1">{role}</span>
-                <span className={`text-[13px] ${selectedCard ? 'text-[#D4AF37] font-semibold' : 'text-[#768196] font-normal'}`}>
+                <span className={`text-[13px] ${selectedCard ? 'text-[#D4AF37] font-semibold' : 'text-text-faint font-normal'}`}>
                   {selectedCard ? selectedCard.baseName : 'Non assigné'}
                 </span>
               </button>
@@ -42,7 +67,7 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
         {/* Grille des cartes possédées pour le rôle sélectionné */}
         <div className="flex gap-5 flex-wrap min-h-[300px]">
           {ownedCardsForRole(activeRole).length === 0 ? (
-            <div className="w-full flex items-center justify-center text-[#768196] italic">Aucun joueur disponible pour le poste de {activeRole}.</div>
+            <div className="w-full flex items-center justify-center text-text-faint italic">Aucun joueur disponible pour le poste de {activeRole}.</div>
           ) : (
             ownedCardsForRole(activeRole).map(baseCard => {
               const card = getDynamicCard(baseCard.id); 
@@ -70,7 +95,7 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
                       boxShadow: `0 4px 15px ${isLifetime ? 'rgba(212, 175, 55, 0.4)' : 'rgba(0,0,0,0.6)'}`
                     }}
                   >
-                    {isLifetime ? '♾️️ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span className="text-[11px] opacity-80">✍️️</span> {contract} TRN</>}
+                    {isLifetime ? '♾ À VIE' : isExpired ? '⚠️ EXPIRÉ' : <><span className="text-[11px] opacity-80">✍</span> {contract} TRN</>}
                   </div>
                 </div>
               );
@@ -82,8 +107,8 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
       {/* Barre Latérale : Statistiques et Trésorerie */}
       <div className="flex flex-col gap-6">
         <div className="bg-[#11141E] border border-[#222838] rounded-lg p-8 text-center">
-          <div className="text-[11px] text-[#768196] tracking-[2px] uppercase mb-2">Moyenne d'Équipe</div>
-          <div className={`text-[56px] font-['Oswald'] font-semibold ${teamPower > 0 ? 'text-[#D4AF37]' : 'text-[#768196]'}`}>
+          <div className="text-[11px] text-text-faint tracking-[2px] uppercase mb-2">Moyenne d'Équipe</div>
+          <div className={`text-[56px] font-['Oswald'] font-semibold ${teamPower > 0 ? 'text-[#D4AF37]' : 'text-text-faint'}`}>
             {teamPower > 0 ? Math.round(teamPower) : '-'}
           </div>
           {synergy.bonus > 0 && (
@@ -92,13 +117,41 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
         </div>
 
         <SynergyGauges synergy={synergy} />
-        
 
         <div className="bg-[#131621] border border-[#222838] rounded-lg p-6 text-center">
           <h3 className="m-0 mb-4 font-['Oswald'] text-white text-[18px] font-medium tracking-[0.5px]">TRÉSORERIE</h3>
-          <div className="text-[24px] font-bold text-[#00e676] mb-5">
+          <div className="text-[24px] font-bold text-[#00e676] mb-4">
             {myEconomy} 💲 CRÉDITS
           </div>
+
+          {/* Historique des 4 derniers tournois (Système de rattrapage) */}
+          <div className="mb-5 bg-[#0C0E14] p-3 rounded border border-[#1F2433]">
+            <div className="text-[10px] text-text-faint uppercase tracking-[1px] mb-2">
+              4 Derniers Tournois (Rattrapage)
+            </div>
+            <div className="flex justify-center gap-2 mb-2">
+              {[0, 1, 2, 3].map(idx => {
+                const res = myHistory[idx] || '-';
+                const isNA = res === 'N/A';
+                return (
+                  <span 
+                    key={idx} 
+                    className={`px-2.5 py-1 rounded text-xs font-bold ${
+                      isNA ? 'bg-[#ff3366]/20 text-[#ff3366] border border-[#ff3366]/40' 
+                      : res === '-' ? 'bg-[#1A1E2C] text-text-faint' 
+                      : 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/40'
+                    }`}
+                  >
+                    {res}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="text-[11px] text-text-faint">
+              Bonus actuel : <span className="text-[#00e676] font-bold">+{currentCatchupBonus} 💲</span>
+            </div>
+          </div>
+
           <button 
             onClick={() => !isReady && setActiveTab('shop')} 
             disabled={isReady}
@@ -111,7 +164,7 @@ export default function RosterTab({ state, myId, isReady, myLineup, myCollection
         <button 
           onClick={toggleLineupReady} 
           disabled={!lineupComplete && !isReady} 
-          className={`border-none p-5 rounded-lg text-[15px] font-bold transition-all duration-200 uppercase tracking-[1px] ${(!lineupComplete && !isReady) ? 'cursor-not-allowed' : 'cursor-pointer'} ${isReady ? 'bg-[#D4AF37] text-black' : lineupComplete ? 'bg-white text-black' : 'bg-[#1F2433] text-[#768196]'}`}
+          className={`border-none p-5 rounded-lg text-[15px] font-bold transition-all duration-200 uppercase tracking-[1px] ${(!lineupComplete && !isReady) ? 'cursor-not-allowed' : 'cursor-pointer'} ${isReady ? 'bg-[#D4AF37] text-black' : lineupComplete ? 'bg-white text-black' : 'bg-[#1F2433] text-text-faint'}`}
         >
           {isReady ? 'ROSTER VERROUILLÉ ✓' : lineupComplete ? 'VALIDER LE ROSTER' : 'ROSTER INCOMPLET'}
         </button>

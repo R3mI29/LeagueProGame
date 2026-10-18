@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "server": "node server/index.js",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test server/state/gameState.test.js server/services/matchService.test.js server/services/playerSessionService.test.js server/services/gamePersistenceService.test.js server/services/tournamentService.test.js server/handlers/socketHandlers.test.js"
   },
   "dependencies": {
     "cors": "^2.8.6",

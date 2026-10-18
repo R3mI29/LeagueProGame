@@ -1,11 +1,12 @@
 import { getSkin } from '../constants/teamSkins';
 
-const CORNERS = [
-  'top-2.5 left-2.5 border-t-2 border-l-2',
-  'top-2.5 right-2.5 border-t-2 border-r-2',
-  'bottom-2.5 left-2.5 border-b-2 border-l-2',
-  'bottom-2.5 right-2.5 border-b-2 border-r-2',
-];
+const MONO = { dark: 'brightness(0)', light: 'brightness(0) invert(1)' };
+const hideOnError = (e) => { e.currentTarget.style.display = 'none'; };
+
+const TAG_POS = {
+  tl: { box: 'left-0 top-0 pl-4 pr-11', clip: 'polygon(0 0, 100% 0, calc(100% - 18px) 100%, 0 100%)', line: 'bottom-0' },
+  br: { box: 'right-0 bottom-0 pl-11 pr-4', clip: 'polygon(18px 0, 100% 0, 100% 100%, 0 100%)', line: 'top-0' },
+};
 
 export default function TeamSkinFrame({ skinId, highlight = false, className = '', children }) {
   const skin = getSkin(skinId);
@@ -17,22 +18,6 @@ export default function TeamSkinFrame({ skinId, highlight = false, className = '
       className={`relative overflow-hidden rounded-xl border border-white/15 bg-bg-panel shadow-[0_10px_30px_rgba(0,0,0,0.5)] ${className}`}
       style={skin.frame || undefined}
     >
-      {/* Logo en filigrane, légèrement rogné en bas à droite */}
-      {decor?.logo?.src && (
-        <img
-          src={decor.logo.src}
-          alt=""
-          aria-hidden="true"
-          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          className="pointer-events-none absolute -bottom-6 -right-6 -rotate-6 select-none object-contain"
-          style={{
-            width: decor.logo.size ?? '65%',
-            opacity: decor.logo.opacity ?? 0.12,
-            filter: decor.logo.mono ? 'brightness(0) invert(1)' : undefined,
-          }}
-        />
-      )}
-
       {/* Effets animés (keyframes dans theme.css) */}
       {fx?.type === 'sweep' && (
         <div
@@ -47,26 +32,30 @@ export default function TeamSkinFrame({ skinId, highlight = false, className = '
         />
       )}
 
-      {/* Liseré dégradé en haut */}
-      {decor?.topLine && (
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[3px]"
-          style={{ background: `linear-gradient(90deg, ${decor.topLine[0]}, ${decor.topLine[1]}, ${decor.topLine[0]})` }}
-        />
-      )}
+      {/* Étiquettes à coin biseauté (logo + soulignement) */}
+      {decor?.tags?.map((tag, i) => {
+        const pos = TAG_POS[tag.pos || 'tl'];
+        return (
+          <div
+            key={i}
+            className={`pointer-events-none absolute z-[3] flex h-[46px] items-center ${pos.box}`}
+            style={{ background: tag.bg ?? '#0a0a0a', clipPath: pos.clip }}
+          >
+            <img
+              src={tag.src}
+              alt=""
+              onError={hideOnError}
+              className="h-7 w-auto object-contain"
+              style={{ filter: MONO[tag.mono] }}
+            />
+            {tag.accent && (
+              <span className={`absolute inset-x-0 h-[3px] ${pos.line}`} style={{ background: tag.accent }} />
+            )}
+          </div>
+        );
+      })}
 
-      {/* Équerres aux 4 coins */}
-      {decor?.corners && CORNERS.map(pos => (
-        <span
-          key={pos}
-          className={`pointer-events-none absolute z-[2] h-4 w-4 ${pos}`}
-          style={{ borderColor: decor.corners }}
-        />
-      ))}
-
-      {highlight && (
-        <div className={`absolute inset-x-0 z-[2] h-[3px] bg-accent-cyan ${decor?.topLine ? 'top-[3px]' : 'top-0'}`} />
-      )}
+      {highlight && <div className="absolute inset-x-0 top-0 z-[2] h-[3px] bg-accent-cyan" />}
       <div className="relative z-[1]">{children}</div>
     </div>
   );

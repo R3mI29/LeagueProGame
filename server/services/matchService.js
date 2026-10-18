@@ -1,4 +1,4 @@
-import { state, matchTimeouts } from '../state/gameState.js';
+import { scheduleMatchTimeout, state } from '../state/gameState.js';
 import { GAMES_TO_WIN, SIMULATION_DELAYS } from '../config/constants.js';
 import { CUSTOM_CARD_EVENTS } from '../../src/constants/cardEvents.js';
 import { SECRET_UNLOCKS } from '../../src/constants/secretUnlocks.js';
@@ -17,6 +17,8 @@ export function simulateGame(match, state) {
   let ratingB = getTeamRating(teamB) + getSynergy(teamB.roster).bonus + (match.boBuffB || 0);
   const triggeredEvents = [];
   const ALL_EVENTS = [...CUSTOM_CARD_EVENTS];
+
+  if (!match.triggeredUniqueEvents) match.triggeredUniqueEvents = [];
 
   for (const event of ALL_EVENTS) {
     if (event.uniquePerBO && match.triggeredUniqueEvents.includes(event.id)) continue;
@@ -49,6 +51,77 @@ export function simulateGame(match, state) {
   const probA = 1 / (1 + Math.pow(10, (ratingB - ratingA) / 11));
   const winnerSide = Math.random() < probA ? 'A' : 'B';
   return { winnerSide, events: triggeredEvents };
+}
+
+export function recordCompletedGame(match, winnerSide, events = []) {
+  if (winnerSide === 'A') match.scoreA += 1;
+  else match.scoreB += 1;
+
+  match.games.push({
+    gameNumber: match.games.length + 1,
+    winnerSide,
+    events,
+  });
+  match.lastGameEvents = events;
+}
+
+export function applyTournamentResult(match, gameState = state) {
+  const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
+
+  if (gameState.tournamentPhase === 'swiss') {
+    const winnerStanding = gameState.swissTeams?.find(entry => entry.team.id === match.winner.id);
+    const loserStanding = gameState.swissTeams?.find(entry => entry.team.id === loser.id);
+    if (winnerStanding) winnerStanding.wins += 1;
+    if (loserStanding) loserStanding.losses += 1;
+    if (gameState.bracket[gameState.currentRound]?.every(candidate => candidate.status === 'finished')) {
+      gameState.roundComplete = true;
+    }
+    return;
+  }
+
+  if (gameState.tournamentPhase === 'groups') {
+    const groupIndex = Number(match.id.match(/^g(\d+)-/)?.[1]);
+    const group = gameState.groups?.[groupIndex];
+    if (!group) return;
+
+    if (match.id.endsWith('m1')) {
+      group.matches[2].teamA = match.winner;
+      group.matches[3].teamA = loser;
+    } else if (match.id.endsWith('m2')) {
+      group.matches[2].teamB = match.winner;
+      group.matches[3].teamB = loser;
+    } else if (match.id.endsWith('winner')) {
+      if (!group.qualified.some(team => team.id === match.winner.id)) group.qualified.push(match.winner);
+      group.matches[4].teamA = loser;
+    } else if (match.id.endsWith('loser')) {
+      group.matches[4].teamB = match.winner;
+    } else if (match.id.endsWith('decider')) {
+      if (!group.qualified.some(team => team.id === match.winner.id)) group.qualified.push(match.winner);
+    }
+
+    if (gameState.groups.every(candidate => candidate.qualified.length === 2)) {
+      gameState.roundComplete = true;
+    }
+    return;
+  }
+
+  advanceTeam(match.winner, match.nextId, match.nextSlot);
+  if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
+  if (gameState.bracket[gameState.currentRound]?.every(candidate => candidate.status === 'finished') && !gameState.champion) {
+    gameState.roundComplete = true;
+  }
+}
+
+export function finalizeMatch(match, io, gameState = state) {
+  match.winner = match.scoreA >= GAMES_TO_WIN ? match.teamA : match.teamB;
+  match.status = 'finished';
+  match.currentEvents = [];
+  match.pendingEvents = [];
+  match.winnerSidePending = null;
+
+  SECRET_UNLOCKS.forEach(secret => secret.checkAndApply(match, gameState, io));
+  applyTournamentResult(match, gameState);
+  return match;
 }
 
 export function playNextGame(match, io) {
@@ -86,7 +159,7 @@ export function playNextGame(match, io) {
       io.emit('draft-update', state);
       
       const delay = isBotOnly ? SIMULATION_DELAYS.EVENT_BOT : (isGenericEvent ? NO_EVENT_DELAY : EVENT_READ_DELAY);
-      matchTimeouts[match.id] = setTimeout(processNextEvent, delay);
+      scheduleMatchTimeout(match.id, processNextEvent, delay);
       
     } else {
       match.status = 'simulating_result';
@@ -95,54 +168,23 @@ export function playNextGame(match, io) {
       const hasAnyRealEvent = match.currentEvents.some(e => e.label && e.label !== "Phase de lane très tactique, les deux équipes s'observent...");
       const RESULT_DELAY = isBotOnly ? SIMULATION_DELAYS.RESULT_BOT : (hasAnyRealEvent ? SIMULATION_DELAYS.RESULT_HUMAN_ACTION : SIMULATION_DELAYS.RESULT_HUMAN_QUIET); 
 
-      matchTimeouts[match.id] = setTimeout(() => {
-        if (match.winnerSidePending === 'A') match.scoreA++; else match.scoreB++;
-        match.games.push({ gameNumber: match.games.length + 1, winnerSide: match.winnerSidePending, events: match.currentEvents });
-        match.lastGameEvents = match.currentEvents;
+      scheduleMatchTimeout(match.id, () => {
+        recordCompletedGame(match, match.winnerSidePending, match.currentEvents);
         match.currentEvents = []; match.pendingEvents = [];
         
         if (match.scoreA === GAMES_TO_WIN || match.scoreB === GAMES_TO_WIN) {
-          match.winner = match.scoreA === GAMES_TO_WIN ? match.teamA : match.teamB;
-          match.status = 'finished';
-          
-          SECRET_UNLOCKS.forEach(secret => secret.checkAndApply(match, state, io));
-          
-          if (state.tournamentPhase === 'swiss') {
-            const wTeam = state.swissTeams.find(t => t.team.id === match.winner.id);
-            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-            const lTeam = state.swissTeams.find(t => t.team.id === loser.id);
-            if (wTeam) wTeam.wins += 1;
-            if (lTeam) lTeam.losses += 1;
-            if (state.bracket[state.currentRound].every(m => m.status === 'finished')) state.roundComplete = true;
-          } 
-          else if (state.tournamentPhase === 'groups') {
-            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-            const groupIndex = match.id.match(/g(\d)/)[1];
-            const group = state.groups[groupIndex];
-            if (match.id.endsWith('m1')) { group.matches[2].teamA = match.winner; group.matches[3].teamA = loser; } 
-            else if (match.id.endsWith('m2')) { group.matches[2].teamB = match.winner; group.matches[3].teamB = loser; } 
-            else if (match.id.endsWith('winner')) { group.qualified.push(match.winner); group.matches[4].teamA = loser; } 
-            else if (match.id.endsWith('loser')) { group.matches[4].teamB = match.winner; } 
-            else if (match.id.endsWith('decider')) { group.qualified.push(match.winner); }
-            if (state.groups.every(g => g.qualified.length === 2)) state.roundComplete = true;
-          } 
-          else {
-            advanceTeam(match.winner, match.nextId, match.nextSlot);
-            const loser = match.winner.id === match.teamA.id ? match.teamB : match.teamA;
-            if (match.loserNextId) advanceTeam(loser, match.loserNextId, match.loserNextSlot);
-            if (state.bracket[state.currentRound]?.every(m => m.status === 'finished') && !state.champion) state.roundComplete = true;
-          }
+          finalizeMatch(match, io);
           io.emit('draft-update', state);
         } else {
           io.emit('draft-update', state);
           const GAME_GAP_MS = isBotOnly ? SIMULATION_DELAYS.GAP_BOT : SIMULATION_DELAYS.GAP_HUMAN; 
-          matchTimeouts[match.id] = setTimeout(() => playNextGame(match, io), GAME_GAP_MS);
+          scheduleMatchTimeout(match.id, () => playNextGame(match, io), GAME_GAP_MS);
         }
       }, RESULT_DELAY);
     }
   };
   
-  matchTimeouts[match.id] = setTimeout(processNextEvent, INIT_DELAY);
+  scheduleMatchTimeout(match.id, processNextEvent, INIT_DELAY);
 }
 
 export function tryStartMatch(match, io) {
@@ -150,7 +192,8 @@ export function tryStartMatch(match, io) {
   if (isBotCheck(match.teamA) && !match.ready.includes(match.teamA.id)) match.ready.push(match.teamA.id);
   if (isBotCheck(match.teamB) && !match.ready.includes(match.teamB.id)) match.ready.push(match.teamB.id);
 
-  if (match.ready.length === 2) {
+  const expectedPlayers = [match.teamA.id, match.teamB.id];
+  if (expectedPlayers.every(playerId => match.ready.includes(playerId))) {
     match.scoreA = 0; match.scoreB = 0; match.games = []; match.lastGameEvents = []; match.triggeredUniqueEvents = []; match.boBuffA = 0; match.boBuffB = 0; 
     playNextGame(match, io);
   }

@@ -21,6 +21,7 @@ export const TEAMS_DB = [
   { name: "Invictus Gaming", tag: "IG", logo: "/equipes/invictus-gaming.webp" },
   { name: "JD Gaming", tag: "JDG", logo: "/equipes/jd-gaming.webp" },
   { name: "Karmine Corp", tag: "KC", logo: "/equipes/kc.webp" },
+  { name: "Karmine Corp Blue", tag: "KCB", logo: "/equipes/karmine-corp-blue.webp" },
   { name: "KT Rolster", tag: "KT", logo: "/equipes/kt-rolster.webp" },
   { name: "LGD Gaming", tag: "LGD", logo: "/equipes/lgd-gaming.webp" },
   { name: "LNG Esports", tag: "LNG", logo: "/equipes/lng.webp" },

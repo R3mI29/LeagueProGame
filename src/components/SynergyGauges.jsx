@@ -29,7 +29,7 @@ function Bar({ count, color, lit }) {
       {Array.from({ length: MAX }, (_, i) => (
         <div
           key={i}
-          className="h-1.5 flex-1 rounded-full bg-white/10 transition-all duration-500"
+          className="h-1.5 flex-1 rounded-full bg-[color:var(--sk-track,rgba(255,255,255,0.1))] transition-all duration-500"
           style={i < count
             ? { backgroundColor: color, opacity: lit ? 1 : 0.45, boxShadow: lit ? `0 0 8px ${color}` : 'none' }
             : undefined}
@@ -39,19 +39,37 @@ function Bar({ count, color, lit }) {
   );
 }
 
-/* ---------- Variante compacte (ArenaView) ---------- */
-function CompactLine({ logo, group, color, title }) {
+/* ---------- Variante compacte (ArenaView) : étiquettes biseautées ---------- */
+const CHIP_CLIP = 'polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)';
+
+function Chip({ logo, group, color, title }) {
   const lit = group.bonus > 0;
   return (
-    <div className={`flex items-center gap-2 ${group.key ? '' : 'opacity-35'}`} title={title}>
+    <div
+      title={title}
+      className={`relative flex h-8 items-center gap-2 bg-[color:var(--sk-plate,rgba(255,255,255,0.07))] pl-3.5 pr-4 ${group.key ? '' : 'opacity-40'}`}
+      style={{ clipPath: CHIP_CLIP }}
+    >
       <div className="flex h-5 w-5 shrink-0 items-center justify-center">{logo}</div>
-      <Bar count={group.count} color={color} lit={lit} />
+
+      <div className="flex gap-[3px]">
+        {Array.from({ length: MAX }, (_, i) => (
+          <span
+            key={i}
+            className="h-3 w-[6px] -skew-x-12"
+            style={{ backgroundColor: i < group.count ? color : 'var(--sk-pip, rgba(255,255,255,0.18))' }}
+          />
+        ))}
+      </div>
+
       <span
-        className="w-[34px] text-right text-[11px] font-bold normal-case tracking-normal"
-        style={{ color: lit ? color : '#6b7388' }}
+        className="min-w-[30px] text-right text-[12px] font-bold normal-case tracking-normal"
+        style={{ color: lit ? `var(--sk-chip-lit, ${color})` : 'var(--sk-dim, #7d8699)' }}
       >
         {!group.key ? '–' : lit ? `+${group.bonus}` : `${group.count}/${MAX}`}
       </span>
+
+      {lit && <span className="absolute inset-x-0 bottom-0 h-[2px]" style={{ backgroundColor: color }} />}
     </div>
   );
 }
@@ -93,9 +111,9 @@ export default function SynergyGauges({ synergy, compact = false }) {
 
   if (compact) {
     return (
-      <div className="mx-auto mt-1 flex w-full max-w-[230px] flex-col gap-1.5">
-        <CompactLine logo={tLogo} group={team} color={tColor} title={`Synergie équipe${team.key ? ` : ${team.key}` : ''}`} />
-        <CompactLine logo={lLogo} group={league} color={lColor} title={`Synergie ligue${league.key ? ` : ${league.key}` : ''}`} />
+      <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
+        <Chip logo={tLogo} group={team} color={tColor} title={`Synergie équipe${team.key ? ` : ${team.key}` : ''}`} />
+        <Chip logo={lLogo} group={league} color={lColor} title={`Synergie ligue${league.key ? ` : ${league.key}` : ''}`} />
       </div>
     );
   }

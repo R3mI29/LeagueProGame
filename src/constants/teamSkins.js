@@ -1,10 +1,20 @@
-
 import { EVENTS } from './seasonConfig.js';
 
 // frame : styles appliqués au rectangle de l'équipe (fond, bordure, ombre)
 // effect : { type: 'sweep' | 'pulse', color } réutilise les keyframes su-sweep / su-pulse de theme.css
 // free : possédé d'office. Sinon il faut un grantSkin() côté serveur.
 const MSI_LOGO = EVENTS.find(e => e.id === 'msi')?.logo;
+// Ajoute ceci en haut de src/constants/teamSkins.js (sous tes imports)
+const WORLDS_LOGO = EVENTS.find(e => e.id === 'worlds')?.logo;
+
+const RARITY_RANK = {
+  'Commune': 1,
+  'Rare': 2,
+  'Épique': 3,
+  'Légendaire': 4,
+  'WANTED': 5,
+  'SECRET': 6,
+};
 
 export const SKINS = [
   { id: 'default', name: 'Classique', rarity: 'Commune', free: true, frame: null, effect: null },
@@ -27,6 +37,28 @@ export const SKINS = [
     effect: { type: 'pulse', color: 'rgba(255,51,102,0.16)' },
   },
   {
+    id: 'worlds-sovereign',
+    name: 'World Champion',
+    rarity: 'Légendaire',
+    free: false,
+    hint: 'Remporter les Worlds',
+    frame: {
+      // Uniquement un fondu noir en bas pour lire le texte, le haut de l'image reste 100% brut et net
+      background: "linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(5,6,10,0.92) 100%), url('/assets/worlds_sober.png') center top / cover no-repeat",
+      borderColor: 'rgba(226, 232, 240, 0.65)',
+      boxShadow: '0 12px 35px rgba(0,0,0,0.9), 0 0 20px rgba(255,255,255,0.12)',
+      '--sk-plate': 'rgba(8, 10, 15, 0.9)',
+      '--sk-good': '#ffffff',
+      '--sk-chip-lit': '#e2e8f0',
+    },
+    effect: { type: 'sweep', color: 'rgba(255, 255, 255, 0.12)' },
+    decor: {
+      tags: [
+        { src: EVENTS.find(e => e.id === 'worlds')?.logo, pos: 'tl', bg: '#050608', accent: '#ffffff', mono: 'light' },
+      ],
+    },
+  },
+  {
     id: 'glacier', name: 'Glacier', rarity: 'Rare', free: false,
     frame: {
       background: 'linear-gradient(160deg, #0b1a2b 0%, #08111c 65%)',
@@ -46,30 +78,34 @@ export const SKINS = [
     },
     effect: { type: 'sweep', color: 'rgba(255,90,120,0.14)' },
   },
-    {
+  {
     id: 'msi-clash', name: 'MSI Clash', rarity: 'Légendaire', free: false,
     hint: 'Remporter le MSI',
     frame: {
-      background:
-        // lueur rouge, coin haut-gauche
-        'radial-gradient(120% 80% at 0% 0%, rgba(230,25,43,0.38) 0%, transparent 55%), ' +
-        // lueur dorée discrète, coin bas-droit
-        'radial-gradient(90% 70% at 100% 100%, rgba(255,234,0,0.12) 0%, transparent 60%), ' +
-        // grille fine type HUD
-        'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 36px 36px, ' +
-        'linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px) 0 0 / 36px 36px, ' +
-        // fond de base
-        'linear-gradient(160deg, #14070c 0%, #090a12 55%, #0a0a0f 100%)',
+      background: [
+        'radial-gradient(circle at 50% 32%, rgba(8, 3, 15, 0.25) 0%, rgba(8, 3, 15, 0.72) 65%, rgba(6, 2, 12, 0.92) 100%)',
+        'linear-gradient(180deg, rgba(255, 0, 55, 0.12) 0%, rgba(10, 4, 18, 0.85) 100%)',
+        "url('/assets/msi-2024-league-of-legends.jpg') center 28% / cover no-repeat"
+      ].join(', '),
       borderWidth: '2px',
-      borderColor: 'rgba(230,25,43,0.9)',
-      borderRadius: '6px',
-      boxShadow: '6px 6px 0px #FFEA00, 0 0 40px rgba(230,25,43,0.25)',
+      borderColor: '#ff0037',
+      borderRadius: '10px',
+      boxShadow: '0 14px 35px rgba(0, 0, 0, 0.85), -6px 0 24px rgba(255, 0, 55, 0.4), 6px 0 24px rgba(168, 85, 247, 0.35), inset 0 0 20px rgba(255, 0, 55, 0.25)',
+      color: '#ffffff',
+      '--sk-muted': '#fda4af',
+      '--sk-good': '#d4ff00',
+      '--sk-track': 'rgba(255, 0, 55, 0.22)',
+      '--sk-plate': 'rgba(7, 3, 14, 0.86)',
+      '--sk-pip': 'rgba(255, 255, 255, 0.22)',
+      '--sk-dim': '#9ca3af',
+      '--sk-chip-lit': '#d4ff00',
+      '--sk-logo-filter': 'drop-shadow(0 0 10px rgba(255, 0, 55, 0.75))',
     },
-    effect: { type: 'sweep', color: 'rgba(255,234,0,0.10)' },
+    effect: { type: 'sweep', color: 'rgba(255, 0, 85, 0.20)' },
     decor: {
-      logo: { src: MSI_LOGO, opacity: 0.14, size: '65%' },
-      topLine: ['#E6192B', '#FFEA00'],
-      corners: '#FFEA00',
+      tags: [
+        { src: MSI_LOGO, pos: 'tl', bg: '#07030e', accent: '#ff0037', mono: 'light' },
+      ],
     },
   },
 ];
@@ -88,15 +124,49 @@ export function getEquippedSkinId(state, playerId) {
   return id && canUseSkin(state, playerId, id) ? id : 'default';
 }
 
+/** Équipe automatiquement le skin le plus rare possédé par un joueur/bot. */
+export function equipRarestSkin(state, playerId) {
+  const owned = state?.teamSkins?.[playerId]?.owned;
+  if (!owned || owned.length === 0) return null;
+
+  let bestSkinId = null;
+  let bestRank = -1;
+
+  owned.forEach(skinId => {
+    const skin = SKIN_BY_ID[skinId];
+    if (!skin) return;
+    const rank = RARITY_RANK[skin.rarity] ?? 0;
+    if (rank >= bestRank) {
+      bestRank = rank;
+      bestSkinId = skin.id;
+    }
+  });
+
+  if (bestSkinId) {
+    state.teamSkins[playerId].equipped = bestSkinId;
+  }
+  return bestSkinId;
+}
+
 /** Côté serveur : offre un skin à un joueur (ou un bot). Retourne true si nouveau. */
 export function grantSkin(state, playerId, skinId) {
   if (!SKIN_BY_ID[skinId]) return false;
   if (!state.teamSkins) state.teamSkins = {};
   const entry = state.teamSkins[playerId] || (state.teamSkins[playerId] = {});
   if (!entry.owned) entry.owned = [];
-  if (entry.owned.includes(skinId)) return false;
-  entry.owned.push(skinId);
-  return true;
+
+  const isNew = !entry.owned.includes(skinId);
+  if (isNew) {
+    entry.owned.push(skinId);
+  }
+
+  // Si c'est un bot, il équipe immédiatement le skin le plus rare en sa possession
+  const participant = state.participants?.find(p => p.id === playerId);
+  if (playerId.startsWith('bot-') || participant?.isBot || participant?.isPermanentBot) {
+    equipRarestSkin(state, playerId);
+  }
+
+  return isNew;
 }
 
 export function revokeSkin(state, playerId, skinId) {

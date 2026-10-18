@@ -24,10 +24,12 @@ export const TEAMS_DB = [
   { name: "Disguised", tag: "DSG", logo: "/equipes/disguised.webp" },
   { name: "Dplus KIA", tag: "DK", logo: "/equipes/dplus.webp" },
   { name: "DRX", tag: "DRX", logo: "/equipes/drx.webp" },
+  { name: "Damwon Gaming", tag: "DWG", logo: "/equipes/DWG.webp" },
   { name: "Edward Gaming", tag: "EDG", logo: "/equipes/edward-gaming.webp" },
   { name: "FearX", tag: "FOX", logo: "/equipes/fearx.webp" },
   { name: "FlyQuest", tag: "FLY", logo: "/equipes/flyquest.webp" },
   { name: "Fnatic", tag: "FNC", logo: "/equipes/fnatic.webp" },
+  { name: "FunPlus Pheonix", tag: "FPX", logo: "equipes/funplus-phoenix.webp" },
   { name: "G2 Esports", tag: "G2", logo: "/equipes/g2.webp" },
   { name: "Gen.G", tag: "GEN", logo: "/equipes/geng.webp" },
   { name: "GiantX", tag: "GX", logo: "/equipes/giantx.webp" },
@@ -35,6 +37,7 @@ export const TEAMS_DB = [
   { name: "Invictus Gaming", tag: "IG", logo: "/equipes/invictus-gaming.webp" },
   { name: "JD Gaming", tag: "JDG", logo: "/equipes/jd-gaming.webp" },
   { name: "Karmine Corp", tag: "KC", logo: "/equipes/kc.webp" },
+  { name: "Karmine Corp Blue", tag: "KCB", logo: "/equipes/karmine-corp-blue.webp" },
   { name: "KT Rolster", tag: "KT", logo: "/equipes/kt-rolster.webp" },
   { name: "LGD Gaming", tag: "LGD", logo: "/equipes/lgd-gaming.webp" },
   { name: "LNG Esports", tag: "LNG", logo: "/equipes/lng.webp" },
@@ -47,12 +50,12 @@ export const TEAMS_DB = [
   { name: "OMG", tag: "OMG", logo: "/equipes/omg.webp" },
   { name: "RNG", tag: "RNG", logo: "/equipes/royal-never-give-up.webp" },
   { name: "Sentinels", tag: "SEN", logo: "/equipes/sentinels.webp" },
-  { name: "Shifters", tag: "SHF", logo: "/equipes/shifters.webp" },
+  { name: "Shifters", tag: "SHFT", logo: "/equipes/shifters.webp" },
   { name: "Shopify Rebellion", tag: "SR", logo: "/equipes/shopify-rebellion.webp" },
   { name: "SK Gaming", tag: "SK", logo: "/equipes/sk.webp" },
   { name: "SK Telecom T1", tag: "SKT", logo: "/equipes/SKT.png" },
   { name: "Solary", tag: "SLY", logo: "/equipes/solary.webp" },
-  { name: "Soopers", tag: "SPR", logo: "/equipes/soopers.webp" },
+  { name: "Soopers", tag: "DNS", logo: "/equipes/soopers.webp" },
   { name: "T1", tag: "T1", logo: "/equipes/t1.webp" },
   { name: "Team Heretics", tag: "TH", logo: "/equipes/team-heretics.webp" },
   { name: "Team Liquid", tag: "TL", logo: "/equipes/team-liquid.webp" },
@@ -63,3 +66,12 @@ export const TEAMS_DB = [
   { name: "Weibo Gaming", tag: "WBG", logo: "/equipes/weibo.webp" },
   { name: "ZyB", tag: "ZYB", logo: "/equipes/zyb.webp" }
 ];
+
+// Prix de revente des cartes par rareté
+export const SELL_PRICES = {
+  'Commune': 5,
+  'Rare': 15,
+  'Épique': 100,
+  'Légendaire': 500,
+  'WANTED': 1400,
+};

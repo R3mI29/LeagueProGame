@@ -35,6 +35,23 @@
 
   /* Le préfixe --animate- indique à Tailwind de générer animate-pulse-fast */
   --animate-pulse-fast: pulse 1s infinite alternate;
+
+  /* Bleu principal (boutons, sélections, accents interactifs) */
+  --color-accent-blue: #4C60D2;
+  --color-accent-blue-light: #8C9AD6;
+  --color-accent-blue-glow: rgba(76, 96, 210, 0.4);
+
+  /* Couleurs de fond supplémentaires */
+  --color-bg-dark: #0A0D14;
+  --color-bg-hover: #1C212E;
+
+  /* Bordures */
+  --color-border: #2B3040;
+  --color-border-active: #6A7DE8;
+
+  /* Texte secondaire supplémentaire */
+  --color-text-secondary: #7A8190;
+  --color-text-faint: #768196;
 }
 
 /* Application du style de base en CSS pur avec les variables générées */
@@ -64,6 +81,9 @@ body {
   filter: contrast(200%) blur(10px);
 }
 
+
+@keyframes skillPopIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 /* === Cinématique secret === */
 @keyframes su-fade-in  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes su-fade-out { from { opacity: 1; } to { opacity: 0; } }

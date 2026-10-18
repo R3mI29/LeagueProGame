@@ -1,13 +1,13 @@
 import { CARD_POOL } from './cardPlayers.js';
 
 // Équipes historiques considérées comme la même organisation (à ajuster)
-export const TEAM_ALIASES = { SKT: 'T1', DWG: 'DK' };
+export const TEAM_ALIASES = { SKT: 'T1', DWG: 'DK', KCB: 'KC' };
 
 // Bonus ajouté à la MOYENNE de l'équipe (en points de rating).
 // Les paliers sont volontairement faibles : voir la note sur la sensibilité plus bas.
 export const SYNERGY_TIERS = {
-  team:   [{ at: 3, bonus: 0.5 }, { at: 4, bonus: 1 }, { at: 5, bonus: 1.5 }],
-  league: [{ at: 4, bonus: 0.5 }, { at: 5, bonus: 1 }],
+  team:   [{ at: 2, bonus: 0.5 },{ at: 3, bonus: 1 }, { at: 4, bonus: 2 }, { at: 5, bonus: 3 }],
+  league: [{ at: 3, bonus: 0.5 },{ at: 4, bonus: 1 }, { at: 5, bonus: 2 }],
 };
 
 const CARD_INDEX = new Map(CARD_POOL.map(c => [c.id, c]));

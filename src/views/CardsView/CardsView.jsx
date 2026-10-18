@@ -74,7 +74,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             <h1 className="font-['Oswald'] text-[38px] m-0 font-semibold tracking-[1px] text-white">
               CIRCUIT <span className="text-[#D4AF37]">PRO</span>
             </h1>
-            <span className="text-[#768196] text-[13px] tracking-[2px] uppercase font-medium">
+            <span className="text-text-faint text-[13px] tracking-[2px] uppercase font-medium">
               Gestion de Roster Officiel — Année {state.year || 1}
             </span>
           </div>
@@ -94,7 +94,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
                 }}
                 disabled={isReady && tab.id !== 'roster'}
-                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-[#768196] border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 {tab.label}
               </button>
@@ -116,6 +116,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             toggleLineupReady={handleToggleReady}
             lineupComplete={lineupComplete}
             teamPower={teamPower}
+            state={state}
           />
         )}
 

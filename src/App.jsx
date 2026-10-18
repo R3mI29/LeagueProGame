@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { socket } from './api/socket'; 
 import { useDraftSocket } from './hooks/useDraftSocket';
 import { isTournamentPhase, getMyActiveMatch } from './utils/bracketHelpers';
 import { EVENTS } from './constants/seasonConfig';
 import { TEAMS_DB } from './constants/teams'; // IMPORT AJOUTÉ
+import { savePlayerSessionToken } from './api/playerSession';
 
 import SecretUnlockOverlay from './components/SecretUnlockOverlay';
 import LobbyView from './views/LobbyView';
@@ -14,12 +15,13 @@ import DevCardsView from './views/DevCardView';
 import PackOpener from './components/PackOpener'; 
 import SeasonHub from './components/SeasonHub';
 import SeasonRecapCinematic from './components/SeasonRecapCinematic';
+import GameManagementOverlay from './components/GameManagementOverlay';
 
 import SwissStageView from './views/formats/SwissStageView';
 import GslGroupView from './views/formats/GslGroupView';
 import DoubleElimView from './views/formats/DoubleElimView';
 
-import './styles/theme.css'; // Ton futur global.css
+import './styles/theme.css';
 
 function TakeoverView({ state, socket }) {
   const [selectedBot, setSelectedBot] = useState(null);
@@ -27,7 +29,10 @@ function TakeoverView({ state, socket }) {
   const [newTag, setNewTag] = useState('');
   const [selectedLogo, setSelectedLogo] = useState('');
 
-  const bots = state.participants.filter(p => p.id.startsWith('bot-') || p.isBot);
+  const bots = useMemo(
+    () => state.participants.filter(p => p.id.startsWith('bot-') || p.isBot),
+    [state.participants],
+  );
 
   useEffect(() => {
       if (selectedBot) {
@@ -44,16 +49,21 @@ function TakeoverView({ state, socket }) {
   const handleTakeover = () => {
     if (!selectedBot || !selectedLogo) return alert("Sélectionnez une équipe et un logo.");
     if (newTag.length < 2 || newTag.length > 4) return alert("Le TAG doit faire entre 2 et 4 caractères.");
-    socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo);
+    socket.emit('takeover-bot', selectedBot, newName, newTag, selectedLogo, (response) => {
+      if (!response?.ok) {
+        alert(response?.error || "Impossible de reprendre cette équipe.");
+        return;
+      }
+      savePlayerSessionToken(response.playerToken);
+    });
   };
-  socket.onAny((e) => console.log('[socket]', e))
   return (
-    <div className="min-h-screen bg-[#0A0D14] text-white flex flex-col items-center justify-center font-sans p-10">
-      <div className="bg-[#151923] p-[50px_60px] rounded-2xl border border-[#2B3040] max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <h1 className="text-[#8C9AD6] mb-4 tracking-[2px] font-black text-[36px] uppercase">
+    <div className="min-h-screen bg-bg-dark text-white flex flex-col items-center justify-center font-sans p-10">
+      <div className="bg-bg-card p-[50px_60px] rounded-2xl border border-border max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <h1 className="text-accent-blue-light mb-4 tracking-[2px] font-black text-[36px] uppercase">
           REJOINDRE LA PARTIE EN COURS
         </h1>
-        <p className="text-[#7A8190] mb-10 text-lg">
+        <p className="text-text-secondary mb-10 text-lg">
           Sélectionnez une IA pour la remplacer. Vous récupérerez ses joueurs et ses crédits.
         </p>
 
@@ -62,22 +72,21 @@ function TakeoverView({ state, socket }) {
             <button 
               key={bot.id} 
               onClick={() => setSelectedBot(bot.id)}
-              className="p-4 rounded-xl text-white flex items-center gap-4 text-base font-bold transition-all duration-200 cursor-pointer text-left"
-              style={{ 
-                backgroundColor: selectedBot === bot.id ? '#4C60D2' : '#1C212E', 
-                border: selectedBot === bot.id ? '2px solid #6A7DE8' : '2px solid transparent', 
-                boxShadow: selectedBot === bot.id ? '0 4px 15px rgba(76, 96, 210, 0.4)' : 'none' 
-              }}
+              className={`p-4 rounded-xl text-white flex items-center gap-4 text-base font-bold transition-all duration-200 cursor-pointer text-left border-2 ${
+                selectedBot === bot.id 
+                  ? 'bg-accent-blue border-border-active shadow-[0_4px_15px_rgba(76,96,210,0.4)]' 
+                  : 'bg-bg-hover border-transparent'
+              }`}
             >
               {bot.logo ? (
                 <img src={bot.logo} alt="" className="w-8 h-8 object-contain shrink-0" />
               ) : (
-                <div className="w-8 h-8 bg-[#2B3040] rounded-md shrink-0" />
+                <div className="w-8 h-8 bg-border rounded-md shrink-0" />
               )}
               <div className="min-w-0">
                   <div className="whitespace-nowrap overflow-hidden text-ellipsis">[{bot.tag}] {bot.name}</div>
                   {bot.isBot && !bot.id.startsWith('bot-') && (
-                    <div className="text-xs" style={{ color: selectedBot === bot.id ? '#D4DDF8' : '#7A8190' }}>
+                    <div className={`text-xs ${selectedBot === bot.id ? 'text-[#D4DDF8]' : 'text-text-secondary'}`}>
                       Joueur Déconnecté
                     </div>
                   )}
@@ -85,23 +94,23 @@ function TakeoverView({ state, socket }) {
             </button>
           ))}
           {bots.length === 0 && (
-            <div className="col-span-full text-[#7A8190] p-5">Aucune IA disponible.</div>
+            <div className="col-span-full text-text-secondary p-5">Aucune IA disponible.</div>
           )}
         </div>
 
         {selectedBot && (
           <div className="animate-[fadeIn_0.3s]">
             <h4 className="text-white mb-4 text-left text-base tracking-[1px] uppercase">PERSONNALISER L'IDENTITÉ</h4>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] gap-2.5 justify-center mb-[30px] max-h-[220px] overflow-y-auto p-4 bg-[#0A0D14] rounded-xl border border-[#2B3040]">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] gap-2.5 justify-center mb-[30px] max-h-[220px] overflow-y-auto p-4 bg-bg-dark rounded-xl border border-border">
               {availableLogos.map(team => (
                 <div 
                   key={team.name} 
                   onClick={() => { setSelectedLogo(team.logo); setNewName(team.name); setNewTag(team.tag); }}
-                  className="aspect-square p-2 rounded-xl flex items-center justify-center cursor-pointer transition-colors"
-                  style={{ 
-                    border: selectedLogo === team.logo ? '2px solid #4C60D2' : '1px solid #2B3040', 
-                    background: selectedLogo === team.logo ? '#1C212E' : '#151923' 
-                  }}
+                  className={`aspect-square p-2 rounded-xl flex items-center justify-center cursor-pointer transition-colors ${
+                    selectedLogo === team.logo 
+                      ? 'border-2 border-accent-blue bg-bg-hover' 
+                      : 'border border-border bg-bg-card'
+                  }`}
                 >
                   <img src={team.logo} alt={team.name} className="max-w-full max-h-full object-contain" />
                 </div>
@@ -114,7 +123,7 @@ function TakeoverView({ state, socket }) {
                   placeholder="Nom complet" 
                   value={newName} 
                   onChange={(e) => setNewName(e.target.value)} 
-                  className="flex-[3] p-5 rounded-lg border border-[#2B3040] bg-[#0A0D14] text-white text-base font-bold outline-none focus:border-[#4C60D2]" 
+                  className="flex-[3] p-5 rounded-lg border border-border bg-bg-dark text-white text-base font-bold outline-none focus:border-accent-blue" 
                 />
                 <input 
                   type="text" 
@@ -122,12 +131,12 @@ function TakeoverView({ state, socket }) {
                   value={newTag} 
                   onChange={(e) => setNewTag(e.target.value.toUpperCase())} 
                   maxLength={4} 
-                  className="flex-1 p-5 rounded-lg border border-[#2B3040] bg-[#0A0D14] text-[#4C60D2] text-lg font-bold text-center uppercase outline-none focus:border-[#4C60D2]" 
+                  className="flex-1 p-5 rounded-lg border border-border bg-bg-dark text-accent-blue text-lg font-bold text-center uppercase outline-none focus:border-accent-blue" 
                 />
             </div>
             <button 
               onClick={handleTakeover} 
-              className="w-full p-6 rounded-lg bg-[#4C60D2] text-white border-none font-bold text-lg cursor-pointer tracking-[2px] uppercase transition-transform hover:-translate-y-1 active:scale-95"
+              className="w-full p-6 rounded-lg bg-accent-blue text-white border-none font-bold text-lg cursor-pointer tracking-[2px] uppercase transition-transform hover:-translate-y-1 active:scale-95"
             >
               CONFIRMER LA FRANCHISE
             </button>
@@ -140,7 +149,7 @@ function TakeoverView({ state, socket }) {
 
 export default function App() {
   const draft = useDraftSocket();
-  const { state, showBracket } = draft;
+  const { state } = draft;
   const [showDevMode, setShowDevMode] = useState(false);
   const [spectatedMatchId, setSpectatedMatchId] = useState(null);
 
@@ -167,8 +176,8 @@ export default function App() {
   const renderSpectatorPanel = (myActiveMatch) => {
       if (myActiveMatch || liveHumanMatches.length === 0 || spectatedMatchId) return null;
       return (
-          <div className="fixed top-20 right-5 bg-[#11141E] border border-[#4C60D2] rounded-lg p-4 z-[9000] shadow-[0_5px_20px_rgba(0,0,0,0.5)] w-[280px] animate-[fadeIn_0.5s]">
-              <h4 className="text-[#8C9AD6] m-0 mb-4 font-sans flex items-center gap-2">
+          <div className="fixed top-20 right-5 bg-[#11141E] border border-accent-blue rounded-lg p-4 z-[9000] shadow-[0_5px_20px_rgba(0,0,0,0.5)] w-[280px] animate-[fadeIn_0.5s]">
+              <h4 className="text-accent-blue-light m-0 mb-4 font-sans flex items-center gap-2">
                 <div className="w-2 h-2 bg-[#e63946] rounded-full animate-pulse"></div> MATCHS EN DIRECT
               </h4>
               <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
@@ -176,9 +185,9 @@ export default function App() {
                       <button 
                         key={m.id} 
                         onClick={() => setSpectatedMatchId(m.id)} 
-                        className="bg-[#151923] text-white border border-[#2B3040] p-3 rounded-md cursor-pointer text-[13px] text-left flex justify-between items-center transition-colors hover:border-[#4C60D2]"
+                        className="bg-bg-card text-white border border-border p-3 rounded-md cursor-pointer text-[13px] text-left flex justify-between items-center transition-colors hover:border-accent-blue"
                       >
-                          <span className="font-bold whitespace-nowrap overflow-hidden text-ellipsis">[{m.teamA?.tag}] <span className="text-[#768196] font-normal mx-1">vs</span> [{m.teamB?.tag}]</span>
+                          <span className="font-bold whitespace-nowrap overflow-hidden text-ellipsis">[{m.teamA?.tag}] <span className="text-text-faint font-normal mx-1">vs</span> [{m.teamB?.tag}]</span>
                           <span className="text-lg shrink-0 ml-2">👁️</span>
                       </button>
                   ))}
@@ -194,8 +203,9 @@ export default function App() {
     if (!myPlayerInfo && state.phase !== 'lobby') return <TakeoverView state={state} socket={socket} />;
     
     if (state.phase === 'season_hub') return <SeasonHub state={state} />;
-    if (state.phase === 'cards') return <CardsView state={state} openPack={draft.openPack} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
+    if (state.phase === 'cards') return <CardsView state={state} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
 
+    const currentEvent = EVENTS[state.eventIndex || 0];
     const myActiveMatch = getMyActiveMatch(state, socket.id);
 
     if (spectatedMatch && !myActiveMatch) {
@@ -204,21 +214,21 @@ export default function App() {
           <div className="absolute top-5 left-5 z-[9999]">
             <button 
               onClick={() => setSpectatedMatchId(null)} 
-              className="bg-[#151923] text-white border border-[#4C60D2] p-[10px_20px] rounded-md font-bold cursor-pointer shadow-[0_4px_15px_rgba(0,0,0,0.4)] transition-colors hover:bg-[#1C212E]"
+              className="bg-bg-card text-white border border-accent-blue p-[10px_20px] rounded-md font-bold cursor-pointer shadow-[0_4px_15px_rgba(0,0,0,0.4)] transition-colors hover:bg-bg-hover"
             >
               ⬅ QUITTER SPECTATEUR
             </button>
           </div>
-          <ArenaView match={spectatedMatch} matchReady={() => {}} dismissMatch={() => setSpectatedMatchId(null)} state={state} isSpectator={true} />
+          <ArenaView match={spectatedMatch} matchReady={() => {}} dismissMatch={() => setSpectatedMatchId(null)} state={state} event={currentEvent} isSpectator={true} />
         </div>
       );
     }
 
     if (myActiveMatch) {
-      return <ArenaView match={myActiveMatch} matchReady={draft.matchReady} dismissMatch={draft.dismissMatch} state={state} />;
+      return <ArenaView match={myActiveMatch} matchReady={draft.matchReady} dismissMatch={draft.dismissMatch} state={state} event={currentEvent} />;
     }
 
-    if (state.phase === 'tournament' || state.phase === 'simulation' || (isTournamentPhase(state) && showBracket)) {
+    if (isTournamentPhase(state)) {
       const currentEvent = EVENTS[state.eventIndex || 0];
       let TournamentComponent = null;
 
@@ -266,6 +276,7 @@ export default function App() {
       {showDevMode && <DevCardsView onClose={() => setShowDevMode(false)} state={state} />}
       {state && <SeasonRecapCinematic state={state} />}
       <SecretUnlockOverlay />
+      <GameManagementOverlay socket={socket} state={state} />
       
     </>
   );

@@ -1,1 +1,8 @@
 node_modules/
+dist/
+
+# Sauvegardes locales du jeu (générées au runtime, ne pas committer)
+server/data/*.json
+server/data/*.json.backup
+server/data/*.tmp
+server/data/saves/

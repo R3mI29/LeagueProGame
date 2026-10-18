@@ -37,18 +37,6 @@ export const CARD_POOL = [
     "league": "LPL"
   },
   {
-    "id": "t1-zeus",
-    "baseName": "Zeus",
-    "variant": "T1 Zeus",
-    "role": "Top",
-    "rating": 83,
-    "rarity": "Rare",
-    "image": "/cardsImg/others/T1_zeus.png",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
     "id": "hle-zeus",
     "baseName": "Zeus",
     "variant": "HLE Zeus",
@@ -58,18 +46,6 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/hle_zeus.webp",
     "nationality": "KR",
     "teamTag": "HLE",
-    "league": "LCK"
-  },
-  {
-    "id": "zeus-lck",
-    "baseName": "Zeus",
-    "variant": "LCK champ Zeus",
-    "role": "Top",
-    "rating": 85,
-    "rarity": "Épique",
-    "image": "/cardsImg/others/zeus_lck_2022.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
     "league": "LCK"
   },
   {
@@ -85,16 +61,28 @@ export const CARD_POOL = [
     "league": "LCK"
   },
   {
-    "id": "zeus-mvp-2023",
-    "baseName": "Zeus",
-    "variant": "T1 legend",
+    "id": "fnc-empyros",
+    "baseName": "Empyros",
+    "variant": "FNC Empyros",
     "role": "Top",
-    "rating": 94,
-    "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_legend_zeus.jpg",
+    "rating": 54,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/FNC_empyros.webp",
+    "nationality": "GR",
+    "teamTag": "FNC",
+    "league": "LEC"
+  },
+  {
+    "id": "fnc-soboro",
+    "baseName": "Soboro",
+    "variant": "FNC Soboro",
+    "role": "Top",
+    "rating": 68,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/FNC_soboro.webp",
     "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
+    "teamTag": "FNC",
+    "league": "LEC"
   },
   {
     "id": "NAVI-adam",
@@ -106,6 +94,18 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/NAVI_adam.webp",
     "nationality": "FR",
     "teamTag": "NAVI",
+    "league": "LEC"
+  },
+  {
+    "id": "VIT_Naak-Nako",
+    "baseName": "Naak Nako",
+    "variant": "VIT Naak Nako",
+    "role": "Top",
+    "rating": 76,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/VIT_naak-nako.webp",
+    "nationality": "FR",
+    "teamTag": "VIT",
     "league": "LEC"
   },
   {
@@ -253,11 +253,59 @@ export const CARD_POOL = [
     "league": "LEC"
   },
   {
+    "id": "mkoi-myrwn",
+    "baseName": "Myrwn",
+    "variant": "MKOI Myrwn",
+    "role": "Top",
+    "rating": 71,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/MKOI_myrwn.webp",
+    "nationality": "ES",
+    "teamTag": "MKOI",
+    "league": "LEC"
+  },
+  {
+    "id": "shft-rooster",
+    "baseName": "Rooster",
+    "variant": "SHFT Rooster",
+    "role": "Top",
+    "rating": 69,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/SHFT_rooster.webp",
+    "nationality": "KR",
+    "teamTag": "SHFT",
+    "league": "LEC"
+  },
+  {
+    "id": "th-tracyn",
+    "baseName": "Tracyn",
+    "variant": "TH Tracyn",
+    "role": "Top",
+    "rating": 61,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/TH_tracyn.webp",
+    "nationality": "PL",
+    "teamTag": "TH",
+    "league": "LEC"
+  },
+  {
+    "id": "gx-oscarinin",
+    "baseName": "Oscarinin",
+    "variant": "GX Oscarinin",
+    "role": "Top",
+    "rating": 69,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/GX_oscarinin.webp",
+    "nationality": "ES",
+    "teamTag": "GX",
+    "league": "LEC"
+  },
+  {
     "id": "fnc-oscarinin",
     "baseName": "Oscarinin",
     "variant": "FNC Oscarinin",
     "role": "Top",
-    "rating": 75,
+    "rating": 73,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/FNC_oscarinin.webp",
     "nationality": "ES",
@@ -298,18 +346,6 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/DNS_dudu.webp",
     "nationality": "KR",
     "teamTag": "DNS",
-    "league": "LCK"
-  },
-  {
-    "id": "t1-doran",
-    "baseName": "Doran",
-    "variant": "T1 Doran",
-    "role": "Top",
-    "rating": 78,
-    "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_doran.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
     "league": "LCK"
   },
   {
@@ -485,18 +521,6 @@ export const CARD_POOL = [
     "league": "LPL"
   },
   {
-    "id": "painter-t1-2026-sub",
-    "baseName": "Painter",
-    "variant": "T1 Painter",
-    "role": "Jungle",
-    "rating": 56,
-    "rarity": "Commune",
-    "image": "/cardsImg/2026-players/T1_Painter.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
     "id": "frx-raptor",
     "baseName": "Raptor",
     "variant": "FRX Raptor",
@@ -508,30 +532,7 @@ export const CARD_POOL = [
     "teamTag": "FRX",
     "league": "LCK"
   },
-  {
-    "id": "t1-oner",
-    "baseName": "Oner",
-    "variant": "T1 Oner",
-    "role": "Jungle",
-    "rating": 81,
-    "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_oner.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "oner-lck",
-    "baseName": "Oner",
-    "variant": "LCK 2022 Spring Champion",
-    "role": "Jungle",
-    "rating": 84,
-    "rarity": "Épique",
-    "image": "/cardsImg/others/Oner_blondie.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
+  
   {
     "id": "DKC-sharvel",
     "baseName": "Sharvel",
@@ -576,6 +577,18 @@ export const CARD_POOL = [
     "rating": 71,
     "rarity": "Commune",
     "image": "/cardsImg/2026-players/C9_blaber.webp",
+    "nationality": "US",
+    "teamTag": "C9",
+    "league": "LCS"
+  },
+  {
+    "id": "blaber-c9-lcs",
+    "baseName": "Blaber",
+    "variant": "4x LCS champion",
+    "role": "Jungle",
+    "rating": 86,
+    "rarity": 'Épique',
+    "image": "/cardsImg/others/C9_blaber_lcs.jpg",
     "nationality": "US",
     "teamTag": "C9",
     "league": "LCS"
@@ -717,42 +730,6 @@ export const CARD_POOL = [
     "league": "LEC"
   },
   {
-    "id": "faker-t1-2022",
-    "baseName": "Faker",
-    "variant": "T1 Faker",
-    "role": "Mid",
-    "rating": 85,
-    "rarity": "Rare",
-    "image": "/cardsImg/others/faker_T1.png",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "faker-6x-champ",
-    "baseName": "Faker",
-    "variant": "6x World Champion",
-    "role": "Mid",
-    "rating": 95,
-    "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_faker.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "faker-hall-of-legends",
-    "baseName": "Faker",
-    "variant": "Unkillable Demon King",
-    "role": "Mid",
-    "rating": 99,
-    "rarity": "WANTED",
-    "image": "/cardsImg/others/faker_UDK2.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
     "id": "nongshim-scout",
     "baseName": "Scout",
     "variant": "NS Scout",
@@ -837,7 +814,7 @@ export const CARD_POOL = [
     "league": "LCK"
   },
   {
-    "id": "showmaker-worlds-2020",
+    "id": "showmaker-ewc-2020",
     "baseName": "ShowMaker",
     "variant": "2026 EWC ShowMaker",
     "role": "Mid",
@@ -976,7 +953,7 @@ export const CARD_POOL = [
     "rating": 71,
     "rarity": "Commune",
     "image": "/cardsImg/2026-players/FNC_vladi.webp",
-    "nationality": "CZ",
+    "nationality": "GR",
     "teamTag": "FNC",
     "league": "LEC"
   },
@@ -1190,7 +1167,7 @@ export const CARD_POOL = [
     "league": "LPL"
   },
   {
-    "id": "viper-worlds-2021",
+    "id": "viper-lpl-2021",
     "baseName": "Viper",
     "variant": "3x LPL champion",
     "role": "ADC",
@@ -1198,7 +1175,7 @@ export const CARD_POOL = [
     "rarity": "Épique",
     "image": "/cardsImg/others/blg_viper_lpl.jpg",
     "nationality": "KR",
-    "teamTag": "EDG",
+    "teamTag": "BLG",
     "league": "LPL"
   },
   {
@@ -1223,30 +1200,6 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/BRO_teddy.webp",
     "nationality": "KR",
     "teamTag": "BRO",
-    "league": "LCK"
-  },
-  {
-    "id": "gumayusi-t1-2022",
-    "baseName": "Gumayusi",
-    "variant": "T1 Gumayusi",
-    "role": "ADC",
-    "rating": 82,
-    "rarity": "Rare",
-    "image": "/cardsImg/webp/t1_gumayusi.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "gumayusi-T1-legend",
-    "baseName": "Gumayusi",
-    "variant": "T1 Legend",
-    "role": "ADC",
-    "rating": 93,
-    "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_gumayusi.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
     "league": "LCK"
   },
   {
@@ -1319,18 +1272,6 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/DNS_deokdam.webp",
     "nationality": "KR",
     "teamTag": "DNS",
-    "league": "LCK"
-  },
-  {
-    "id": "T1-peyz",
-    "baseName": "Peyz",
-    "variant": "T1 Peyz",
-    "role": "ADC",
-    "rating": 84,
-    "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_peyz.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
     "league": "LCK"
   },
   {
@@ -1469,54 +1410,6 @@ export const CARD_POOL = [
     "image": "/cardsImg/2026-players/DNS_peter.webp",
     "nationality": "KR",
     "teamTag": "DNS",
-    "league": "LCK"
-  },
-  {
-    "id": "t1-keria",
-    "baseName": "Keria",
-    "variant": "T1 Keria",
-    "role": "Support",
-    "rating": 84,
-    "rarity": "Rare",
-    "image": "/cardsImg/2026-players/T1_keria.webp",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "keria-lck-mvp",
-    "baseName": "Keria",
-    "variant": "LCK MVP Keria",
-    "role": "Support",
-    "rating": 88,
-    "rarity": "Épique",
-    "image": "/cardsImg/others/T1_keria_2022.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "keria-worlds-2023",
-    "baseName": "Keria",
-    "variant": "World Champion",
-    "role": "Support",
-    "rating": 92,
-    "rarity": "Légendaire",
-    "image": "/cardsImg/others/T1_keria.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
-    "league": "LCK"
-  },
-  {
-    "id": "keria-3PEAT-WC",
-    "baseName": "Keria",
-    "variant": "3PEAT Worlds",
-    "role": "Support",
-    "rating": 97,
-    "rarity": "WANTED",
-    "image": "/cardsImg/others/3PEAT_keria.jpg",
-    "nationality": "KR",
-    "teamTag": "T1",
     "league": "LCK"
   },
   {
@@ -1808,6 +1701,18 @@ export const CARD_POOL = [
     "league": "LPL"
   },
   {
+    "id": "blg-on-lpl",
+    "baseName": "ON",
+    "variant": "5x LPL champion",
+    "role": "Support",
+    "rating": 88,
+    "rarity": 'Épique',
+    "image": "/cardsImg/others/BLG-ON-LPL.jpg",
+    "nationality": "CN",
+    "teamTag": "BLG",
+    "league": "LPL"
+  },
+  {
     "id": "JDG-2026-vampire",
     "baseName": "Vampire",
     "variant": "JDG Vampire",
@@ -1835,5 +1740,254 @@ export const CARD_POOL = [
     "nationality": "CN",
     "teamTag": "JDG",
     "league": "LPL"
-  }
+  },
+
+
+  /////////////// T1 ///////////////
+  {
+    "id": "t1-zeus",
+    "baseName": "Zeus",
+    "variant": "T1 Zeus",
+    "role": "Top",
+    "rating": 83,
+    "rarity": "Rare",
+    "image": "/cardsImg/others/T1_zeus.png",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "zeus-lck",
+    "baseName": "Zeus",
+    "variant": "LCK champ Zeus",
+    "role": "Top",
+    "rating": 85,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/zeus_lck_2022.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "zeus-mvp-2023",
+    "baseName": "Zeus",
+    "variant": "T1 legend",
+    "role": "Top",
+    "rating": 94,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_legend_zeus.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "t1-doran",
+    "baseName": "Doran",
+    "variant": "T1 Doran",
+    "role": "Top",
+    "rating": 78,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_doran.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "t1-doran-world_champion",
+    "baseName": "Doran",
+    "variant": "World Champion",
+    "role": "Top",
+    "rating": 90,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/doran_T1_red.png",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "painter-t1-2026-sub",
+    "baseName": "Painter",
+    "variant": "T1 Painter",
+    "role": "Jungle",
+    "rating": 56,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/T1_Painter.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "t1-oner",
+    "baseName": "Oner",
+    "variant": "T1 Oner",
+    "role": "Jungle",
+    "rating": 81,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_oner.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "oner-lck",
+    "baseName": "Oner",
+    "variant": "LCK 2022 Spring Champion",
+    "role": "Jungle",
+    "rating": 84,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/Oner_blondie.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "faker-t1-2022",
+    "baseName": "Faker",
+    "variant": "T1 Faker",
+    "role": "Mid",
+    "rating": 85,
+    "rarity": "Rare",
+    "image": "/cardsImg/others/faker_T1.png",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "faker-6x-champ",
+    "baseName": "Faker",
+    "variant": "6x World Champion",
+    "role": "Mid",
+    "rating": 95,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_faker.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "faker-hall-of-legends",
+    "baseName": "Faker",
+    "variant": "Unkillable Demon King",
+    "role": "Mid",
+    "rating": 99,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/faker_UDK2.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "gumayusi-t1-2022",
+    "baseName": "Gumayusi",
+    "variant": "T1 Gumayusi",
+    "role": "ADC",
+    "rating": 82,
+    "rarity": "Rare",
+    "image": "/cardsImg/webp/t1_gumayusi.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "gumayusi-T1-legend",
+    "baseName": "Gumayusi",
+    "variant": "T1 Legend",
+    "role": "ADC",
+    "rating": 93,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_gumayusi.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "T1-peyz",
+    "baseName": "Peyz",
+    "variant": "T1 Peyz",
+    "role": "ADC",
+    "rating": 84,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_peyz.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "t1-keria",
+    "baseName": "Keria",
+    "variant": "T1 Keria",
+    "role": "Support",
+    "rating": 84,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/T1_keria.webp",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "keria-lck-mvp",
+    "baseName": "Keria",
+    "variant": "LCK MVP Keria",
+    "role": "Support",
+    "rating": 88,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/T1_keria_2022.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "keria-worlds-2023",
+    "baseName": "Keria",
+    "variant": "3x World Champion",
+    "role": "Support",
+    "rating": 92,
+    "rarity": "Légendaire",
+    "image": "/cardsImg/others/T1_keria.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+  {
+    "id": "keria-3PEAT-WC",
+    "baseName": "Keria",
+    "variant": "3PEAT Worlds",
+    "role": "Support",
+    "rating": 97,
+    "rarity": "WANTED",
+    "image": "/cardsImg/others/3PEAT_keria.jpg",
+    "nationality": "KR",
+    "teamTag": "T1",
+    "league": "LCK"
+  },
+
+
+
+  /////////// KC /////////////////
+  {
+    "id": "kc-canna",
+    "baseName": "Canna",
+    "variant": "KC Canna",
+    "role": "Top",
+    "rating": 78,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/KC_canna.webp",
+    "nationality": "KR",
+    "teamTag": "KC",
+    "league": "LEC"
+  },
+  /////////// KCB ///////////////
+  {
+    "id": "kcb-tao",
+    "baseName": "Tao",
+    "variant": "KCB Tao",
+    "role": "Top",
+    "rating": 55,
+    "rarity": "Commune",
+    "image": "/cardsImg/2026-players/KCB_tao.webp",
+    "nationality": "IT",
+    "teamTag": "KCB",
+    "league": "LEC"
+  },
+
 ];
