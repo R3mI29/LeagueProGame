@@ -5,19 +5,20 @@ import { CARD_POOL } from '../../constants/cardPlayers';
 
 
 // Import des sous-composants (les onglets)
-import RosterTab from './Tabs/RosterTab';
-import ShopTab from './Tabs/ShopTab';
-import SellTab from './Tabs/SellTab';
-import CircuitTab from './Tabs/CircuitTab';
-import HallOfFameTab from './Tabs/HallOfFameTab';
-import SkinsTab from './Tabs/SkinsTab';
+import RosterTab from './tabs/RosterTab';
+import MetaTab from './tabs/MetaTab';
+import ShopTab from './tabs/ShopTab';
+import SellTab from './tabs/SellTab';
+import CircuitTab from './tabs/CircuitTab';
+import HallOfFameTab from './tabs/HallOfFameTab';
+import SkinsTab from './tabs/SkinsTab';
 
 
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
 }
 
-export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
+export default function CardsView({ state, setLineupCard, toggleLineupReady, setPrelockedChampion }) {
   const myId = socket.id;
   const [activeTab, setActiveTab] = useState('roster'); 
 
@@ -71,7 +72,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
         {/* EN-TÊTE ÉLÉGANT */}
         <div className="flex justify-between items-center border-b border-[#222838] pb-6 mb-8">
           <div>
-            <h1 className="font-['Oswald'] text-[38px] m-0 font-semibold tracking-[1px] text-white">
+            <h1 className="font-rajdhani text-[38px] m-0 font-bold tracking-[1px] text-white">
               CIRCUIT <span className="text-[#D4AF37]">PRO</span>
             </h1>
             <span className="text-text-faint text-[13px] tracking-[2px] uppercase font-medium">
@@ -82,6 +83,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           <div className="flex gap-2">
             {[
               { id: 'roster', label: 'Gestion Équipe' },
+              { id: 'meta', label: 'Méta & Analyse' },
               { id: 'shop', label: 'Boutique' },
               { id: 'sell', label: 'Revente' },
               { id: 'circuit', label: 'Compétitions' },
@@ -91,10 +93,10 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
               <button
                 key={tab.id}
                 onClick={() => {
-                  if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
+                  if (!isReady || tab.id === 'roster' || tab.id === 'meta') setActiveTab(tab.id);
                 }}
-                disabled={isReady && tab.id !== 'roster'}
-                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={isReady && tab.id !== 'roster' && tab.id !== 'meta'}
+                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster' && tab.id !== 'meta') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 {tab.label}
               </button>
@@ -117,8 +119,11 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
             lineupComplete={lineupComplete}
             teamPower={teamPower}
             state={state}
+            setPrelockedChampion={setPrelockedChampion}
           />
         )}
+
+        {activeTab === 'meta' && <MetaTab state={state} myId={myId} />}
 
         {activeTab === 'skins' && <SkinsTab state={state} myId={myId} />}
 

@@ -1,3 +1,5 @@
+import { generateYearlyMeta } from '../../src/constants/metaConfig.js';
+
 export function createInitialGameState(overrides = {}) {
   return {
     phase: 'lobby',
@@ -32,6 +34,11 @@ export function createInitialGameState(overrides = {}) {
     recentPlacements: {},
     endOfYearRecap: null,
     awaitingResumeDecision: false,
+    yearlyMeta: null,
+    teamTactics: {},
+    metaKnowledge: {},
+    prelockedChampions: {},
+    championMastery: {},
     ...overrides,
   };
 }
@@ -123,6 +130,7 @@ export function prepareNewGame(participants = state.participants) {
   resetGameState({ participants: activeParticipants });
   state.phase = 'cards';
   state.seasonRound = 1;
+  state.yearlyMeta = generateYearlyMeta(state.year || 1);
 
   activeParticipants.forEach(participant => {
     const { id } = participant;
@@ -134,6 +142,8 @@ export function prepareNewGame(participants = state.participants) {
     state.economy[id] = 100;
     state.lockedCards[id] = [];
     state.recentPlacements[id] = [];
+    state.teamTactics[id] = { chosenStyle: 'teamfight_5v5', modifiedMidTournament: false, tournamentPenalty: 0 };
+    state.metaKnowledge[id] = { points: 0, progress: 0, scrimsAvailable: 3, scrimsUsed: 0, discoveredClues: [], observations: [], championKnowledge: {} };
   });
 
   return state;

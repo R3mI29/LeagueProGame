@@ -22,6 +22,7 @@ import {
   tryStartMatch,
 } from '../services/matchService.js';
 import { shuffleArray } from '../utils/random.js';
+import { generateYearlyMeta, calculatePointsGain, countMetaLeaguePlayers, addMetaProgress, addChampionDecryptionPoints } from '../../src/constants/metaConfig.js';
 
 export function registerTournamentHandlers(io, socket, {
   state = defaultState,
@@ -90,10 +91,19 @@ export function registerTournamentHandlers(io, socket, {
     }
   });
 
-  socket.on('match-ready', (matchId) => {
+  socket.on('match-ready', (matchId, selectedChampions) => {
     const match = findMatchById(matchId);
     if (!match || match.status !== 'pending') return;
     if (!match.ready.includes(socket.id)) match.ready.push(socket.id);
+
+    if (!match.teamPicks) match.teamPicks = {};
+    if (selectedChampions && typeof selectedChampions === 'object') {
+      if (match.teamA?.id === socket.id) {
+        match.teamPicks.A = { ...selectedChampions };
+      } else if (match.teamB?.id === socket.id) {
+        match.teamPicks.B = { ...selectedChampions };
+      }
+    }
     
     tryStartMatch(match, io);
     if (match.status.startsWith('simulating')) startAllBotMatchesInCurrentRound(io);
@@ -209,11 +219,76 @@ export function registerTournamentHandlers(io, socket, {
          }
          endOfYearRecap = { year: state.year, history: currentYearHistory, goldenRoadSecret: goldenRoadData };
          state.eventIndex = 0; state.year += 1; 
+         state.yearlyMeta = generateYearlyMeta(state.year);
+         // Réinitialisation de la connaissance de la méta pour la nouvelle année
+         allHumans.forEach(p => {
+           state.metaKnowledge[p.id] = {
+             points: 0,
+             scrimsAvailable: 3,
+             scrimsUsed: 0,
+             discoveredClues: [],
+             observations: [{
+               id: `obs-year-${Date.now()}`,
+               source: 'Saison',
+               text: `Année ${state.year} : Le nouveau patch de saison a complètement rebattu la méta régionale !`,
+               timestamp: '00:00',
+             }],
+           };
+         });
       }
+
+      // Bilan global d'apprentissage de la méta pour le tournoi entier (1 seul message par tournoi)
+      if (state.yearlyMeta && state.metaKnowledge) {
+        allHumans.forEach(p => {
+          const tracker = state.tournamentTracker?.[p.id];
+          const matchesPlayed = tracker?.matchesPlayed || 1;
+          const wins = tracker?.wins || 0;
+          const losses = tracker?.losses || 0;
+          const knowledge = state.metaKnowledge[p.id];
+
+          if (knowledge && p.roster) {
+            const metaCount = countMetaLeaguePlayers(p.roster, state.yearlyMeta.metaLeague);
+            const pointsPerMatch = calculatePointsGain(p.roster, state.yearlyMeta.metaLeague, false);
+            const totalTournamentPoints = pointsPerMatch * matchesPlayed;
+
+            addMetaProgress(knowledge, totalTournamentPoints, state.yearlyMeta, 'Tournoi', {
+              metaCount,
+              matchesPlayed,
+              wins,
+              losses,
+            });
+
+            // Décryptage des champions joués durant le tournoi (1 pt par match joué)
+            const prelocked = state.prelockedChampions?.[p.id] || {};
+            Object.values(prelocked).forEach(champId => {
+              if (champId) {
+                addChampionDecryptionPoints(knowledge, champId, Math.max(1, matchesPlayed));
+              }
+            });
+          }
+        });
+      }
+      state.tournamentTracker = {};
 
       resetTournamentState();
       state.seasonRound += 1;
       state.phase = 'cards';
+
+      // Réinitialisation du quota de scrims disponibles (3 max par inter-tournoi)
+      allHumans.forEach(p => {
+        if (!state.metaKnowledge) state.metaKnowledge = {};
+        if (!state.metaKnowledge[p.id]) {
+          state.metaKnowledge[p.id] = {
+            points: 0,
+            scrimsAvailable: 3,
+            scrimsUsed: 0,
+            discoveredClues: [],
+            observations: [],
+          };
+        } else {
+          state.metaKnowledge[p.id].scrimsAvailable = 3;
+        }
+      });
 
       if (endOfYearRecap) {
         clearGameTimeout('season-recap');

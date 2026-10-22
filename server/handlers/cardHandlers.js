@@ -153,6 +153,15 @@ export function registerCardHandlers(io, socket, {
     io.emit('draft-update', state);
   });
 
+  socket.on('set-prelocked-champion', ({ role, champId }) => {
+    const id = socket.id;
+    if (!ORDERED_ROLES.includes(role)) return;
+    if (!state.prelockedChampions) state.prelockedChampions = {};
+    if (!state.prelockedChampions[id]) state.prelockedChampions[id] = {};
+    state.prelockedChampions[id][role] = champId;
+    io.emit('draft-update', state);
+  });
+
   socket.on('toggle-lineup-ready', () => {
     if (state.phase !== 'cards') return;
     const id = socket.id;

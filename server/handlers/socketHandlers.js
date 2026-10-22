@@ -4,6 +4,7 @@ import { registerCardHandlers } from './cardHandlers.js';
 import { registerTournamentHandlers } from './tournamentHandlers.js';
 import { registerSaveHandlers } from './saveHandlers.js';
 import { registerDevHandlers } from './devHandlers.js';
+import { registerMetaHandlers } from './metaHandlers.js';
 
 const defaultGameManager = {
   async archive() {
@@ -35,4 +36,5 @@ export function registerSocketHandlers(io, socket, { gameManager = defaultGameMa
   registerTournamentHandlers(io, socket, context);
   registerSaveHandlers(io, socket, context);
   registerDevHandlers(io, socket, context);
+  registerMetaHandlers(io, socket, context);
 }

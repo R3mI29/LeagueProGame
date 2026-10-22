@@ -31,7 +31,7 @@ export default function SeasonRecapCinematic({ state }) {
   if (showGoldenRoad && recap.goldenRoadSecret) {
     const secret = recap.goldenRoadSecret;
     return (
-      <div className="fixed inset-0 bg-[#050001] z-[100000] flex flex-col justify-center items-center overflow-hidden font-['Oswald'] animate-[cinematicFade_8.5s_ease-in-out_forwards]">
+      <div className="fixed inset-0 bg-[#050001] z-[100000] flex flex-col justify-center items-center overflow-hidden font-rajdhani animate-[cinematicFade_8.5s_ease-in-out_forwards]">
         <style>{`
           @keyframes cinematicFade { 0% { opacity: 0; } 5% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
           @keyframes slowZoom { 0% { transform: scale(1.1); filter: grayscale(100%) contrast(1.2); } 20% { filter: grayscale(0%) contrast(1.1); } 100% { transform: scale(1.0); filter: grayscale(0%) contrast(1.1); } }
@@ -70,7 +70,7 @@ export default function SeasonRecapCinematic({ state }) {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
 
-      <h1 className="font-['Oswald'] text-white text-5xl mb-14 tracking-widest">
+      <h1 className="font-rajdhani font-bold text-white text-5xl mb-14 tracking-widest">
         PALMARÈS DE L'ANNÉE {recap.year}
       </h1>
 
@@ -98,7 +98,7 @@ export default function SeasonRecapCinematic({ state }) {
                 {eventDetails?.shortName}
               </div>
               
-              <div className="text-xl font-['Oswald'] text-[#D4AF37] font-bold text-center">
+              <div className="text-xl font-rajdhani text-[#D4AF37] font-bold text-center">
                 {h.winnerName}
               </div>
             </div>

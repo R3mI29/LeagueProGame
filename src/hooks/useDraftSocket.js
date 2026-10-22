@@ -44,9 +44,10 @@ export function useDraftSocket() {
 
   return {
     state,
-    matchReady: (id) => socket.emit('match-ready', id),
+    matchReady: (id, selectedChampions) => socket.emit('match-ready', id, selectedChampions),
     dismissMatch: (id) => socket.emit('dismiss-match', id),
     setLineupCard: (role, cardId) => socket.emit('set-lineup-card', { role, cardId }),
+    setPrelockedChampion: (role, champId) => socket.emit('set-prelocked-champion', { role, champId }),
     toggleLineupReady: () => socket.emit('toggle-lineup-ready'),
   };
 }

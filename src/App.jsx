@@ -203,7 +203,7 @@ export default function App() {
     if (!myPlayerInfo && state.phase !== 'lobby') return <TakeoverView state={state} socket={socket} />;
     
     if (state.phase === 'season_hub') return <SeasonHub state={state} />;
-    if (state.phase === 'cards') return <CardsView state={state} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} />;
+    if (state.phase === 'cards') return <CardsView state={state} setLineupCard={draft.setLineupCard} toggleLineupReady={draft.toggleLineupReady} setPrelockedChampion={draft.setPrelockedChampion} />;
 
     const currentEvent = EVENTS[state.eventIndex || 0];
     const myActiveMatch = getMyActiveMatch(state, socket.id);

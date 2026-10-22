@@ -55,7 +55,6 @@ export default function TeamSkinFrame({ skinId, highlight = false, className = '
         );
       })}
 
-      {highlight && <div className="absolute inset-x-0 top-0 z-[2] h-[3px] bg-accent-cyan" />}
       <div className="relative z-[1]">{children}</div>
     </div>
   );

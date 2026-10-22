@@ -108,7 +108,10 @@ export function cardToRosterEntry(card) {
   return { 
     id: card.id, 
     name: card.variant || card.baseName || card.name, 
+    baseName: card.baseName,
     role: card.role, 
+    league: card.league,
+    teamTag: card.teamTag,
     rating: card.rating || card.overall || 80,
     rarity: card.rarity,
     isFullArt: Boolean(card.isFullArt)

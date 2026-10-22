@@ -16,7 +16,7 @@ export default function SkinsTab({ state, myId }) {
   return (
     <div className="animate-[fadeIn_0.3s]">
       <div className="mb-8 flex items-end justify-between">
-        <h2 className="m-0 font-['Oswald'] text-[24px] tracking-[0.5px] text-white">CASIER DE SKINS</h2>
+        <h2 className="m-0 font-rajdhani font-bold text-[24px] tracking-[0.5px] text-white">CASIER DE SKINS</h2>
         <div className="text-sm text-text-faint">
           {ownedSkins.length} / {SKINS.length} skin{ownedSkins.length > 1 ? 's' : ''} débloqué{ownedSkins.length > 1 ? 's' : ''} · Personnalise le cadre de ton équipe en match
         </div>

@@ -5,7 +5,7 @@ export default function CircuitTab({ currentEventIndex, history }) {
   return (
     <div className="animate-[fadeIn_0.3s]">
       <div className="text-center mb-10">
-        <h2 className="font-['Oswald'] text-[32px] m-0 mb-2.5 text-white">
+        <h2 className="font-rajdhani font-bold text-[32px] m-0 mb-2.5 text-white">
           FEUILLE DE ROUTE OFFICIELLE
         </h2>
         <p className="text-[#768196] text-[15px]">
@@ -49,7 +49,7 @@ export default function CircuitTab({ currentEventIndex, history }) {
                 />
               </div>
 
-              <h3 className={`font-['Oswald'] m-0 mb-2 text-white text-center ${tourney.isMajor ? 'text-[22px]' : 'text-[18px]'}`}>
+              <h3 className={`font-rajdhani font-bold m-0 mb-2 text-white text-center ${tourney.isMajor ? 'text-[22px]' : 'text-[18px]'}`}>
                 {tourney.name}
               </h3>
 

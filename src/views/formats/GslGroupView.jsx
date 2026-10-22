@@ -23,7 +23,7 @@ export default function GslGroupView({ state, event }) {
   if (isWorlds) {
       theme = { ...theme,
           main: '#FFFFFF', accent: '#004DE6', bg: '#01040A', boxBg: 'rgba(10, 14, 25, 0.9)', 
-          border: 'rgba(255, 255, 255, 0.1)', font: "'Oswald', sans-serif", textMain: '#FFFFFF', textMuted: '#8A9CCC',
+          border: 'rgba(255, 255, 255, 0.1)', font: "'Rajdhani', sans-serif", textMain: '#FFFFFF', textMuted: '#8A9CCC',
           headerBg: 'transparent', headerText: '#FFFFFF', logoPlaceholder: 'rgba(255,255,255,0.05)',
           logoFilter: 'drop-shadow(0px 1px 3px rgba(255, 255, 255, 0.2))', boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
           bgStyle: { backgroundImage: `radial-gradient(circle at 50% 0%, rgba(0, 102, 255, 0.15) 0%, transparent 70%)` }

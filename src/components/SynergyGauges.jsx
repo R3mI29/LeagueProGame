@@ -121,7 +121,7 @@ export default function SynergyGauges({ synergy, compact = false }) {
   return (
     <div className="rounded-lg border border-[#222838] bg-[#131621] p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="m-0 font-['Oswald'] text-[18px] font-medium tracking-[0.5px] text-white">SYNERGIES</h3>
+        <h3 className="m-0 font-rajdhani text-[18px] font-bold tracking-[0.5px] text-white">SYNERGIES</h3>
         <span className={`text-sm font-bold ${synergy.bonus > 0 ? 'text-[#00e676]' : 'text-[#4a5266]'}`}>
           +{synergy.bonus}
         </span>

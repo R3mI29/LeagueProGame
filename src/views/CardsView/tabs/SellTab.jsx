@@ -50,7 +50,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
   return (
     <div className="animate-[fadeIn_0.3s]">
       <div className="text-center mb-10 relative">
-        <h2 className="font-['Oswald'] text-[36px] m-0 mb-2.5 text-white">
+        <h2 className="font-rajdhani font-bold text-[36px] m-0 mb-2.5 text-white">
           MARCHÉ DES TRANSFERTS
         </h2>
         <p className="text-text-faint text-[16px] max-w-2xl mx-auto">

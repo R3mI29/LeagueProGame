@@ -25,7 +25,7 @@ export default function SwissStageView({ state, event }) {
       theme = { ...theme,
           main: '#FFFFFF', accent: '#0066FF', bg: '#02050D', 
           boxBg: 'linear-gradient(180deg, rgba(12, 18, 38, 0.85) 0%, rgba(6, 10, 22, 0.95) 100%)', 
-          border: 'rgba(255, 255, 255, 0.15)', font: "'Oswald', sans-serif", textMain: '#FFFFFF', textMuted: '#8A9CCC',
+          border: 'rgba(255, 255, 255, 0.15)', font: "'Rajdhani', sans-serif", textMain: '#FFFFFF', textMuted: '#8A9CCC',
           headerBg: 'linear-gradient(90deg, rgba(0, 51, 153, 0.15), rgba(0, 102, 255, 0.3), rgba(0, 51, 153, 0.15))', 
           headerText: '#FFFFFF', logoPlaceholder: 'rgba(255,255,255,0.05)',
           logoFilter: 'drop-shadow(0px 2px 8px rgba(0, 102, 255, 0.5))', 

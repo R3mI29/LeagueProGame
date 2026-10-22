@@ -37,5 +37,10 @@ export function createInitialClientState() {
     recentPlacements: {},
     endOfYearRecap: null,
     awaitingResumeDecision: false,
+    yearlyMeta: null,
+    teamTactics: {},
+    metaKnowledge: {},
+    prelockedChampions: {},
+    championMastery: {},
   };
 }

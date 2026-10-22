@@ -5,6 +5,8 @@ import { grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
 import { shuffleArray, seedTeams } from '../utils/random.js';
+import { generateYearlyMeta } from '../../src/constants/metaConfig.js';
+
 
 // Barème de rattrapage sur les 4 derniers tournois (Max = 4 x 100$= 400$)
 const CATCHUP_VALUES = {
@@ -84,13 +86,11 @@ export function buildPlayoffsFromGroups() {
   state.champion = null;
 }
 
-export function startCardTournament(io) {
+export function initializeSeasonBots(gameState = state) {
   const TOTAL_TEAMS = 16;
   const isGeneratedBot = participant => participant.id.startsWith('bot-') || participant.isPermanentBot;
-  const playerTeams = state.participants.filter(participant => !isGeneratedBot(participant));
-  const existingBots = state.participants.filter(isGeneratedBot);
-
-  syncPlayerRosters();
+  const playerTeams = gameState.participants.filter(participant => !isGeneratedBot(participant));
+  const existingBots = gameState.participants.filter(isGeneratedBot);
 
   if (existingBots.length === 0) {
     const numBots = TOTAL_TEAMS - playerTeams.length;
@@ -100,35 +100,57 @@ export function startCardTournament(io) {
       const botRoster = generateBotRosterFromCards();
       const botTeam = getUniqueBotTeam(bots);
       
-      if (!state.cardCollections[botId]) state.cardCollections[botId] = {};
-      if (!state.activeLineups[botId]) state.activeLineups[botId] = {};
+      if (!gameState.cardCollections) gameState.cardCollections = {};
+      if (!gameState.activeLineups) gameState.activeLineups = {};
+      if (!gameState.cardCollections[botId]) gameState.cardCollections[botId] = {};
+      if (!gameState.activeLineups[botId]) gameState.activeLineups[botId] = {};
       
       botRoster.forEach(card => {
-          card.contract = 'LIFETIME';
-          state.cardCollections[botId][card.id] = 'LIFETIME';
-          state.activeLineups[botId][card.role] = card.id;
+        card.contract = 'LIFETIME';
+        gameState.cardCollections[botId][card.id] = 'LIFETIME';
+        gameState.activeLineups[botId][card.role] = card.id;
       });
 
       bots.push({ id: botId, name: botTeam.name, tag: botTeam.tag, logo: botTeam.logo, roster: botRoster, isBot: true });
     }
-    state.participants = [...playerTeams, ...bots];
-  } else {
-    state.participants = [...playerTeams, ...existingBots];
+    gameState.participants = [...playerTeams, ...bots];
   }
 
-  if (!state.seasonScores) {
-    state.seasonScores = {};
-    state.participants.forEach(p => { state.seasonScores[p.id] = { points: 0, titles: 0 }; });
+  if (!gameState.seasonScores) {
+    gameState.seasonScores = {};
+    gameState.participants.forEach(p => { gameState.seasonScores[p.id] = { points: 0, titles: 0 }; });
   }
 
-  if (!state.recentPlacements) {
-    state.recentPlacements = {};
-    state.participants.forEach(p => { state.recentPlacements[p.id] = []; });
+  if (!gameState.recentPlacements) {
+    gameState.recentPlacements = {};
+    gameState.participants.forEach(p => { gameState.recentPlacements[p.id] = []; });
   }
 
   // S'assurer que les bots équipent leur skin le plus rare
+  gameState.participants.forEach(p => {
+    if (isBotCheck(p)) equipRarestSkin(gameState, p.id);
+  });
+}
+
+export function startCardTournament(io) {
+  syncPlayerRosters();
+  initializeSeasonBots(state);
+
+  // Initialisation de la méta secrète régionale
+  if (!state.yearlyMeta) {
+    state.yearlyMeta = generateYearlyMeta(state.year || 1);
+  }
+  if (!state.metaKnowledge) state.metaKnowledge = {};
   state.participants.forEach(p => {
-    if (isBotCheck(p)) equipRarestSkin(state, p.id);
+    if (!state.metaKnowledge[p.id]) {
+      state.metaKnowledge[p.id] = {
+        points: 0,
+        scrimsAvailable: 3,
+        scrimsUsed: 0,
+        discoveredClues: [],
+        observations: [],
+      };
+    }
   });
 
   state.phase = 'season_hub';

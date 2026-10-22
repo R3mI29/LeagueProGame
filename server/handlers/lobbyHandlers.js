@@ -11,6 +11,7 @@ import {
 } from '../services/playerSessionService.js';
 import { startAllBotMatchesInCurrentRound } from '../services/matchService.js';
 import { SKIN_BY_ID, canUseSkin } from '../../src/constants/teamSkins.js';
+import { initializeSeasonBots } from '../services/tournamentService.js';
 
 export function registerLobbyHandlers(io, socket, {
   state = defaultState,
@@ -142,6 +143,7 @@ export function registerLobbyHandlers(io, socket, {
   socket.on('start-draft', () => {
     if (state.phase === 'lobby' && state.participants.length >= 1) {
       prepareNewGame(state.participants);
+      initializeSeasonBots(state);
       io.emit('draft-update', state);
     }
   });

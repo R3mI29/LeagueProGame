@@ -4,6 +4,14 @@ import { CUSTOM_CARD_EVENTS } from '../../src/constants/cardEvents.js';
 import { SECRET_UNLOCKS } from '../../src/constants/secretUnlocks.js';
 import { isBotCheck, advanceTeam } from './playerService.js';
 import { getSynergy } from '../../src/constants/synergy.js';
+import { 
+  evaluateTeamMetaSynergy, 
+  calculatePointsGain, 
+  countMetaLeaguePlayers, 
+  addMetaProgress,
+  evaluateTeamChampionPicks,
+  selectBotTeamChampions
+} from '../../src/constants/metaConfig.js';
 
 export function getTeamRating(team) {
   if (!team || !team.roster || team.roster.length === 0) return 0;
@@ -13,8 +21,29 @@ export function getTeamRating(team) {
 export function simulateGame(match, state) {
   const teamA = match.teamA;
   const teamB = match.teamB;
-  let ratingA = getTeamRating(teamA) + getSynergy(teamA.roster).bonus + (match.boBuffA || 0);
-  let ratingB = getTeamRating(teamB) + getSynergy(teamB.roster).bonus + (match.boBuffB || 0);
+
+  if (!match.teamPicks) match.teamPicks = {};
+  if (!match.teamPicks.A && teamA?.roster) {
+    const prelockedA = state?.prelockedChampions?.[teamA.id];
+    match.teamPicks.A = prelockedA && Object.keys(prelockedA).length > 0
+      ? { ...prelockedA }
+      : selectBotTeamChampions(teamA.roster, state?.yearlyMeta, state?.championMastery);
+  }
+  if (!match.teamPicks.B && teamB?.roster) {
+    const prelockedB = state?.prelockedChampions?.[teamB.id];
+    match.teamPicks.B = prelockedB && Object.keys(prelockedB).length > 0
+      ? { ...prelockedB }
+      : selectBotTeamChampions(teamB.roster, state?.yearlyMeta, state?.championMastery);
+  }
+
+  const metaA = evaluateTeamMetaSynergy(teamA.roster, state?.yearlyMeta);
+  const metaB = evaluateTeamMetaSynergy(teamB.roster, state?.yearlyMeta);
+
+  const champSynergyA = evaluateTeamChampionPicks(teamA.roster, match.teamPicks?.A || {}, state?.yearlyMeta, state?.championMastery);
+  const champSynergyB = evaluateTeamChampionPicks(teamB.roster, match.teamPicks?.B || {}, state?.yearlyMeta, state?.championMastery);
+
+  let ratingA = getTeamRating(teamA) + getSynergy(teamA.roster).bonus + (match.boBuffA || 0) + metaA.bonus + (champSynergyA.totalChampionMetaBonus) + (champSynergyA.totalMasteryBonus / 5);
+  let ratingB = getTeamRating(teamB) + getSynergy(teamB.roster).bonus + (match.boBuffB || 0) + metaB.bonus + (champSynergyB.totalChampionMetaBonus) + (champSynergyB.totalMasteryBonus / 5);
   const triggeredEvents = [];
   const ALL_EVENTS = [...CUSTOM_CARD_EVENTS];
 
@@ -121,6 +150,23 @@ export function finalizeMatch(match, io, gameState = state) {
 
   SECRET_UNLOCKS.forEach(secret => secret.checkAndApply(match, gameState, io));
   applyTournamentResult(match, gameState);
+
+  // Suivi des matchs de tournoi joués par les équipes humaines pour le bilan global du tournoi
+  if (!gameState.tournamentTracker) gameState.tournamentTracker = {};
+  [match.teamA, match.teamB].forEach(team => {
+    if (team && !isBotCheck(team)) {
+      if (!gameState.tournamentTracker[team.id]) {
+        gameState.tournamentTracker[team.id] = { matchesPlayed: 0, wins: 0, losses: 0 };
+      }
+      gameState.tournamentTracker[team.id].matchesPlayed += 1;
+      if (team.id === match.winner?.id) {
+        gameState.tournamentTracker[team.id].wins += 1;
+      } else {
+        gameState.tournamentTracker[team.id].losses += 1;
+      }
+    }
+  });
+
   return match;
 }
 

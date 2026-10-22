@@ -79,23 +79,23 @@ export default function LobbyView({ state, socket }) {
   if (amIJoined) {
     return (
       <div className="min-h-screen bg-bg-dark text-white flex flex-col items-center overflow-y-auto py-8 px-10 pb-28 font-sans">
-        <h1 className="text-[42px] mb-10 text-accent-blue-light tracking-[2px] font-extrabold uppercase">
+        <h1 className="text-[42px] mb-8 text-accent-blue-light tracking-[2px] font-extrabold uppercase">
           SALLE D'ATTENTE ({state.participants.length}/16)
         </h1>
         
         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6 w-full max-w-[1400px]">
             {state.participants.map(p => (
-                <div key={p.id} className="bg-bg-card border border-border rounded-xl p-6 flex items-center gap-5 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-                    {p.logo ? (
-                      <img src={p.logo} alt="" className="w-12 h-12 object-contain" />
-                    ) : (
-                      <div className="w-12 h-12 bg-border rounded-lg" />
-                    )}
-                    <div>
-                        <div className="text-[15px] text-accent-blue font-extrabold tracking-[1px] uppercase">[{p.tag}]</div>
-                        <div className="text-[20px] font-semibold text-[#F0F0F2]">{p.name}</div>
-                    </div>
+              <div key={p.id} className="bg-bg-card border border-border rounded-xl p-5 flex items-center gap-4 shadow-[0_8px_24px_rgba(0,0,0,0.4)] transition-all hover:border-accent-blue/40">
+                {p.logo ? (
+                  <img src={p.logo} alt="" className="w-12 h-12 object-contain shrink-0" />
+                ) : (
+                  <div className="w-12 h-12 bg-border rounded-lg shrink-0" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] text-accent-blue font-extrabold tracking-[1px] uppercase">[{p.tag}]</div>
+                  <div className="text-[18px] font-semibold text-[#F0F0F2] truncate">{p.name}</div>
                 </div>
+              </div>
             ))}
         </div>
 

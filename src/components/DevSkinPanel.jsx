@@ -9,7 +9,7 @@ export default function DevSkinPanel({ state }) {
   return (
     <div className="rounded-lg border border-[#222838] bg-[#11141E] p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h3 className="m-0 font-['Oswald'] text-[18px] tracking-[0.5px] text-white">SKINS D'ÉQUIPE</h3>
+        <h3 className="m-0 font-rajdhani font-bold text-[18px] tracking-[0.5px] text-white">SKINS D'ÉQUIPE</h3>
         <div className="flex gap-2">
           <button
             onClick={() => send('unlock-all')}
