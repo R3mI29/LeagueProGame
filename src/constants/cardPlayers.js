@@ -392,6 +392,7 @@ export const CARD_POOL = [
     "rating": 97,
     "rarity": "WANTED",
     "image": "/cardsImg/others/TheShy_legend.jpg",
+    "video": "/videos/theshy_god.mp4",
     "nationality": "KR",
     "teamTag": "IG",
     "league": "LPL"
@@ -833,6 +834,7 @@ export const CARD_POOL = [
     "rating": 97,
     "rarity": "WANTED",
     "image": "/cardsImg/others/showmaker_prime.jpg",
+    "video": "/videos/showmaker_legend.mp4",
     "nationality": "KR",
     "teamTag": "DWG",
     "league": "LCK"
@@ -845,6 +847,7 @@ export const CARD_POOL = [
     "rating": 94,
     "rarity": "WANTED",
     "image": "/cardsImg/others/showmaker_mentor.jpg",
+    "video": "/videos/showmaker_legend.mp4",
     "nationality": "KR",
     "teamTag": "DK",
     "league": "LCK"
@@ -1537,7 +1540,7 @@ export const CARD_POOL = [
     "baseName": "Lehends",
     "variant": "2024 MSI MVP",
     "role": "Support",
-    "rating": 92,
+    "rating": 91,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/msi_mvp_lehends.jpg",
     "nationality": "KR",
@@ -1693,7 +1696,7 @@ export const CARD_POOL = [
     "baseName": "Meiko",
     "variant": "LPL Legend",
     "role": "Support",
-    "rating": 92,
+    "rating": 93,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/legend_MEIKO.jpg",
     "nationality": "CN",
@@ -1872,6 +1875,7 @@ export const CARD_POOL = [
     "rating": 99,
     "rarity": "WANTED",
     "image": "/cardsImg/others/faker_UDK2.jpg",
+    "video": "/videos/faker_unkillable.mp4",
     "nationality": "KR",
     "teamTag": "T1",
     "league": "LCK"
@@ -1941,7 +1945,7 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "3x World Champion",
     "role": "Support",
-    "rating": 92,
+    "rating": 94,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/T1_keria.jpg",
     "nationality": "KR",
@@ -1956,6 +1960,7 @@ export const CARD_POOL = [
     "rating": 97,
     "rarity": "WANTED",
     "image": "/cardsImg/others/3PEAT_keria.jpg",
+    "video": "/videos/keria_worlds.mp4",
     "nationality": "KR",
     "teamTag": "T1",
     "league": "LCK"
@@ -1988,6 +1993,32 @@ export const CARD_POOL = [
     "nationality": "IT",
     "teamTag": "KCB",
     "league": "LEC"
+  },
+
+  {
+    "id": "custom-career-1793322845982",
+    "baseName": "Career",
+    "variant": "DK Career",
+    "role": "Support",
+    "rating": 82,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/dk_career.webp",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
+  },
+
+  {
+    "id": "custom-career-1793322955045",
+    "baseName": "CAREER",
+    "variant": "EWC Champion",
+    "role": "Support",
+    "rating": 86,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/dk_career_ewc.jpg",
+    "nationality": "KR",
+    "teamTag": "DK",
+    "league": "LCK"
   },
 
 ];

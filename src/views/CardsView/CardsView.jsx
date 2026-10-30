@@ -3,22 +3,19 @@ import { socket } from '../../api/socket';
 import { ORDERED_ROLES } from '../../constants/roles';
 import { CARD_POOL } from '../../constants/cardPlayers';
 
-
 // Import des sous-composants (les onglets)
 import RosterTab from './tabs/RosterTab';
-import MetaTab from './tabs/MetaTab';
 import ShopTab from './tabs/ShopTab';
 import SellTab from './tabs/SellTab';
 import CircuitTab from './tabs/CircuitTab';
 import HallOfFameTab from './tabs/HallOfFameTab';
 import SkinsTab from './tabs/SkinsTab';
 
-
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
 }
 
-export default function CardsView({ state, setLineupCard, toggleLineupReady, setPrelockedChampion }) {
+export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   const myId = socket.id;
   const [activeTab, setActiveTab] = useState('roster'); 
 
@@ -83,7 +80,6 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady, set
           <div className="flex gap-2">
             {[
               { id: 'roster', label: 'Gestion Équipe' },
-              { id: 'meta', label: 'Méta & Analyse' },
               { id: 'shop', label: 'Boutique' },
               { id: 'sell', label: 'Revente' },
               { id: 'circuit', label: 'Compétitions' },
@@ -93,10 +89,10 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady, set
               <button
                 key={tab.id}
                 onClick={() => {
-                  if (!isReady || tab.id === 'roster' || tab.id === 'meta') setActiveTab(tab.id);
+                  if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
                 }}
-                disabled={isReady && tab.id !== 'roster' && tab.id !== 'meta'}
-                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster' && tab.id !== 'meta') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                disabled={isReady && tab.id !== 'roster'}
+                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 {tab.label}
               </button>
@@ -119,11 +115,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady, set
             lineupComplete={lineupComplete}
             teamPower={teamPower}
             state={state}
-            setPrelockedChampion={setPrelockedChampion}
           />
         )}
-
-        {activeTab === 'meta' && <MetaTab state={state} myId={myId} />}
 
         {activeTab === 'skins' && <SkinsTab state={state} myId={myId} />}
 

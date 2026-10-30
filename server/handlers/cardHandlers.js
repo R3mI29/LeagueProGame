@@ -10,6 +10,7 @@ export function registerCardHandlers(io, socket, {
 } = {}) {
   socket.on('buy-pack', (packTypeId = 'standard') => {
     if (state.phase !== 'cards') return;
+    if (packTypeId === 'wanted') return;
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
     
@@ -30,7 +31,8 @@ export function registerCardHandlers(io, socket, {
 
     const openedCardsWithContracts = [];
     cards.forEach(c => {
-      let contractToAdd = isStarter ? 'LIFETIME' : (Math.random() < 0.02 ? 'LIFETIME' : Math.floor(Math.random() * 9) + 1);
+      const lifetimeChance = isStarter ? 1 : (packTypeId === 'wanted' ? 0.10 : 0.02);
+      let contractToAdd = isStarter ? 'LIFETIME' : (Math.random() < lifetimeChance ? 'LIFETIME' : Math.floor(Math.random() * 9) + 1);
       openedCardsWithContracts.push({ id: c.id, contractAdded: contractToAdd });
     });
 
@@ -42,22 +44,20 @@ export function registerCardHandlers(io, socket, {
   });
 
   socket.on('close-pack', () => {
-    if (state.phase === 'cards') {
-      const id = socket.id;
-      if (state.pendingPackResults && state.pendingPackResults[id]) {
-        if (!state.cardCollections[id]) state.cardCollections[id] = {};
-        state.pendingPackResults[id].forEach(item => {
-          const cardId = item.id;
-          const contractToAdd = item.contractAdded;
-          let currentContract = state.cardCollections[id][cardId] || 0;
-          if (currentContract === 'LIFETIME' || contractToAdd === 'LIFETIME') state.cardCollections[id][cardId] = 'LIFETIME';
-          else state.cardCollections[id][cardId] = currentContract + contractToAdd;
-        });
-        delete state.pendingPackResults[id];
-      }
-      if (state.lastOpenedPack[id]) state.lastOpenedPack[id] = [];
-      io.emit('draft-update', state);
+    const id = socket.id;
+    if (state.pendingPackResults && state.pendingPackResults[id]) {
+      if (!state.cardCollections[id]) state.cardCollections[id] = {};
+      state.pendingPackResults[id].forEach(item => {
+        const cardId = item.id;
+        const contractToAdd = item.contractAdded;
+        let currentContract = state.cardCollections[id][cardId] || 0;
+        if (currentContract === 'LIFETIME' || contractToAdd === 'LIFETIME') state.cardCollections[id][cardId] = 'LIFETIME';
+        else state.cardCollections[id][cardId] = currentContract + contractToAdd;
+      });
+      delete state.pendingPackResults[id];
     }
+    if (state.lastOpenedPack && state.lastOpenedPack[id]) state.lastOpenedPack[id] = [];
+    io.emit('draft-update', state);
   });
 
   socket.on('toggle-lock-card', (cardId) => {
@@ -153,14 +153,6 @@ export function registerCardHandlers(io, socket, {
     io.emit('draft-update', state);
   });
 
-  socket.on('set-prelocked-champion', ({ role, champId }) => {
-    const id = socket.id;
-    if (!ORDERED_ROLES.includes(role)) return;
-    if (!state.prelockedChampions) state.prelockedChampions = {};
-    if (!state.prelockedChampions[id]) state.prelockedChampions[id] = {};
-    state.prelockedChampions[id][role] = champId;
-    io.emit('draft-update', state);
-  });
 
   socket.on('toggle-lineup-ready', () => {
     if (state.phase !== 'cards') return;

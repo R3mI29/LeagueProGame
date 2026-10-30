@@ -25,6 +25,13 @@ export const PACK_TYPES = {
     size: 5,
     // Chances x5 sur les cartes Épiques, Légendaires et WANTED
     weights: { Commune: 155, Rare: 580, 'Épique': 200, 'Légendaire': 50, WANTED: 15 }
+  },
+  wanted: {
+    name: "Pack WANTED",
+    price: 9000,
+    size: 5,
+    // Zéro commune. 30% Rare, 45% Épique, 17% Légendaire, 8% WANTED (par carte)
+    weights: { Commune: 0, Rare: 0, 'Épique': 0, 'Légendaire': 0, WANTED: 80 }
   }
 };
 

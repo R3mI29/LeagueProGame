@@ -77,6 +77,9 @@ test('registerSocketHandlers registers all handlers across all domains', () => {
     'dev-give-card',
     'dev-give-money',
     'dev-set-event',
+    'dev-open-pack',
+    'dev-save-custom-card',
+    'dev-delete-custom-card',
   ];
 
   for (const eventName of expectedEvents) {
@@ -132,4 +135,24 @@ test('cardHandlers sell-all-unlocked uses SELL_PRICES correctly', () => {
   assert.equal(state.cardCollections['p1']['edg_zdz'], undefined);
   assert.equal(state.cardCollections['p1']['t1-zeus'], undefined);
   assert.equal(state.economy['p1'], 10 + 5 + 15);
+});
+test('devHandlers dev-open-pack opens a wanted pack and sets lastOpenedPack', () => {
+  resetGameState();
+  const io = createMockIo();
+  const socket = createMockSocket('dev-user');
+
+  registerSocketHandlers(io, socket);
+
+  socket.handlers['dev-open-pack']('wanted');
+
+  assert.ok(Array.isArray(state.lastOpenedPack['dev-user']));
+  assert.equal(state.lastOpenedPack['dev-user'].length, 5);
+  assert.ok(Array.isArray(state.pendingPackResults['dev-user']));
+  assert.equal(state.pendingPackResults['dev-user'].length, 5);
+
+  // Closing the pack should claim the cards
+  socket.handlers['close-pack']();
+  assert.equal(state.lastOpenedPack['dev-user'].length, 0);
+  assert.equal(state.pendingPackResults['dev-user'], undefined);
+  assert.ok(Object.keys(state.cardCollections['dev-user']).length > 0);
 });

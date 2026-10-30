@@ -5,12 +5,14 @@ import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
 import DevSkinPanel from '../components/DevSkinPanel';
+import CardCreator from '../components/CardCreator';
 
 const RARITY_ORDER = { 'Commune': 1, 'Rare': 2, 'Épique': 3, 'Légendaire': 4, 'WANTED': 5, "SECRET" : 6 };
 
 const DEV_TABS = [
   { id: 'cards', label: 'CARTES' },
   { id: 'skins', label: 'SKINS' },
+  { id: 'creator', label: 'CRÉATEUR' },
 ];
 
 export default function DevCardsView({ onClose, state }) {
@@ -24,6 +26,10 @@ export default function DevCardsView({ onClose, state }) {
   const handleGiveCard = (cardId) => socket.emit('dev-give-card', cardId);
   const handleSetEvent = (idx) => socket.emit('dev-set-event', idx);
   const handleGiveMoney = () => socket.emit('dev-give-money', 1000);
+  const handleOpenWantedPack = () => {
+    socket.emit('dev-open-pack', 'wanted');
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 bg-[#08090d]/95 backdrop-blur-md z-[10000] flex flex-col p-5 font-sans">
@@ -68,14 +74,22 @@ export default function DevCardsView({ onClose, state }) {
 
             <div className="bg-[#0C0E14] p-4 rounded-lg border border-[#ffd700]/25">
               <h3 className="font-rajdhani text-white m-0 mb-3 text-lg uppercase tracking-wide">
-                RESSOURCES
+                RESSOURCES & PACKS
               </h3>
-              <button 
-                onClick={handleGiveMoney}
-                className="bg-[#FFD700] text-black border-none py-2.5 px-5 rounded text-sm font-bold cursor-pointer font-rajdhani tracking-wider shadow-[0_4px_15px_rgba(255,215,0,0.2)] transition-transform active:scale-95"
-              >
-                💰 +1000 CRÉDITS
-              </button>
+              <div className="flex gap-3 flex-wrap">
+                <button 
+                  onClick={handleGiveMoney}
+                  className="bg-[#FFD700] text-black border-none py-2.5 px-5 rounded text-sm font-bold cursor-pointer font-rajdhani tracking-wider shadow-[0_4px_15px_rgba(255,215,0,0.2)] transition-transform active:scale-95 hover:brightness-110"
+                >
+                  💰 +1000 CRÉDITS
+                </button>
+                <button 
+                  onClick={handleOpenWantedPack}
+                  className="bg-gradient-to-r from-white via-[#ffd700] to-white text-black border-none py-2.5 px-4 rounded text-sm font-black cursor-pointer font-rajdhani tracking-wider shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-transform active:scale-95 hover:brightness-110"
+                >
+                  👑 OUVRIR PACK WANTED
+                </button>
+              </div>
             </div>
           </div>
 
@@ -156,9 +170,13 @@ export default function DevCardsView({ onClose, state }) {
                 );
               })}
             </div>
-          ) : (
+          ) : devTab === 'skins' ? (
             <div className="max-w-[900px] mx-auto pb-10">
               <DevSkinPanel state={state} />
+            </div>
+          ) : (
+            <div className="max-w-[1100px] mx-auto pb-10">
+              <CardCreator />
             </div>
           )}
         </div>

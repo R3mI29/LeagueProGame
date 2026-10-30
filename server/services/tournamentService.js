@@ -5,7 +5,6 @@ import { grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
 import { shuffleArray, seedTeams } from '../utils/random.js';
-import { generateYearlyMeta } from '../../src/constants/metaConfig.js';
 
 
 // Barème de rattrapage sur les 4 derniers tournois (Max = 4 x 100$= 400$)
@@ -136,22 +135,6 @@ export function startCardTournament(io) {
   syncPlayerRosters();
   initializeSeasonBots(state);
 
-  // Initialisation de la méta secrète régionale
-  if (!state.yearlyMeta) {
-    state.yearlyMeta = generateYearlyMeta(state.year || 1);
-  }
-  if (!state.metaKnowledge) state.metaKnowledge = {};
-  state.participants.forEach(p => {
-    if (!state.metaKnowledge[p.id]) {
-      state.metaKnowledge[p.id] = {
-        points: 0,
-        scrimsAvailable: 3,
-        scrimsUsed: 0,
-        discoveredClues: [],
-        observations: [],
-      };
-    }
-  });
 
   state.phase = 'season_hub';
   if (state.eventIndex === undefined) state.eventIndex = 0;
