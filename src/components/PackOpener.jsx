@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CARD_POOL } from '../constants/cardPlayers'; 
+import { CARD_POOL, RARITY_ORDER } from '../constants/cardPlayers'; 
 import CardIllustration from './CardIllustration';
 import { TEAMS_DB } from '../constants/teams'; 
 
@@ -118,21 +118,25 @@ function ScreenShatterReveal({ children, onStartVideo, onShatterComplete }) {
         </g>
       </svg>
 
-      {/* Les 9 Fragments découpés qui composent l'écran et tombent vers le bas dès l'étape 6 (BAM à 6.4s) */}
-      {SHARDS.map(s => (
+      {/* Écran intact unique (étapes 0 à 5) — AUCUNE marque de découpe ou couture polygonale visible */}
+      {!isFalling && (
+        <div className="absolute inset-0 bg-[#050508] z-10">
+          {children}
+        </div>
+      )}
+
+      {/* Les 9 Fragments découpés qui composent l'écran et tombent vers le bas UNIQUEMENT dès l'étape 6 (BAM à 6.4s) */}
+      {isFalling && SHARDS.map(s => (
         <div
           key={s.id}
-          className="absolute inset-0 bg-[#050508]"
+          className="absolute inset-0 bg-[#050508] z-20"
           style={{
             clipPath: s.clip,
-            transform: isFalling
-              ? `translate(${s.dx}, ${s.dy}) rotate(${s.rot}deg)`
-              : 'translate(0, 0) rotate(0deg)',
-            transition: isFalling
-              ? `transform 0.95s cubic-bezier(0.5, 0, 0.85, 0.3) ${s.delay}s, opacity 0.4s ease-in ${s.delay + 0.45}s`
-              : 'none',
-            opacity: isFalling ? 0 : 1,
-            boxShadow: isFalling ? '0 15px 30px rgba(0,0,0,0.8)' : 'none',
+            '--sh-dx': s.dx,
+            '--sh-dy': s.dy,
+            '--sh-rot': `${s.rot}deg`,
+            animation: `shardFallDrop 0.95s cubic-bezier(0.5, 0, 0.85, 0.3) ${s.delay}s forwards`,
+            boxShadow: '0 15px 30px rgba(0,0,0,0.8)',
           }}
         >
           {children}
@@ -152,8 +156,24 @@ export default function PackOpener({ cardIds, onClose }) {
   const [videoWatched, setVideoWatched] = useState(false);
   const videoRef = useRef(null);
 
-  const showSummary = currentIndex >= cardIds.length;
-  const currentItem = !showSummary ? cardIds[currentIndex] : null;
+  // Garantir le tri : les moins rares & scores les plus bas d'abord -> les plus rares & meilleurs scores en dernier
+  const sortedCardIds = React.useMemo(() => {
+    if (!Array.isArray(cardIds)) return [];
+    return [...cardIds].sort((itemA, itemB) => {
+      const cardA = CARD_POOL.find(c => c.id === (itemA?.id || itemA));
+      const cardB = CARD_POOL.find(c => c.id === (itemB?.id || itemB));
+      if (!cardA || !cardB) return 0;
+      const rarityA = RARITY_ORDER[cardA.rarity] ?? 0;
+      const rarityB = RARITY_ORDER[cardB.rarity] ?? 0;
+      if (rarityA !== rarityB) return rarityA - rarityB;
+      const ratingA = Number(cardA.overall || cardA.rating || 0);
+      const ratingB = Number(cardB.overall || cardB.rating || 0);
+      return ratingA - ratingB;
+    });
+  }, [cardIds]);
+
+  const showSummary = currentIndex >= sortedCardIds.length;
+  const currentItem = !showSummary ? sortedCardIds[currentIndex] : null;
   const currentCardId = currentItem?.id || currentItem;
   const currentCard = CARD_POOL.find(c => c.id === currentCardId);
 
@@ -162,6 +182,33 @@ export default function PackOpener({ cardIds, onClose }) {
   const wantedVideo = currentCard?.video || null;
 
   const [hadVideoTransition, setHadVideoTransition] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const isTouch = typeof window !== 'undefined' && (
+        'ontouchstart' in window ||
+        (navigator.maxTouchPoints && navigator.maxTouchPoints > 0) ||
+        window.matchMedia('(max-width: 768px)').matches ||
+        window.matchMedia('(pointer: coarse)').matches
+      );
+      setIsMobileDevice(Boolean(isTouch));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleSkip = () => {
+    if (isCracking || isPlayingVideo) {
+      setIsCracking(false);
+      finishVideo(true);
+      return;
+    }
+    if (revealStep < finalStep) {
+      setRevealStep(finalStep);
+    }
+  };
 
   const finishVideo = (wasPlayed = false) => {
     setIsPlayingVideo(false);
@@ -269,18 +316,30 @@ export default function PackOpener({ cardIds, onClose }) {
 
   if (!cardIds || cardIds.length === 0 || isClosing) return null;
 
-  // Passage au CLIC (Bloqué pendant l'animation)
+  // Interaction au clic / toucher
   const handleNext = () => {
-    if (isCracking || isPlayingVideo) {
-      setIsCracking(false);
-      finishVideo(true);
+    if (showSummary) return;
+
+    const isAnimationRunning = isCracking || isPlayingVideo || revealStep < finalStep;
+
+    // Sur ordi : le clic NE PEUT PAS skip les animations, ça doit rester ESPACE uniquement
+    if (!isMobileDevice && isAnimationRunning) {
       return;
     }
-    if (!showSummary && revealStep >= finalStep) {
+
+    // Sur mobile : toucher l'écran permet de skip l'animation
+    if (isMobileDevice && isAnimationRunning) {
+      handleSkip();
+      return;
+    }
+
+    // Animation terminée (carte révélée) : clic ou tap passe à la carte suivante
+    if (revealStep >= finalStep) {
       setCurrentIndex(prev => prev + 1); 
       setRevealStep(0); 
       setVideoWatched(false);
       setIsPlayingVideo(false);
+      setIsCracking(false);
       setHadVideoTransition(false);
     }
   };
@@ -443,6 +502,21 @@ export default function PackOpener({ cardIds, onClose }) {
           0% { opacity: 0; }
           15% { opacity: 0.95; }
           100% { opacity: 0; }
+        }
+
+        /* Chute réaliste des éclats dès la rupture (étape 6) */
+        @keyframes shardFallDrop {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          65% {
+            opacity: 1;
+          }
+          100% {
+            transform: translate(var(--sh-dx), var(--sh-dy)) rotate(var(--sh-rot));
+            opacity: 0;
+          }
         }`}</style>
 
       {/* LECTEUR VIDÉO AVANT ANIMATION WANTED (Actif dès isCracking en arrière-plan) */}
@@ -451,7 +525,9 @@ export default function PackOpener({ cardIds, onClose }) {
           className={`fixed inset-0 bg-black flex items-center justify-center select-none ${
             isPlayingVideo ? 'z-[9999] cursor-pointer pointer-events-auto' : 'z-[9990] pointer-events-none'
           }`}
-          onClick={isPlayingVideo ? () => finishVideo(true) : undefined}
+          onClick={isPlayingVideo ? () => {
+            if (isMobileDevice) finishVideo(true);
+          } : undefined}
         >
           <video
             ref={videoRef}
@@ -463,21 +539,43 @@ export default function PackOpener({ cardIds, onClose }) {
           />
           {isPlayingVideo && (
             <div className="absolute bottom-8 right-8 z-50 flex items-center gap-3 pointer-events-auto">
-              <span className="text-white/70 font-rajdhani text-xs tracking-[2px] uppercase bg-black/70 px-4 py-2 rounded-full border border-white/15 backdrop-blur-md">
-                Passer la vidéo (ESPACE ou CLIC) ⏭
-              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isMobileDevice) finishVideo(true);
+                }}
+                className="text-white/70 font-rajdhani text-xs tracking-[2px] uppercase bg-black/70 px-4 py-2 rounded-full border border-white/15 backdrop-blur-md cursor-pointer"
+              >
+                {isMobileDevice ? "Passer la vidéo (Touchez) ⏭" : "Passer la vidéo (ESPACE) ⏭"}
+              </button>
             </div>
           )}
         </div>
       )}
 
+      {/* Bouton passer dédié sur mobile lors d'une animation en cours */}
+      {isMobileDevice && !showSummary && (revealStep < finalStep || isCracking || isPlayingVideo) && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleSkip();
+          }}
+          className="fixed top-4 right-4 z-[10005] bg-black/85 hover:bg-black text-[#D4AF37] border border-[#D4AF37]/60 px-4 py-2 rounded-full font-rajdhani text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(212,175,55,0.3)] backdrop-blur-md flex items-center gap-2 pointer-events-auto cursor-pointer"
+        >
+          <span>⏭</span>
+          <span>Passer</span>
+        </button>
+      )}
+
       {showSummary ? (
-        <div className="flex flex-col items-center animate-[fadeIn_0.4s] w-full max-w-[1200px]">
-          <div className="text-[26px] text-[#FFB020] mb-10 font-rajdhani font-bold tracking-[2px]">
+        <div className="flex flex-col items-center animate-[fadeIn_0.4s] w-full max-w-[1200px] px-4 py-8 overflow-y-auto max-h-[92vh]">
+          <div className="text-[22px] sm:text-[26px] text-[#FFB020] mb-6 sm:mb-10 font-rajdhani font-bold tracking-[2px] text-center">
             RÉCAPITULATIF DU PACK
           </div>
-          <div className="flex gap-5 flex-wrap justify-center">
-            {cardIds.map((item, index) => {
+          <div className="flex gap-3 sm:gap-5 flex-wrap justify-center">
+            {sortedCardIds.map((item, index) => {
               const c = CARD_POOL.find(card => card.id === (item.id || item));
               return (
                 <div key={index} className="flex flex-col items-center gap-2.5 animate-[fadeIn_0.4s]" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -488,7 +586,7 @@ export default function PackOpener({ cardIds, onClose }) {
           </div>
           <button 
             onClick={handleClose}
-            className="mt-14 bg-[#4CE0D2] text-[#0A0E14] py-3.5 px-7 rounded text-[15px] font-bold font-rajdhani tracking-wider transition-transform active:scale-95 shadow-[0_4px_15px_rgba(76,224,210,0.3)]"
+            className="mt-8 sm:mt-14 bg-[#4CE0D2] text-[#0A0E14] py-3.5 px-7 rounded text-[15px] font-bold font-rajdhani tracking-wider transition-transform active:scale-95 shadow-[0_4px_15px_rgba(76,224,210,0.3)] cursor-pointer"
           >
             AJOUTER À LA COLLECTION
           </button>
@@ -516,7 +614,7 @@ export default function PackOpener({ cardIds, onClose }) {
           {/* L'écran unique et continu de l'étape 4 avec le logo du club qui se fissure et se brise */}
           <div className="relative flex flex-col items-center justify-center w-full h-full select-none">
             <div className="absolute top-10 text-lg text-text-muted font-rajdhani tracking-[2px] font-bold z-50">
-              CARTE {currentIndex + 1} / {cardIds.length}
+              CARTE {currentIndex + 1} / {sortedCardIds.length}
             </div>
 
             <div 
@@ -532,8 +630,10 @@ export default function PackOpener({ cardIds, onClose }) {
               />
             </div>
 
-            <div className="absolute bottom-10 text-white/30 text-sm font-rajdhani tracking-widest uppercase z-50">
-              Appuyez sur ESPACE pour passer l'animation
+            <div className="absolute bottom-10 text-white/30 text-xs sm:text-sm font-rajdhani tracking-widest uppercase z-50 text-center px-4">
+              {isMobileDevice 
+                ? "Touchez l'écran ou « Passer » pour passer l'animation" 
+                : "Appuyez sur ESPACE pour passer l'animation"}
             </div>
           </div>
         </ScreenShatterReveal>
@@ -542,7 +642,7 @@ export default function PackOpener({ cardIds, onClose }) {
         <div className="relative flex flex-col items-center justify-center w-full h-full">
           
           <div className="absolute top-10 text-lg text-text-muted font-rajdhani tracking-[2px] font-bold z-50">
-            CARTE {currentIndex + 1} / {cardIds.length}
+            CARTE {currentIndex + 1} / {sortedCardIds.length}
           </div>
 
           <div 
@@ -632,20 +732,20 @@ export default function PackOpener({ cardIds, onClose }) {
 
                   <div className={`absolute inset-0 z-30 flex flex-col items-center justify-center ${hadVideoTransition ? 'animate-[majesticRise_1.6s_0.2s_ease-out_both]' : 'animate-[majesticRise_2s_1.5s_ease-out_both]'}`}>
                     <div className={`${hadVideoTransition ? 'animate-[majesticFloat_6s_1.8s_ease-in-out_infinite]' : 'animate-[majesticFloat_6s_3.5s_ease-in-out_infinite]'}`}>
-                      <CardIllustration card={currentCard} width={380} />
+                      <CardIllustration card={currentCard} width={isMobileDevice ? 260 : 380} />
                     </div>
                     
                     {currentCard.variant && (
                       <div className={`absolute -bottom-20 opacity-0 ${hadVideoTransition ? 'animate-[metallicShine_5s_1.6s_infinite_forwards]' : 'animate-[metallicShine_5s_3s_infinite_forwards]'}`}>
                         <div 
-                          className="px-10 py-3 rounded-full border border-white/10 bg-[#05060A]/80 backdrop-blur-md"
+                          className="px-6 sm:px-10 py-2 sm:py-3 rounded-full border border-white/10 bg-[#05060A]/80 backdrop-blur-md"
                           style={{ 
                             boxShadow: `0 10px 20px rgba(0,0,0,0.8)`,
                             background: `linear-gradient(120deg, transparent 0%, ${themeColor}15 30%, ${themeColor}40 50%, transparent 70%)`,
                             backgroundSize: '200% 100%'
                           }}
                         >
-                          <span className="font-rajdhani text-2xl font-bold uppercase tracking-[8px] text-white">
+                          <span className="font-rajdhani text-lg sm:text-2xl font-bold uppercase tracking-[4px] sm:tracking-[8px] text-white">
                             {currentCard.variant}
                           </span>
                         </div>
@@ -653,38 +753,38 @@ export default function PackOpener({ cardIds, onClose }) {
                     )}
                   </div>
 
-                  <div className="absolute inset-0 z-40 p-10 lg:p-24 flex justify-between items-center pointer-events-none">
+                  {/* PANNEAUX LATÉRAUX (Rôle, Franchise, Overall) — affichés sur ordinateur (md+), masqués sur téléphone (< md) pour éviter la superposition sur l'écran étroit */}
+                  <div className="absolute inset-0 z-40 p-6 md:p-10 lg:p-24 hidden md:flex justify-between items-center pointer-events-none">
                     
-                    <div className={`flex flex-col gap-6 ${hadVideoTransition ? 'animate-[slideGlassPanel_1s_1.0s_both]' : 'animate-[slideGlassPanel_1s_2.5s_both]'}`}>
+                    <div className={`flex flex-col gap-4 lg:gap-6 ${hadVideoTransition ? 'animate-[slideGlassPanel_1s_1.0s_both]' : 'animate-[slideGlassPanel_1s_2.5s_both]'}`}>
                       <div 
-                        className="flex items-center gap-6 p-6 rounded-2xl bg-[#000000]/40 border-l-[4px] border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                        className="flex items-center gap-4 lg:gap-6 p-4 lg:p-6 rounded-2xl bg-[#000000]/40 border-l-[4px] border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
                         style={{ borderLeftColor: themeColor }}
                       >
-                        <img src={getRoleImage(roleName)} alt="Role" className="h-[50px] object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" onError={(e) => e.target.style.display='none'} />
+                        <img src={getRoleImage(roleName)} alt="Role" className="h-[36px] lg:h-[50px] object-contain drop-shadow-[0_0_5px_rgba(255,255,255,0.4)]" onError={(e) => e.target.style.display='none'} />
                         <div className="flex flex-col">
-                          <span className="text-white/50 font-rajdhani text-sm uppercase tracking-[4px]">Rôle Officiel</span>
-                          <span className="font-msi text-3xl text-white uppercase tracking-wider">{roleName}</span>
+                          <span className="text-white/50 font-rajdhani text-xs lg:text-sm uppercase tracking-[4px]">Rôle Officiel</span>
+                          <span className="font-msi text-xl lg:text-3xl text-white uppercase tracking-wider">{roleName}</span>
                         </div>
                       </div>
                       
                       <div 
-                        className="flex items-center gap-6 p-6 rounded-2xl bg-[#000000]/40 border-l-[4px] border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                        className="flex items-center gap-4 lg:gap-6 p-4 lg:p-6 rounded-2xl bg-[#000000]/40 border-l-[4px] border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
                         style={{ borderLeftColor: themeColor }}
                       >
-                        <img src={teamInfo.logo} alt="Club" className="h-[50px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                        <img src={teamInfo.logo} alt="Club" className="h-[36px] lg:h-[50px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
                         <div className="flex flex-col">
-                          <span className="text-white/50 font-rajdhani text-sm uppercase tracking-[4px]">Franchise</span>
-                          <span className="font-msi text-3xl text-white uppercase tracking-wider">{currentCard.teamTag}</span>
+                          <span className="text-white/50 font-rajdhani text-xs lg:text-sm uppercase tracking-[4px]">Franchise</span>
+                          <span className="font-msi text-xl lg:text-3xl text-white uppercase tracking-wider">{currentCard.teamTag}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className={`${hadVideoTransition ? 'animate-[slideGlassPanelRight_1s_1.2s_both]' : 'animate-[slideGlassPanelRight_1s_3s_both]'} flex flex-col items-center`}>
-                      <span className="text-white/50 font-rajdhani text-lg uppercase tracking-[8px] mb-2">Overall</span>
+                      <span className="text-white/50 font-rajdhani text-sm lg:text-lg uppercase tracking-[8px] mb-2">Overall</span>
                       <div 
-                        className="font-msi leading-none"
+                        className="font-msi leading-none text-[100px] lg:text-[180px]"
                         style={{ 
-                          fontSize: '180px', 
                           color: '#FFF', 
                           background: `linear-gradient(180deg, #FFFFFF 0%, ${themeColor} 100%)`, 
                           WebkitBackgroundClip: 'text', 
@@ -701,6 +801,7 @@ export default function PackOpener({ cardIds, onClose }) {
               </div>
             )}
 
+            {/* REVEAL FINAL POUR TOUTES LES CARTES (Étape 6 pour WANTED, Étape 5 pour les autres) */}
             {revealStep >= finalStep && currentCard && (
               <div 
                 className={`flex flex-col items-center gap-6 z-50 ${currentCard.rarity === 'WANTED' ? 'animate-[wantedCardDrop_0.6s_ease-out_forwards]' : currentCard.rarity === 'Légendaire' ? 'animate-[legendaryBoom_0.8s_ease-out_forwards]' : 'animate-[popUpStat_0.4s_ease-out_forwards]'}`}
@@ -722,10 +823,14 @@ export default function PackOpener({ cardIds, onClose }) {
 
           </div>
 
-          <div className="absolute bottom-10 text-white/30 text-sm font-rajdhani tracking-widest uppercase z-50">
+          <div className="absolute bottom-10 text-white/30 text-xs sm:text-sm font-rajdhani tracking-widest uppercase z-50 text-center px-4">
             {revealStep < finalStep 
-              ? "Appuyez sur ESPACE pour passer l'animation" 
-              : "Cliquez ou appuyez sur ESPACE pour continuer"}
+              ? (isMobileDevice 
+                  ? "Touchez l'écran ou « Passer » pour passer l'animation" 
+                  : "Appuyez sur ESPACE pour passer l'animation")
+              : (isMobileDevice 
+                  ? "Touchez l'écran pour continuer" 
+                  : "Cliquez ou appuyez sur ESPACE pour continuer")}
           </div>
         </div>
       )}

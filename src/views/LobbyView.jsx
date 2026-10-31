@@ -78,8 +78,8 @@ export default function LobbyView({ state, socket }) {
 
   if (amIJoined) {
     return (
-      <div className="min-h-screen bg-bg-dark text-white flex flex-col items-center overflow-y-auto py-8 px-10 pb-28 font-sans">
-        <h1 className="text-[42px] mb-8 text-accent-blue-light tracking-[2px] font-extrabold uppercase">
+      <div className="min-h-screen bg-bg-dark text-white flex flex-col items-center overflow-y-auto py-6 sm:py-8 px-4 sm:px-10 pb-28 font-sans">
+        <h1 className="text-2xl sm:text-[42px] mb-6 sm:mb-8 text-accent-blue-light tracking-[1px] sm:tracking-[2px] font-extrabold uppercase text-center">
           SALLE D'ATTENTE ({state.participants.length}/16)
         </h1>
         
@@ -115,8 +115,8 @@ export default function LobbyView({ state, socket }) {
 
   return (
     <div className="min-h-screen bg-bg-dark text-white flex flex-col items-center overflow-y-auto font-sans p-5 pb-32">
-      <div className="bg-bg-card py-8 px-10 rounded-2xl border border-border max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <h1 className="text-accent-blue-light mb-3 text-[48px] tracking-[4px] font-black uppercase">CIRCUIT ESPORT</h1>
+      <div className="bg-bg-card py-6 sm:py-8 px-4 sm:px-10 rounded-2xl border border-border max-w-[1200px] w-full text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <h1 className="text-accent-blue-light mb-3 text-2xl sm:text-[48px] tracking-[2px] sm:tracking-[4px] font-black uppercase">CIRCUIT ESPORT</h1>
         <p className="text-text-secondary mb-10 text-lg">Sélectionnez l'identité visuelle de votre franchise.</p>
 
         <div className={`mb-6 rounded-lg border px-4 py-3 text-left text-sm ${isConnected ? 'border-[#00e676]/30 bg-[#00e676]/5 text-[#7de8ad]' : 'border-[#ff3366]/40 bg-[#ff3366]/5 text-[#ff8eaa]'}`}>
@@ -143,28 +143,30 @@ export default function LobbyView({ state, socket }) {
 
       </div>
 
-      <div className="fixed inset-x-4 bottom-4 z-[9000] mx-auto flex max-w-[1000px] items-center gap-3 rounded-xl border border-accent-blue/60 bg-[#11141E]/95 p-3 shadow-[0_15px_45px_rgba(0,0,0,0.65)] backdrop-blur-xl">
-        <input
-          type="text"
-          aria-label="Nom complet de l'équipe"
-          placeholder="Nom complet de l'équipe"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          className="min-w-0 flex-[3] rounded-lg border border-border bg-bg-dark px-4 py-3 text-white font-bold outline-none transition-colors focus:border-accent-blue"
-        />
-        <input
-          type="text"
-          aria-label="Tag de l'équipe"
-          placeholder="TAG"
-          value={tag}
-          onChange={(event) => setTag(event.target.value.toUpperCase())}
-          maxLength={4}
-          className="w-24 rounded-lg border border-border bg-bg-dark px-3 py-3 text-center text-accent-blue-light font-bold uppercase outline-none transition-colors focus:border-accent-blue"
-        />
+      <div className="fixed inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 z-[9000] mx-auto flex flex-col sm:flex-row max-w-[1000px] items-stretch sm:items-center gap-2 sm:gap-3 rounded-xl border border-accent-blue/60 bg-[#11141E]/95 p-3 shadow-[0_15px_45px_rgba(0,0,0,0.65)] backdrop-blur-xl">
+        <div className="flex gap-2 w-full flex-1">
+          <input
+            type="text"
+            aria-label="Nom complet de l'équipe"
+            placeholder="Nom complet de l'équipe"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            className="min-w-0 flex-1 rounded-lg border border-border bg-bg-dark px-3 sm:px-4 py-2.5 sm:py-3 text-white font-bold outline-none transition-colors focus:border-accent-blue text-sm sm:text-base"
+          />
+          <input
+            type="text"
+            aria-label="Tag de l'équipe"
+            placeholder="TAG"
+            value={tag}
+            onChange={(event) => setTag(event.target.value.toUpperCase())}
+            maxLength={4}
+            className="w-20 sm:w-24 rounded-lg border border-border bg-bg-dark px-2 sm:px-3 py-2.5 sm:py-3 text-center text-accent-blue-light font-bold uppercase outline-none transition-colors focus:border-accent-blue text-sm sm:text-base"
+          />
+        </div>
         <button
           onClick={handleJoin}
           disabled={!isConnected || isSubmitting}
-          className="shrink-0 rounded-lg bg-accent-blue px-6 py-3 text-sm font-bold tracking-[1px] text-white uppercase shadow-[0_8px_20px_rgba(76,96,210,0.3)] transition-transform hover:-translate-y-0.5 active:scale-95 disabled:cursor-wait disabled:opacity-50"
+          className="w-full sm:w-auto shrink-0 rounded-lg bg-accent-blue px-6 py-2.5 sm:py-3 text-sm font-bold tracking-[1px] text-white uppercase shadow-[0_8px_20px_rgba(76,96,210,0.3)] transition-transform hover:-translate-y-0.5 active:scale-95 disabled:cursor-wait disabled:opacity-50 cursor-pointer"
         >
           {isSubmitting ? 'CONNEXION…' : 'VALIDER L’ÉQUIPE'}
         </button>

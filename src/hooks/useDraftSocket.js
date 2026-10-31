@@ -1,3 +1,4 @@
+import { registerCardInPool, unregisterCardFromPool } from '../constants/cardPlayers';
 import { useEffect, useState } from 'react';
 import { socket } from '../api/socket';
 import { clearPlayerSessionToken, getPlayerSessionToken } from '../api/playerSession';
@@ -11,8 +12,24 @@ export function useDraftSocket() {
   const [state, setState] = useState(createInitialClientState);
 
   useEffect(() => {
+    // Nettoyer l'ancien cache local et les anciens IDs temporaires
+    try {
+      localStorage.removeItem('custom_cards');
+    } catch (_) {}
+    ['custom-career-1793322955045', 'custom-career-1793322845982', 'custom-career-1793322188369'].forEach(id => {
+      unregisterCardFromPool(id);
+    });
+
     const handleUpdate = (newState) => {
       setState(newState);
+    };
+
+    const handleCardSaved = (card) => {
+      registerCardInPool(card);
+    };
+
+    const handleCardDeleted = (cardId) => {
+      unregisterCardFromPool(cardId);
     };
     const reconnectPlayer = () => {
       const token = getPlayerSessionToken();
@@ -27,6 +44,8 @@ export function useDraftSocket() {
     };
 
     socket.on('draft-update', handleUpdate);
+    socket.on('dev-card-saved', handleCardSaved);
+    socket.on('dev-card-deleted', handleCardDeleted);
     socket.on('connect', reconnectPlayer);
     socket.on('game-loaded', reconnectPlayer);
     socket.on('game-reset', clearPlayerSessionToken);
@@ -35,6 +54,8 @@ export function useDraftSocket() {
 
     return () => {
       socket.off('draft-update', handleUpdate);
+      socket.off('dev-card-saved', handleCardSaved);
+      socket.off('dev-card-deleted', handleCardDeleted);
       socket.off('connect', reconnectPlayer);
       socket.off('game-loaded', reconnectPlayer);
       socket.off('game-reset', clearPlayerSessionToken);

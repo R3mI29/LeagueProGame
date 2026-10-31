@@ -37,9 +37,9 @@ export default function RosterTab({
   const currentCatchupBonus = myHistory.reduce((total, res) => total + (CATCHUP_VALUES[res] || 0), 0);
 
   return (
-    <div className="grid grid-cols-[1fr_360px] gap-8 animate-[fadeIn_0.3s]">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8 animate-[fadeIn_0.3s]">
         {/* Zone Principale : Alignement Titulaire et Cartes */}
-        <div className="bg-[#11141E] border border-[#222838] rounded-xl p-7 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+        <div className="bg-[#11141E] border border-[#222838] rounded-xl p-4 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="font-rajdhani font-bold m-0 text-white text-[24px] tracking-[0.5px]">ALIGNEMENT TITULAIRE</h2>
@@ -51,7 +51,7 @@ export default function RosterTab({
           </div>
           
           {/* Barre des 5 Titulaires */}
-          <div className="grid grid-cols-5 gap-3 mb-8 justify-items-center">
+          <div className="flex gap-2 sm:gap-2.5 mb-6 sm:mb-8 overflow-x-auto sm:overflow-visible pb-2 justify-start sm:justify-center sm:grid sm:grid-cols-5 justify-items-center no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {ORDERED_ROLES.map(role => {
               const selectedCard = getDynamicCard(myLineup[role]);
               const isRoleActive = activeRole === role;
@@ -60,7 +60,7 @@ export default function RosterTab({
                 <div
                   key={role}
                   onClick={() => !isReady && setActiveRole(role)}
-                  className={`flex flex-col items-center cursor-pointer transition-all duration-200 select-none ${
+                  className={`flex flex-col items-center cursor-pointer transition-all duration-200 select-none shrink-0 ${
                     isRoleActive ? '-translate-y-1.5' : 'hover:-translate-y-0.5'
                   }`}
                 >
@@ -70,7 +70,7 @@ export default function RosterTab({
                         ? 'border-2 border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] bg-[#D4AF37]/5' 
                         : 'border-2 border-transparent'
                     }`}>
-                      <CardIllustration card={selectedCard} width={135} />
+                      <CardIllustration card={selectedCard} width={128} />
                     </div>
                   ) : (
                     <div
@@ -79,7 +79,7 @@ export default function RosterTab({
                           ? 'border-2 border-[#D4AF37] bg-[#D4AF37]/5 shadow-[0_0_20px_rgba(212,175,55,0.15)]'
                           : 'border border-dashed border-[#242C3D] bg-[#0A0D15] hover:border-[#36425C]'
                       }`}
-                      style={{ width: '143px', height: `${135 * 1.4 + 8}px` }}
+                      style={{ width: '136px', height: `${128 * 1.4 + 8}px` }}
                     >
                       <span className={`font-rajdhani font-black text-lg tracking-[2px] uppercase ${
                         isRoleActive ? 'text-[#D4AF37]' : 'text-[#5A657C]'
@@ -112,7 +112,7 @@ export default function RosterTab({
           </div>
 
           {/* Grille des cartes possédées pour le rôle sélectionné */}
-          <div className="flex gap-4 flex-wrap min-h-[280px]">
+          <div className="flex gap-3 sm:gap-4 flex-wrap justify-center sm:justify-start min-h-[220px] sm:min-h-[280px]">
             {ownedCardsForRole(activeRole).length === 0 ? (
               <div className="w-full py-12 flex flex-col items-center justify-center text-text-faint gap-3 bg-[#0A0D15]/50 rounded-xl border border-dashed border-white/5">
                 <span className="text-3xl opacity-30">📭</span>

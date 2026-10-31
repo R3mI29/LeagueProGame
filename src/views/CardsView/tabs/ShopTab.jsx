@@ -16,9 +16,9 @@ export default function ShopTab({ myEconomy, isReady, hasStarter }) {
         </div>
       </div>
 
-      <div className="flex gap-[30px] justify-center flex-wrap">
+      <div className="flex gap-4 sm:gap-[30px] justify-center flex-wrap">
         {!hasStarter && (
-          <div className="bg-[#11141E] border-2 border-[#00e676] rounded-xl p-[30px] w-[300px] text-center shadow-[0_0_30px_rgba(0,230,118,0.2)]">
+          <div className="bg-[#11141E] border-2 border-[#00e676] rounded-xl p-6 sm:p-[30px] w-full max-w-[320px] sm:w-[300px] text-center shadow-[0_0_30px_rgba(0,230,118,0.2)]">
             <div className="text-[50px] mb-2.5">🎁</div>
             <h3 className="font-rajdhani font-bold text-[#00e676] text-[24px] m-0 mb-2.5">PACK DE DÉPART</h3>
             <p className="text-text-faint text-[14px] mb-5 min-h-[60px]">Une base solide pour débuter votre saison. Contient 10 cartes de contrat À VIE.</p>
@@ -35,7 +35,7 @@ export default function ShopTab({ myEconomy, isReady, hasStarter }) {
 
         {hasStarter && (
           <>
-            <div className="bg-[#11141E] border border-[#222838] rounded-xl p-[30px] w-[300px] text-center transition-transform cursor-default">
+            <div className="bg-[#11141E] border border-[#222838] rounded-xl p-6 sm:p-[30px] w-full max-w-[320px] sm:w-[300px] text-center transition-transform cursor-default">
               <div className="text-[50px] mb-2.5">📦</div>
               <h3 className="font-rajdhani font-bold text-white text-[24px] m-0 mb-2.5">PACK STANDARD</h3>
               <p className="text-text-faint text-[14px] mb-5 min-h-[60px]">Idéal pour commencer. Probabilités classiques (5 cartes).</p>
@@ -47,7 +47,7 @@ export default function ShopTab({ myEconomy, isReady, hasStarter }) {
               >ACHETER</button>
             </div>
 
-            <div className="bg-[linear-gradient(180deg,rgba(0,229,255,0.1)_0%,#11141E_100%)] border border-[#00e5ff] rounded-xl p-[30px] w-[300px] text-center shadow-[0_10px_30px_rgba(0,229,255,0.1)]">
+            <div className="bg-[linear-gradient(180deg,rgba(0,229,255,0.1)_0%,#11141E_100%)] border border-[#00e5ff] rounded-xl p-6 sm:p-[30px] w-full max-w-[320px] sm:w-[300px] text-center shadow-[0_10px_30px_rgba(0,229,255,0.1)]">
               <div className="text-[50px] mb-2.5">💎</div>
               <h3 className="font-rajdhani font-bold text-[#00e5ff] text-[24px] m-0 mb-2.5">PACK ÉLITE</h3>
               <p className="text-text-faint text-[14px] mb-5 min-h-[60px]">Chances doublées d'obtenir des cartes Rares, Épiques, Légendaires et WANTED.</p>
@@ -59,7 +59,7 @@ export default function ShopTab({ myEconomy, isReady, hasStarter }) {
               >ACHETER</button>
             </div>
 
-            <div className="bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border border-[#D4AF37] rounded-xl p-[30px] w-[300px] text-center shadow-[0_10px_30px_rgba(212,175,55,0.15)]">
+            <div className="bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border border-[#D4AF37] rounded-xl p-6 sm:p-[30px] w-full max-w-[320px] sm:w-[300px] text-center shadow-[0_10px_30px_rgba(212,175,55,0.15)]">
               <div className="text-[50px] mb-2.5">👑</div>
               <h3 className="font-rajdhani font-bold text-[#D4AF37] text-[24px] m-0 mb-2.5">PACK LÉGENDE</h3>
               <p className="text-text-faint text-[14px] mb-5 min-h-[60px]">Chances multipliées par 5 pour les cartes de niveau Épique, Légendaire et WANTED.</p>

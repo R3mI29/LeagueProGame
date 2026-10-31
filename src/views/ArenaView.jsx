@@ -434,7 +434,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
     return (
       <TeamSkinFrame
         skinId={getEquippedSkinId(state, team.id)}
-        className="w-[380px] lg:w-[420px] shrink-0 p-6 lg:p-7 flex flex-col justify-between rounded-xl"
+        className="w-[310px] sm:w-[380px] lg:w-[420px] shrink-0 p-4 sm:p-6 lg:p-7 flex flex-col justify-between rounded-xl"
       >
         <h2 className="font-rajdhani mb-5 text-center flex flex-col items-center gap-2.5 uppercase">
           <div className="flex flex-col items-center gap-1.5">
@@ -477,7 +477,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center font-sans overflow-x-hidden p-4 lg:p-6 transition-colors duration-700">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center font-sans overflow-x-auto p-2 sm:p-4 lg:p-6 transition-colors duration-700">
       {theme.type === 'first_stand' && <FirstStandBackground />}
       {theme.type === 'msi' && <MsiBackground />}
       {theme.type === 'ewc' && <EwcBackground />}
@@ -495,7 +495,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
             <span>SAISON {state?.year || 1}</span>
           </div>
 
-          <h1 className={`font-rajdhani text-[38px] uppercase font-black m-0 leading-tight ${theme.titleColor}`}>
+          <h1 className={`font-rajdhani text-[24px] sm:text-[38px] uppercase font-black m-0 leading-tight text-center ${theme.titleColor}`}>
             CONFRONTATION PROTOCOLE
           </h1>
           
@@ -509,11 +509,12 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
         </div>
         
         {/* SCÈNE PRINCIPALE : ÉQUIPE A (3/2) - CONSOLE CENTRALE - ÉQUIPE B (3/2) */}
-        <div className="flex w-full max-w-[1280px] gap-6 items-stretch mt-3 justify-center overflow-x-auto pb-4">
-          
-          {renderTeamPanel(match.teamA, 'A')}
+        <div className="w-full max-w-full overflow-x-auto pb-4">
+          <div className="flex w-max max-w-[1280px] gap-4 sm:gap-6 items-stretch mt-3 justify-start lg:justify-center mx-auto px-2">
+            
+            {renderTeamPanel(match.teamA, 'A')}
 
-          <div className="text-center w-[260px] lg:w-[300px] shrink-0 flex flex-col justify-center px-2 relative">
+            <div className="text-center w-[220px] sm:w-[260px] lg:w-[300px] shrink-0 flex flex-col justify-center px-2 relative">
             
             {isSimulating && !isSpectator && (
               <div className="mb-5">
@@ -623,6 +624,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
 
           {renderTeamPanel(match.teamB, 'B')}
 
+          </div>
         </div>
       </div>
     </div>

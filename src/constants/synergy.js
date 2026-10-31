@@ -27,7 +27,7 @@ function bestGroup(values, tiers) {
 
 /** ids : liste d'ids de cartes (lineup partielle acceptée). */
 export function computeSynergy(ids = []) {
-  const cards = ids.map(id => CARD_INDEX.get(id)).filter(Boolean);
+  const cards = ids.map(id => CARD_INDEX.get(id) || CARD_POOL.find(c => c.id === id)).filter(Boolean);
   const tags = cards.map(c => TEAM_ALIASES[c.teamTag] || c.teamTag).filter(Boolean);
   const leagues = cards.map(c => c.league).filter(Boolean);
 

@@ -3,6 +3,15 @@
 
 export const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED'];
 
+export const RARITY_ORDER = {
+  'Commune': 1,
+  'Rare': 2,
+  'Épique': 3,
+  'Légendaire': 4,
+  'WANTED': 5,
+  'SECRET': 6,
+};
+
 // Probabilités de tirage par emplacement de carte dans un pack (en %).
 export const RARITY_WEIGHTS = {
   Commune: 633,
@@ -1333,6 +1342,7 @@ export const CARD_POOL = [
     "rating": 89,
     "rarity": "WANTED",
     "image": "/cardsImg/others/caliste_prodigy.jpg",
+    "video": "/videos/caliste_prodige.mp4",
     "nationality": "FR",
     "teamTag": "KC",
     "league": "LEC"
@@ -1393,6 +1403,7 @@ export const CARD_POOL = [
     "rating": 95,
     "rarity": "WANTED",
     "image": "/cardsImg/others/uzi_adc_god.png",
+    "video": "/videos/uzi_adcgod.mp4",
     "nationality": "CN",
     "teamTag": "RNG",
     "league": "LPL"
@@ -1996,7 +2007,7 @@ export const CARD_POOL = [
   },
 
   {
-    "id": "custom-career-1793322845982",
+    "id": "dk_career",
     "baseName": "Career",
     "variant": "DK Career",
     "role": "Support",
@@ -2009,7 +2020,7 @@ export const CARD_POOL = [
   },
 
   {
-    "id": "custom-career-1793322955045",
+    "id": "dk_career_ewc",
     "baseName": "CAREER",
     "variant": "EWC Champion",
     "role": "Support",
@@ -2021,4 +2032,43 @@ export const CARD_POOL = [
     "league": "LCK"
   },
 
+  {
+    "id": "custom-smeb-1793401108574",
+    "baseName": "Smeb",
+    "variant": "lck legend",
+    "role": "Top",
+    "rating": 94,
+    "rarity": "WANTED",
+    "image": "/cardsImg/custom/smeb_legend.jpg",
+    "video": "/videos/smeb_lck_legend.mp4",
+    "nationality": "KR",
+    "teamTag": "ROX",
+    "league": "LCK",
+    "themeColor": "#fffafa"
+  },
+
 ];
+
+/**
+ * Enregistre ou met à jour une carte dans le CARD_POOL en mémoire vive.
+ */
+export function registerCardInPool(card) {
+  if (!card || !card.id) return;
+  const idx = CARD_POOL.findIndex(c => c.id === card.id);
+  if (idx !== -1) {
+    CARD_POOL[idx] = card;
+  } else {
+    CARD_POOL.push(card);
+  }
+}
+
+/**
+ * Retire une carte du CARD_POOL en mémoire vive.
+ */
+export function unregisterCardFromPool(cardId) {
+  if (!cardId) return;
+  const idx = CARD_POOL.findIndex(c => c.id === cardId);
+  if (idx !== -1) {
+    CARD_POOL.splice(idx, 1);
+  }
+}

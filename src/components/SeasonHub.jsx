@@ -10,22 +10,22 @@ export default function SeasonHub({ state }) {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center min-h-screen p-10">
+    <div className="max-w-[1200px] mx-auto text-center flex flex-col items-center min-h-screen p-4 sm:p-10">
       
       {/* AFFICHAGE DE L'ANNÉE ET DU STATUT */}
-      <div className="mb-12">
-        <h2 className="font-rajdhani text-accent-pink text-2xl tracking-[4px] m-0 uppercase">
+      <div className="mb-8 sm:mb-12">
+        <h2 className="font-rajdhani text-accent-pink text-xl sm:text-2xl tracking-[3px] sm:tracking-[4px] m-0 uppercase">
           SAISON {state.year || 1}
         </h2>
-        <h1 className="font-rajdhani text-accent-cyan text-5xl my-2.5 uppercase">
+        <h1 className="font-rajdhani text-accent-cyan text-3xl sm:text-5xl my-2 sm:my-2.5 uppercase font-bold">
           CIRCUIT COMPÉTITIF MAJEUR
         </h1>
-        <p className="font-rajdhani text-text-muted text-lg tracking-widest uppercase">
+        <p className="font-rajdhani text-text-muted text-sm sm:text-lg tracking-widest uppercase">
           16 ÉQUIPES. 4 TITRES. 1 LÉGENDE.
         </p>
       </div>
 
-      <div className="flex gap-5 justify-center items-stretch w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 justify-center items-stretch w-full max-w-full">
         {EVENTS.map((tourney, index) => {
           const isActive = index === currentEventIndex;
           const isCompleted = index < currentEventIndex;
@@ -33,9 +33,8 @@ export default function SeasonHub({ state }) {
           return (
             <div 
               key={tourney.id} 
-              className={`bg-bg-panel rounded-xl flex flex-col items-center p-8 transition-all duration-300 relative ${isCompleted ? 'opacity-50 grayscale-[80%]' : (isActive ? 'opacity-100 grayscale-0' : 'opacity-70 grayscale-[80%]')}`}
+              className={`bg-bg-panel rounded-xl flex flex-col items-center p-5 sm:p-8 transition-all duration-300 relative w-full ${isCompleted ? 'opacity-50 grayscale-[80%]' : (isActive ? 'opacity-100 grayscale-0' : 'opacity-70 grayscale-[80%]')}`}
               style={{ 
-                flex: tourney.isMajor ? '1.4' : '1', 
                 border: isActive ? `2px solid ${tourney.color}` : '2px solid transparent',
                 boxShadow: isActive ? `0 0 20px ${tourney.color}40` : 'none',
               }}

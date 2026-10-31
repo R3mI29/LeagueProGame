@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import CardIllustration from './CardIllustration';
-import { CARD_POOL } from '../constants/cardPlayers';
+import { CARD_POOL, registerCardInPool, unregisterCardFromPool } from '../constants/cardPlayers';
 import { socket } from '../api/socket';
 
 const ROLES = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
@@ -30,8 +30,17 @@ const inputClass =
 const labelClass = 'text-text-muted text-xs uppercase tracking-wider mb-1 block';
 const sectionTitleClass = 'font-rajdhani text-white uppercase tracking-wider text-sm mb-3 font-bold';
 
-export default function CardCreator() {
+function generateSlugId(name, tag, rarity) {
+  const cleanName = (name || '').toLowerCase().trim().replace(/[^a-z0-9_-]/g, '_');
+  const cleanTag = (tag || '').toLowerCase().trim().replace(/[^a-z0-9_-]/g, '_');
+  const cleanRarity = (rarity || '').toLowerCase().replace(/é/g, 'e').replace(/[^a-z0-9_-]/g, '_');
+  if (!cleanName) return '';
+  return cleanTag ? `${cleanTag}_${cleanName}_${cleanRarity}` : `${cleanName}_${cleanRarity}`;
+}
+
+export default function CardCreator({ state, onNavigateToCards } = {}) {
   const [form, setForm] = useState({
+    id: '',
     baseName: '',
     role: 'Mid',
     rating: 85,
@@ -45,31 +54,40 @@ export default function CardCreator() {
     variant: '',
   });
 
+  const [isManualId, setIsManualId] = useState(false);
+  const [poolVersion, setPoolVersion] = useState(0);
+
   // Dossier et nom du fichier de destination de l'image
   const [imageFolder, setImageFolder] = useState('cardsImg/custom');
   const [manualFolder, setManualFolder] = useState('');
   const [imageFileName, setImageFileName] = useState('');
 
-  const [savedCards, setSavedCards] = useState(() => {
-    const fromPool = CARD_POOL.filter(c => c.isCustom || c.id?.startsWith('custom-'));
-    try {
-      const fromLocal = JSON.parse(localStorage.getItem('custom_cards') || '[]');
-      const map = new Map();
-      [...fromPool, ...fromLocal].forEach(c => map.set(c.id, c));
-      return Array.from(map.values());
-    } catch {
-      return fromPool;
+  // Cartes créées dans CETTE session / partie de jeu
+  const [localCreatedCards, setLocalCreatedCards] = useState([]);
+  const savedCards = useMemo(() => {
+    if (Array.isArray(state?.createdCardsThisGame)) {
+      return state.createdCardsThisGame;
     }
-  });
+    return localCreatedCards;
+  }, [state?.createdCardsThisGame, localCreatedCards]);
 
   const [dragOver, setDragOver] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
   const [justSavedId, setJustSavedId] = useState(null);
 
+  // Nettoyage de l'ancien cache localStorage obsolète
+  useEffect(() => {
+    try {
+      localStorage.removeItem('custom_cards');
+    } catch (_) {}
+  }, []);
+
   useEffect(() => {
     const onSaved = (newCard) => {
-      setSavedCards(prev => {
+      registerCardInPool(newCard);
+      setPoolVersion(v => v + 1);
+      setLocalCreatedCards(prev => {
         const idx = prev.findIndex(c => c.id === newCard.id);
         if (idx !== -1) {
           const next = [...prev];
@@ -81,7 +99,9 @@ export default function CardCreator() {
     };
 
     const onDeleted = (delId) => {
-      setSavedCards(prev => prev.filter(c => c.id !== delId));
+      unregisterCardFromPool(delId);
+      setPoolVersion(v => v + 1);
+      setLocalCreatedCards(prev => prev.filter(c => c.id !== delId));
     };
 
     socket.on('dev-card-saved', onSaved);
@@ -93,7 +113,19 @@ export default function CardCreator() {
     };
   }, []);
 
-  const set = (field, value) => setForm(f => ({ ...f, [field]: value }));
+  const set = (field, value) => {
+    setForm(f => {
+      const next = { ...f, [field]: value };
+      if (!isManualId && (field === 'baseName' || field === 'teamTag' || field === 'rarity')) {
+        next.id = generateSlugId(
+          field === 'baseName' ? value : next.baseName,
+          field === 'teamTag' ? value : next.teamTag,
+          field === 'rarity' ? value : next.rarity
+        );
+      }
+      return next;
+    });
+  };
 
   const computeDefaultFileName = (ext = 'png') => {
     const tagPrefix = form.teamTag ? `${form.teamTag.toUpperCase()}_` : '';
@@ -116,9 +148,30 @@ export default function CardCreator() {
   const effectiveFolder = (imageFolder === 'manual' ? manualFolder : imageFolder) || 'cardsImg/custom';
   const effectiveFileName = imageFileName?.trim() || computeDefaultFileName('png');
 
+  // Validation d'ID en temps réel
+  const cleanId = form.id.trim().toLowerCase();
+  const isIdCreatedThisGame = useMemo(() => {
+    const thisGameList = state?.createdCardsThisGame || localCreatedCards;
+    return thisGameList.some(c => c.id?.toLowerCase() === cleanId);
+  }, [cleanId, state?.createdCardsThisGame, localCreatedCards]);
+
+  const conflictingCard = useMemo(() => {
+    if (!cleanId) return null;
+    if (isIdCreatedThisGame) return null; // Permet de mettre à jour la carte qu'on vient de créer dans cette partie
+    return CARD_POOL.find(c => c.id?.toLowerCase() === cleanId) || null;
+  }, [cleanId, isIdCreatedThisGame, poolVersion, CARD_POOL.length]);
+
   const handleSave = () => {
     if (!form.baseName.trim()) {
       alert('⚠️ Le nom du joueur est requis.');
+      return;
+    }
+    if (!cleanId) {
+      alert("⚠️ L'identifiant de la carte (ID) est requis.");
+      return;
+    }
+    if (conflictingCard) {
+      alert(`⚠️ L'identifiant "${cleanId}" est déjà attribué à la carte "${conflictingCard.baseName}" (${conflictingCard.teamTag || ''} ${conflictingCard.rarity}). Veuillez en choisir un autre.`);
       return;
     }
 
@@ -126,16 +179,14 @@ export default function CardCreator() {
     setSaveStatus(null);
 
     const isBase64 = typeof form.image === 'string' && form.image.startsWith('data:');
-    const id = `custom-${form.baseName.toLowerCase().replace(/[^a-zA-Z0-9_-]/g, '-')}-${Date.now()}`;
 
     const cardPayload = {
       ...form,
-      id,
+      id: cleanId,
       rating: Number(form.rating),
       video: form.video?.trim() ? form.video.trim() : undefined,
       themeColor: form.themeColor || undefined,
       variant: form.variant?.trim() || undefined,
-      isCustom: true,
     };
 
     socket.emit('dev-save-custom-card', {
@@ -146,17 +197,18 @@ export default function CardCreator() {
     }, (response) => {
       setIsSaving(false);
       if (response?.ok && response?.card) {
+        registerCardInPool(response.card);
         setJustSavedId(response.card.id);
         setSaveStatus({
           type: 'success',
-          message: `Carte "${response.card.baseName}" enregistrée définitivement dans src/constants/cardPlayers.js !`,
+          message: `Carte "${response.card.baseName}" (ID: ${response.card.id}) enregistrée définitivement dans le code source !`,
         });
 
         if (response.card.image) {
           set('image', response.card.image);
         }
 
-        setSavedCards(prev => {
+        setLocalCreatedCards(prev => {
           const idx = prev.findIndex(x => x.id === response.card.id);
           if (idx !== -1) {
             const next = [...prev];
@@ -165,12 +217,6 @@ export default function CardCreator() {
           }
           return [response.card, ...prev];
         });
-
-        // Mise à jour de sauvegarde locale
-        try {
-          const updated = [...savedCards.filter(c => c.id !== response.card.id), response.card];
-          localStorage.setItem('custom_cards', JSON.stringify(updated));
-        } catch (_) {}
 
         setTimeout(() => setJustSavedId(null), 4000);
       } else {
@@ -183,17 +229,12 @@ export default function CardCreator() {
   };
 
   const handleDelete = (cardId, cardName) => {
-    if (!confirm(`Supprimer définitivement la carte "${cardName}" du code source (cardPlayers.js) ?`)) return;
+    if (!confirm(`Supprimer définitivement la carte "${cardName}" (${cardId}) du code source (cardPlayers.js) ?`)) return;
 
     socket.emit('dev-delete-custom-card', cardId, (response) => {
       if (response?.ok) {
-        setSavedCards(prev => prev.filter(c => c.id !== cardId));
-        const idx = CARD_POOL.findIndex(c => c.id === cardId);
-        if (idx !== -1) CARD_POOL.splice(idx, 1);
-        try {
-          const local = JSON.parse(localStorage.getItem('custom_cards') || '[]');
-          localStorage.setItem('custom_cards', JSON.stringify(local.filter(c => c.id !== cardId)));
-        } catch (_) {}
+        setLocalCreatedCards(prev => prev.filter(c => c.id !== cardId));
+        unregisterCardFromPool(cardId);
       } else {
         alert('Erreur lors de la suppression: ' + (response?.error || 'Erreur inconnue'));
       }
@@ -325,6 +366,67 @@ export default function CardCreator() {
           <div className="bg-[#0C0E14] rounded-xl border border-[#1B2333] p-5">
             <div className={sectionTitleClass}>👤 Identité & Statistiques</div>
             <div className="grid grid-cols-2 gap-4">
+
+              {/* Champ ID Personnalisé avec détection de doublon */}
+              <div className="col-span-2 bg-[#090C13] p-3.5 rounded-lg border border-[#222838]">
+                <div className="flex items-center justify-between mb-1">
+                  <label className={labelClass}>
+                    Identifiant unique de la carte (ID) *
+                  </label>
+                  {isManualId ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsManualId(false);
+                        const autoId = generateSlugId(form.baseName, form.teamTag, form.rarity);
+                        setForm(f => ({ ...f, id: autoId }));
+                      }}
+                      className="text-[11px] text-accent-cyan hover:underline cursor-pointer font-bold"
+                    >
+                      🔄 Rétablir ID automatique
+                    </button>
+                  ) : (
+                    <span className="text-[10px] text-text-muted">
+                      Généré automatiquement (modifiable librement)
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={form.id}
+                  onChange={e => {
+                    setIsManualId(true);
+                    const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+                    setForm(f => ({ ...f, id: val }));
+                  }}
+                  placeholder="ex: faker_t1_wanted, dk_career_rare, showmaker_dk..."
+                  className={`${inputClass} font-mono ${
+                    conflictingCard 
+                      ? 'border-red-500 bg-red-950/30 text-red-200 focus:border-red-500' 
+                      : cleanId ? 'border-emerald-500/60' : ''
+                  }`}
+                />
+
+                {/* Message d'erreur doublon en direct */}
+                {conflictingCard && (
+                  <div className="mt-2 p-2.5 bg-red-500/20 border border-red-500/50 rounded text-red-300 text-xs flex items-center gap-2">
+                    <span className="text-base">❌</span>
+                    <div>
+                      Cet identifiant est déjà attribué à la carte existante :{' '}
+                      <strong>"{conflictingCard.baseName}"</strong> ({conflictingCard.teamTag || 'Sans équipe'} - {conflictingCard.rarity} - Note {conflictingCard.rating}).
+                      <div className="font-semibold text-red-400 mt-0.5">Veuillez choisir un autre identifiant pour cette carte.</div>
+                    </div>
+                  </div>
+                )}
+
+                {!conflictingCard && cleanId && (
+                  <div className="mt-1.5 text-[11px] text-emerald-400 font-mono flex items-center gap-1.5">
+                    <span>✓</span>
+                    <span>Identifiant disponible : <strong>{cleanId}</strong></span>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className={labelClass}>Nom du joueur *</label>
                 <input
@@ -498,23 +600,36 @@ export default function CardCreator() {
           <div className="flex flex-col gap-2">
             <button
               onClick={handleSave}
-              disabled={isSaving}
-              className={`w-full font-rajdhani font-bold tracking-widest uppercase py-4 px-8 rounded-lg text-base shadow-[0_4px_25px_rgba(76,96,210,0.5)] transition-all cursor-pointer ${
-                isSaving 
-                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#4C60D2] via-[#6A7DE8] to-[#4C60D2] text-white hover:brightness-110 active:scale-98'
+              disabled={isSaving || !!conflictingCard || !cleanId || !form.baseName.trim()}
+              className={`w-full font-rajdhani font-bold tracking-widest uppercase py-4 px-8 rounded-lg text-base transition-all cursor-pointer ${
+                isSaving || !!conflictingCard || !cleanId || !form.baseName.trim()
+                  ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed shadow-none'
+                  : 'bg-gradient-to-r from-[#4C60D2] via-[#6A7DE8] to-[#4C60D2] text-white hover:brightness-110 active:scale-98 shadow-[0_4px_25px_rgba(76,96,210,0.5)]'
               }`}
             >
-              {isSaving ? '⏳ Enregistrement dans le code...' : '💾 Sauvegarder dans le code (cardPlayers.js)'}
+              {isSaving 
+                ? '⏳ Enregistrement dans le code...' 
+                : conflictingCard
+                ? "❌ ID déjà utilisé (changez l'ID)"
+                : '💾 Sauvegarder dans le code (cardPlayers.js)'}
             </button>
 
             {saveStatus && (
-              <div className={`p-3 rounded-lg text-xs font-bold ${
+              <div className={`p-3 rounded-lg text-xs font-bold flex items-center justify-between gap-3 ${
                 saveStatus.type === 'success' 
                   ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300' 
                   : 'bg-red-500/20 border border-red-500/40 text-red-300'
               }`}>
-                {saveStatus.message}
+                <span>{saveStatus.message}</span>
+                {saveStatus.type === 'success' && onNavigateToCards && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigateToCards(form.baseName)}
+                    className="px-3 py-1.5 bg-emerald-400 text-black font-rajdhani font-black rounded uppercase text-xs hover:bg-white cursor-pointer transition-all shrink-0 shadow"
+                  >
+                    👉 Voir dans l'onglet CARTES
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -530,7 +645,7 @@ export default function CardCreator() {
             <CardIllustration
               card={{
                 ...form,
-                id: 'preview',
+                id: cleanId || 'preview',
                 rating: Number(form.rating),
               }}
               width={220}
@@ -538,6 +653,9 @@ export default function CardCreator() {
           </div>
 
           <div className="text-center w-full border-t border-[#1B2333] pt-3">
+            <div className="text-accent-cyan font-mono text-xs mb-1">
+              ID: {cleanId || '—'}
+            </div>
             <div className="text-white font-rajdhani font-black text-xl tracking-wide">
               {form.baseName || 'Nom du joueur'}
             </div>
@@ -553,21 +671,29 @@ export default function CardCreator() {
         </div>
       </div>
 
-      {/* ── Cartes sauvegardées ── */}
-      {savedCards.length > 0 && (
-        <div className="mt-10 pt-8 border-t border-[#1B2333]">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-white font-rajdhani uppercase tracking-wider text-xl font-bold flex items-center gap-2">
-              <span>📚 Mes cartes créées</span>
-              <span className="text-xs bg-accent-pink/20 text-accent-pink px-2 py-0.5 rounded-full font-mono">
-                {savedCards.length}
-              </span>
-            </h3>
-            <span className="text-xs text-text-muted">
-              Ces cartes sont écrites de manière permanente dans le code source du jeu.
+      {/* ── Cartes sauvegardées à cette partie ── */}
+      <div className="mt-10 pt-8 border-t border-[#1B2333]">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white font-rajdhani uppercase tracking-wider text-xl font-bold flex items-center gap-2">
+            <span>📚 Mes cartes créées à cette partie</span>
+            <span className="text-xs bg-accent-pink/20 text-accent-pink px-2.5 py-0.5 rounded-full font-mono">
+              {savedCards.length}
             </span>
-          </div>
+          </h3>
+          <span className="text-xs text-text-muted">
+            Seules les cartes créées durant la partie en cours sont listées ici.
+          </span>
+        </div>
 
+        {savedCards.length === 0 ? (
+          <div className="bg-[#090C13] border border-dashed border-[#1B2333] rounded-xl p-6 text-center text-text-muted text-sm">
+            <div className="text-2xl mb-1">🃏</div>
+            <div className="text-white font-rajdhani font-bold mb-1">Aucune carte créée durant cette partie</div>
+            <p className="text-xs max-w-md mx-auto text-text-muted">
+              Les cartes créées lors de parties précédentes sont désormais des cartes standards définitivement intégrées au jeu (visibles dans l'onglet CARTES).
+            </p>
+          </div>
+        ) : (
           <div className="flex gap-6 flex-wrap">
             {savedCards.map(c => (
               <div 
@@ -578,6 +704,9 @@ export default function CardCreator() {
                 <CardIllustration card={c} width={130} />
                 
                 <div className="text-center mt-2 w-full">
+                  <span className="text-accent-cyan font-mono text-[10px] truncate block" title={c.id}>
+                    {c.id}
+                  </span>
                   <span className="text-white font-bold text-xs truncate block font-rajdhani">{c.baseName}</span>
                   <span className="text-text-muted text-[10px] block">{c.rarity} • {c.rating}</span>
                 </div>
@@ -601,8 +730,8 @@ export default function CardCreator() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -15,14 +15,14 @@ export default function SkinsTab({ state, myId }) {
 
   return (
     <div className="animate-[fadeIn_0.3s]">
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-2">
         <h2 className="m-0 font-rajdhani font-bold text-[24px] tracking-[0.5px] text-white">CASIER DE SKINS</h2>
         <div className="text-sm text-text-faint">
           {ownedSkins.length} / {SKINS.length} skin{ownedSkins.length > 1 ? 's' : ''} débloqué{ownedSkins.length > 1 ? 's' : ''} · Personnalise le cadre de ton équipe en match
         </div>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-6">
         {orderedSkins.map(skin => {
           const isUnlocked = canUseSkin(state, myId, skin.id);
 

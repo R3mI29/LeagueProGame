@@ -13,10 +13,10 @@ export default function HallOfFameTab({ sortedLeaderboard, seasonScores, history
         </p>
       </div>
 
-      <div className="flex justify-center items-end gap-5 mb-[60px] h-[200px]">
+      <div className="flex justify-center items-end gap-2 sm:gap-5 mb-8 sm:mb-[60px] h-[190px] sm:h-[200px] w-full px-2">
         {/* TOP 2 */}
         {sortedLeaderboard[1] && (
-          <div className="w-[220px] bg-[linear-gradient(180deg,rgba(192,192,192,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#C0C0C0] rounded-t-xl p-5 text-center relative h-[140px] flex flex-col justify-start">
+          <div className="flex-1 sm:w-[220px] max-w-[220px] bg-[linear-gradient(180deg,rgba(192,192,192,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#C0C0C0] rounded-t-xl p-2 sm:p-5 text-center relative h-[140px] flex flex-col justify-start">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#C0C0C0] text-black w-[30px] h-[30px] rounded-full flex items-center justify-center font-bold text-[14px] border-[4px] border-[#080A10]">2</div>
             <h3 className="text-white mt-[15px] mb-[5px] text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[1].name}</h3>
             <span className="text-[#C0C0C0] font-bold">{seasonScores?.[sortedLeaderboard[1].id]?.points || 0} PTS</span>
@@ -25,7 +25,7 @@ export default function HallOfFameTab({ sortedLeaderboard, seasonScores, history
 
         {/* TOP 1 */}
         {sortedLeaderboard[0] && (
-          <div className="w-[260px] bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border-t-[6px] border-[#D4AF37] rounded-t-xl p-[30px_20px] text-center relative h-[180px] flex flex-col justify-start shadow-[0_-10px_40px_rgba(212,175,55,0.15)]">
+          <div className="flex-1 sm:w-[260px] max-w-[260px] bg-[linear-gradient(180deg,rgba(212,175,55,0.15)_0%,#11141E_100%)] border-t-[6px] border-[#D4AF37] rounded-t-xl p-3 sm:p-[30px_20px] text-center relative h-[180px] flex flex-col justify-start shadow-[0_-10px_40px_rgba(212,175,55,0.15)]">
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 text-[40px] drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">👑</div>
             <h3 className="text-[#D4AF37] mt-[5px] mb-[5px] text-[24px] font-rajdhani font-bold tracking-[1px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[0].name}</h3>
             <span className="text-white font-bold text-[18px]">{seasonScores?.[sortedLeaderboard[0].id]?.points || 0} PTS</span>
@@ -35,7 +35,7 @@ export default function HallOfFameTab({ sortedLeaderboard, seasonScores, history
 
         {/* TOP 3 */}
         {sortedLeaderboard[2] && (
-          <div className="w-[220px] bg-[linear-gradient(180deg,rgba(205,127,50,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#CD7F32] rounded-t-xl p-5 text-center relative h-[120px] flex flex-col justify-start">
+          <div className="flex-1 sm:w-[220px] max-w-[220px] bg-[linear-gradient(180deg,rgba(205,127,50,0.1)_0%,#11141E_100%)] border-t-[4px] border-[#CD7F32] rounded-t-xl p-2 sm:p-5 text-center relative h-[120px] flex flex-col justify-start">
             <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#CD7F32] text-black w-[30px] h-[30px] rounded-full flex items-center justify-center font-bold text-[14px] border-[4px] border-[#080A10]">3</div>
             <h3 className="text-white mt-[15px] mb-[5px] text-[18px] whitespace-nowrap overflow-hidden text-ellipsis">{sortedLeaderboard[2].name}</h3>
             <span className="text-[#CD7F32] font-bold">{seasonScores?.[sortedLeaderboard[2].id]?.points || 0} PTS</span>
@@ -43,8 +43,8 @@ export default function HallOfFameTab({ sortedLeaderboard, seasonScores, history
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-10">
-        <div className="bg-[#11141E] rounded-lg p-8 border border-[#222838]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+        <div className="bg-[#11141E] rounded-lg p-4 sm:p-8 border border-[#222838]">
           <h3 className="font-rajdhani font-bold text-white m-0 mb-5 text-[20px] border-b border-[#222838] pb-4">CHALLENGERS (TOP 4 - 16)</h3>
           <div className="flex flex-col gap-2">
             {sortedLeaderboard.slice(3, 16).map((p, i) => (
@@ -60,7 +60,7 @@ export default function HallOfFameTab({ sortedLeaderboard, seasonScores, history
           </div>
         </div>
 
-        <div className="bg-[#11141E] rounded-lg p-8 border border-[#222838]">
+        <div className="bg-[#11141E] rounded-lg p-4 sm:p-8 border border-[#222838]">
           <h3 className="font-rajdhani font-bold text-white m-0 mb-5 text-[20px] border-b border-[#222838] pb-4">LIVRE DES ARCHIVES</h3>
           <div className="flex flex-col gap-4">
             {history && history.length > 0 ? (

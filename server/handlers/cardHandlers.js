@@ -1,7 +1,7 @@
 import { state as defaultState } from '../state/gameState.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { PACK_TYPES, openPack, openStarterPack, getCardById } from '../services/cardService.js';
-import { SELL_PRICES } from '../config/constants.js';
+import { SELL_PRICES, compareCardsForPack } from '../config/constants.js';
 import { isBotCheck } from '../services/playerService.js';
 import { startCardTournament } from '../services/tournamentService.js';
 
@@ -27,7 +27,7 @@ export function registerCardHandlers(io, socket, {
     }
 
     const cards = isStarter ? openStarterPack() : openPack(packTypeId);
-    cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
+    cards.sort(compareCardsForPack);
 
     const openedCardsWithContracts = [];
     cards.forEach(c => {

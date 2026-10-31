@@ -49,6 +49,7 @@ export const TEAMS_DB = [
   { name: "Nongshim RedForce", tag: "NS", logo: "/equipes/nongshim.webp" },
   { name: "OMG", tag: "OMG", logo: "/equipes/omg.webp" },
   { name: "RNG", tag: "RNG", logo: "/equipes/royal-never-give-up.webp" },
+  { name: "ROX Tigers", tag: "ROX", logo: "/equipes/rox-tigers.webp" },
   { name: "Sentinels", tag: "SEN", logo: "/equipes/sentinels.webp" },
   { name: "Shifters", tag: "SHFT", logo: "/equipes/shifters.webp" },
   { name: "Shopify Rebellion", tag: "SR", logo: "/equipes/shopify-rebellion.webp" },
@@ -75,3 +76,29 @@ export const SELL_PRICES = {
   'Légendaire': 500,
   'WANTED': 1400,
 };
+
+// Ordre d'importance des raretés (du plus commun au plus rare)
+export const RARITY_ORDER = {
+  'Commune': 1,
+  'Rare': 2,
+  'Épique': 3,
+  'Légendaire': 4,
+  'WANTED': 5,
+  'SECRET': 6,
+};
+
+/**
+ * Compare deux cartes pour l'ouverture d'un pack :
+ * 1. Les raretés les plus faibles d'abord, les plus rares en dernier
+ * 2. À rareté égale, les notes (rating/overall) les plus faibles d'abord, les meilleures en dernier
+ */
+export function compareCardsForPack(a, b) {
+  const rarityA = RARITY_ORDER[a?.rarity] ?? 0;
+  const rarityB = RARITY_ORDER[b?.rarity] ?? 0;
+  if (rarityA !== rarityB) {
+    return rarityA - rarityB;
+  }
+  const ratingA = Number(a?.overall || a?.rating || 0);
+  const ratingB = Number(b?.overall || b?.rating || 0);
+  return ratingA - ratingB;
+}

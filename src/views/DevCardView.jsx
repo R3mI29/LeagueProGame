@@ -1,13 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { socket } from '../api/socket';
-import { CARD_POOL } from '../constants/cardPlayers';
+import { CARD_POOL, RARITY_ORDER, registerCardInPool, unregisterCardFromPool } from '../constants/cardPlayers';
 import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
 import DevSkinPanel from '../components/DevSkinPanel';
 import CardCreator from '../components/CardCreator';
-
-const RARITY_ORDER = { 'Commune': 1, 'Rare': 2, 'Épique': 3, 'Légendaire': 4, 'WANTED': 5, "SECRET" : 6 };
 
 const DEV_TABS = [
   { id: 'cards', label: 'CARTES' },
@@ -18,10 +16,64 @@ const DEV_TABS = [
 export default function DevCardsView({ onClose, state }) {
   const [devTab, setDevTab] = useState('cards');
   const [filterRole, setFilterRole] = useState('Tous');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [poolVersion, setPoolVersion] = useState(0);
 
-  const displayedCards = CARD_POOL
-    .filter(c => filterRole === 'Tous' || c.role === filterRole)
-    .sort((a, b) => (RARITY_ORDER[a.rarity] || 0) - (RARITY_ORDER[b.rarity] || 0));
+  useEffect(() => {
+    const handleCardSaved = (card) => {
+      registerCardInPool(card);
+      setPoolVersion(v => v + 1);
+    };
+    const handleCardDeleted = (cardId) => {
+      unregisterCardFromPool(cardId);
+      setPoolVersion(v => v + 1);
+    };
+
+    socket.on('dev-card-saved', handleCardSaved);
+    socket.on('dev-card-deleted', handleCardDeleted);
+
+    return () => {
+      socket.off('dev-card-saved', handleCardSaved);
+      socket.off('dev-card-deleted', handleCardDeleted);
+    };
+  }, []);
+
+  const customCardsCount = useMemo(() => {
+    const list = state?.createdCardsThisGame || [];
+    return list.length;
+  }, [state?.createdCardsThisGame, poolVersion]);
+
+  const displayedCards = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    return CARD_POOL
+      .filter(c => {
+        const isThisGameCard = (state?.createdCardsThisGame || []).some(x => x.id === c.id);
+        const matchRole =
+          filterRole === 'Tous'
+            ? true
+            : filterRole === 'Custom'
+            ? isThisGameCard
+            : c.role === filterRole;
+        if (!matchRole) return false;
+
+        if (!query) return true;
+        return (
+          c.baseName?.toLowerCase().includes(query) ||
+          c.variant?.toLowerCase().includes(query) ||
+          c.teamTag?.toLowerCase().includes(query) ||
+          c.league?.toLowerCase().includes(query) ||
+          c.rarity?.toLowerCase().includes(query) ||
+          c.id?.toLowerCase().includes(query)
+        );
+      })
+      .sort((a, b) => {
+        // En mode Custom, afficher les plus récentes en premier
+        if (filterRole === 'Custom') {
+          return b.id.localeCompare(a.id);
+        }
+        return (RARITY_ORDER[a.rarity] || 0) - (RARITY_ORDER[b.rarity] || 0);
+      });
+  }, [filterRole, searchQuery, poolVersion, CARD_POOL.length, state?.createdCardsThisGame]);
 
   const handleGiveCard = (cardId) => socket.emit('dev-give-card', cardId);
   const handleSetEvent = (idx) => socket.emit('dev-set-event', idx);
@@ -110,22 +162,48 @@ export default function DevCardsView({ onClose, state }) {
             {devTab === 'cards' && (
               <>
                 <div className="h-8 w-px bg-[#222838]" />
-                <div className="flex gap-2.5 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
                   <button 
                     className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === 'Tous' ? 'bg-accent-pink text-black border-accent-pink shadow-pink' : 'bg-transparent text-white border-text-muted hover:border-accent-pink hover:text-accent-pink'}`}
                     onClick={() => setFilterRole('Tous')}
                   >
-                    TOUTES LES CARTES
+                    TOUTES
                   </button>
+
+                  <button 
+                    className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === 'Custom' ? 'bg-emerald-400 text-black border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.5)]' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:border-emerald-400'}`}
+                    onClick={() => setFilterRole('Custom')}
+                  >
+                    CRÉÉES ({customCardsCount})
+                  </button>
+
                   {ORDERED_ROLES.map(role => (
                     <button 
                       key={role} 
-                      className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === role ? 'bg-accent-pink text-black border-accent-pink shadow-pink' : 'bg-transparent text-white border-text-muted hover:border-accent-pink hover:text-accent-pink'}`}
+                      className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-3 rounded text-[13px] transition-all border-2 ${filterRole === role ? 'bg-accent-pink text-black border-accent-pink shadow-pink' : 'bg-transparent text-white border-text-muted hover:border-accent-pink hover:text-accent-pink'}`}
                       onClick={() => setFilterRole(role)}
                     >
                       {role.toUpperCase()}
                     </button>
                   ))}
+
+                  <div className="relative ml-2">
+                    <input
+                      type="text"
+                      placeholder="🔍 Rechercher joueur, tag..."
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="bg-[#0C0E14] border border-[#222838] focus:border-accent-pink text-white text-xs px-3 py-2 rounded-lg outline-none w-56 font-sans placeholder-text-muted"
+                    />
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 top-2 text-text-muted hover:text-white text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
                 </div>
               </>
             )}
@@ -176,7 +254,11 @@ export default function DevCardsView({ onClose, state }) {
             </div>
           ) : (
             <div className="max-w-[1100px] mx-auto pb-10">
-              <CardCreator />
+              <CardCreator state={state} onNavigateToCards={(cardName) => {
+                setDevTab('cards');
+                setFilterRole('Tous');
+                setSearchQuery(cardName || '');
+              }} />
             </div>
           )}
         </div>

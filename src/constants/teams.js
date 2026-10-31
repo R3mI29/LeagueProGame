@@ -33,6 +33,7 @@ export const TEAMS_DB = [
   { name: "Nongshim RedForce", tag: "NS", logo: "/equipes/nongshim.webp" },
   { name: "OMG", tag: "OMG", logo: "/equipes/omg.webp" },
   { name: "RNG", tag: "RNG", logo: "/equipes/royal-never-give-up.webp" },
+  { name: "ROX Tigers", tag: "ROX", logo: "/equipes/rox-tigers.webp" },
   { name: "Sentinels", tag: "SEN", logo: "/equipes/sentinels.webp" },
   { name: "Shifters", tag: "SHFT", logo: "/equipes/shifters.webp" },
   { name: "Shopify Rebellion", tag: "SR", logo: "/equipes/shopify-rebellion.webp" },

@@ -167,7 +167,7 @@ export default function BracketView({ state, event }) {
                    <span className="text-black text-2xl font-bold" style={{ fontFamily: theme.font }}>W</span>
                </div>
            )}
-           <h2 className="text-5xl m-0 uppercase tracking-[4px]" style={{ fontFamily: theme.font, color: theme.textMain }}>THE FINAL BRACKET</h2>
+           <h2 className="text-2xl sm:text-5xl m-0 uppercase tracking-[2px] sm:tracking-[4px] text-center" style={{ fontFamily: theme.font, color: theme.textMain }}>THE FINAL BRACKET</h2>
            <div className="flex items-center gap-4 mt-1.5">
                <div className="h-px w-10 bg-white/20" />
                <div className="font-bold tracking-[4px] text-xs uppercase" style={{ color: theme.accent }}>MAKE THEM BELIEVE</div>
@@ -180,10 +180,10 @@ export default function BracketView({ state, event }) {
       return (
         <div className="text-center mb-20 pt-5">
            {event?.logo && <img src={event.logo} alt="EWC" className="h-[70px] object-contain mb-2.5" style={{ filter: theme.logoFilter }} />}
-           <h3 className="text-[32px] m-0 mb-2.5 uppercase tracking-[4px] font-extrabold" style={{ fontFamily: theme.font, color: theme.main }}>
+           <h3 className="text-xl sm:text-[32px] m-0 mb-2 uppercase tracking-[2px] sm:tracking-[4px] font-extrabold" style={{ fontFamily: theme.font, color: theme.main }}>
               CHAMPIONSHIP BRACKET
            </h3>
-           <h2 className="text-[64px] text-white m-0 uppercase tracking-[2px] font-black" style={{ fontFamily: theme.font }}>
+           <h2 className="text-3xl sm:text-[64px] text-white m-0 uppercase tracking-[2px] font-black" style={{ fontFamily: theme.font }}>
               PLAYOFFS PHASE
            </h2>
         </div>
@@ -194,10 +194,10 @@ export default function BracketView({ state, event }) {
         <div className="relative text-center mb-20 pt-5">
           <div className="absolute top-5 left-5 font-extrabold text-xs tracking-[2px]" style={{ color: theme.main }}>LOL ESPORTS</div>
           <div className="absolute top-5 right-5 font-extrabold text-xs tracking-[2px]" style={{ color: theme.main }}>[20——25]</div>
-          <h2 className="flex justify-center items-center gap-5 font-['Arial_Black'] text-[72px] font-black m-0 italic tracking-[-2px] scale-x-110" style={{ color: theme.textMain }}>
+          <h2 className="flex justify-center items-center gap-3 sm:gap-5 font-['Arial_Black'] text-[36px] sm:text-[72px] font-black m-0 italic tracking-[-1px] sm:tracking-[-2px] sm:scale-x-110" style={{ color: theme.textMain }}>
             <span>FIRST</span>
             {event?.logo ? ( 
-              <img src={event.logo} alt="FS" className="h-[70px] object-contain" style={{ filter: theme.logoFilter }} /> 
+              <img src={event.logo} alt="FS" className="h-10 sm:h-[70px] object-contain" style={{ filter: theme.logoFilter }} /> 
             ) : ( 
               <span style={{ color: theme.main }}>♦</span> 
             )}
@@ -214,7 +214,7 @@ export default function BracketView({ state, event }) {
     if (isWorlds || isEWC) {
         return (
           <div 
-            className={`fixed bottom-[30px] left-1/2 -translate-x-1/2 backdrop-blur-md p-[12px_32px] flex gap-10 items-center z-[1000] border ${isEWC ? 'rounded-none' : 'rounded-full'}`}
+            className={`fixed bottom-4 sm:bottom-[30px] left-1/2 -translate-x-1/2 backdrop-blur-md max-w-[95vw] p-3 sm:p-[12px_32px] flex flex-col sm:flex-row gap-2 sm:gap-10 items-center z-[1000] border ${isEWC ? 'rounded-none' : 'rounded-2xl sm:rounded-full'}`}
             style={{ 
               background: isWorlds ? 'rgba(5, 10, 25, 0.95)' : 'rgba(10, 10, 10, 0.95)', 
               borderColor: isWorlds ? 'rgba(255, 255, 255, 0.15)' : 'rgba(212, 175, 55, 0.4)',
@@ -273,7 +273,7 @@ export default function BracketView({ state, event }) {
 
     return (
       <div 
-        className="w-full max-w-[1200px] mt-5 mx-auto rounded-lg border p-[24px_32px] flex justify-between items-center"
+        className="w-full max-w-[1200px] mt-5 mx-auto rounded-lg border p-4 sm:p-[24px_32px] flex flex-col sm:flex-row gap-3 justify-between items-center text-center sm:text-left"
         style={{ background: theme.boxBg, borderColor: theme.border, boxShadow: theme.boxShadow }}
       >
         <h3 className="m-0 text-[20px] font-extrabold" style={{ fontFamily: theme.font, color: theme.textMain }}>
@@ -313,7 +313,7 @@ export default function BracketView({ state, event }) {
 
   return (
     <div 
-      className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-hidden"
+      className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-auto"
       style={{ backgroundColor: theme.bg, ...theme.bgStyle }}
     >
       <style>{`
@@ -321,37 +321,39 @@ export default function BracketView({ state, event }) {
       `}</style>
 
       <div 
-        className="w-full relative z-[1] p-[20px_4vw] flex flex-col min-h-screen"
-        style={{ paddingBottom: isWorlds || isEWC ? '140px' : '40px' }}
+        className="w-full relative z-[1] p-3 sm:p-[20px_4vw] flex flex-col min-h-screen"
+        style={{ paddingBottom: isWorlds || isEWC ? '160px' : '60px' }}
       >
         
         {renderHeader()}
 
-        <div className="flex w-full max-w-[1400px] mx-auto flex-1" style={{ justifyContent: isWorlds || isEWC ? 'space-between' : 'space-around', gap: isWorlds || isEWC ? '3vw' : '40px' }}>
-          
-          {bracket[0] && (
-            <div className="flex-1 flex flex-col justify-around z-[2]" style={{ gap: isWorlds || isEWC ? '50px' : '40px' }}>
-              {bracket[0].map(m => getMatchBox(m, "QUARTERFINALS"))}
-            </div>
-          )}
-          
-          {bracket[1] && (
-            <div className="flex-1 flex flex-col justify-around z-[2]" style={{ gap: isWorlds || isEWC ? '100px' : '40px' }}>
-              {bracket[1].map(m => getMatchBox(m, "SEMIFINALS"))}
-            </div>
-          )}
-          
-          {bracket[2] && (
-            <div className="flex flex-col gap-10 justify-center z-[3]" style={{ flex: isWorlds || isEWC ? 1.1 : 1 }}>
-              {isWorlds || isEWC ? (
-                  bracket[2].map(m => getMatchBox(m, "GRAND FINAL", true))
-              ) : (
-                  <div className="scale-110 z-[2]">
-                    {bracket[2].map(m => getMatchBox(m, "GRAND FINAL"))}
-                  </div>
-              )}
-            </div>
-          )}
+        <div className="w-full overflow-x-auto pb-8">
+          <div className="flex gap-4 sm:gap-[3vw] justify-start md:justify-around items-stretch min-w-[700px] max-w-[1400px] mx-auto px-2">
+            
+            {bracket[0] && (
+              <div className="flex-1 min-w-[210px] flex flex-col justify-around z-[2]" style={{ gap: isWorlds || isEWC ? '50px' : '40px' }}>
+                {bracket[0].map(m => getMatchBox(m, "QUARTERFINALS"))}
+              </div>
+            )}
+            
+            {bracket[1] && (
+              <div className="flex-1 min-w-[210px] flex flex-col justify-around z-[2]" style={{ gap: isWorlds || isEWC ? '100px' : '40px' }}>
+                {bracket[1].map(m => getMatchBox(m, "SEMIFINALS"))}
+              </div>
+            )}
+            
+            {bracket[2] && (
+              <div className="flex-1 min-w-[210px] flex flex-col gap-10 justify-center z-[3]" style={{ flex: isWorlds || isEWC ? 1.1 : 1 }}>
+                {isWorlds || isEWC ? (
+                    bracket[2].map(m => getMatchBox(m, "GRAND FINAL", true))
+                ) : (
+                    <div className="sm:scale-110 z-[2]">
+                      {bracket[2].map(m => getMatchBox(m, "GRAND FINAL"))}
+                    </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
       </div>

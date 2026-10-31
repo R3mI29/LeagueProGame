@@ -10,10 +10,12 @@ import { state as defaultState } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { SKINS, SKIN_BY_ID, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
 import { openPack } from '../services/cardService.js';
+import { compareCardsForPack } from '../config/constants.js';
 
 export function registerDevHandlers(io, socket, {
   state = defaultState,
 } = {}) {
+  if (!state.createdCardsThisGame) state.createdCardsThisGame = [];
   socket.on('dev-skin', ({ action, skinId } = {}) => {
     const valid = SKIN_BY_ID[skinId];
 
@@ -50,8 +52,15 @@ export function registerDevHandlers(io, socket, {
   });
 
   socket.on('dev-add-custom-card', (card) => {
-    if (card && card.id && !CARD_POOL.find(c => c.id === card.id)) {
-      CARD_POOL.push(card);
+    if (card && card.id) {
+      if (!CARD_POOL.find(c => c.id === card.id)) {
+        CARD_POOL.push(card);
+      }
+      if (!state.customCards) state.customCards = [];
+      if (!state.customCards.some(c => c.id === card.id)) {
+        state.customCards.push(card);
+        io.emit('draft-update', state);
+      }
     }
   });
 
@@ -60,7 +69,7 @@ export function registerDevHandlers(io, socket, {
     const cards = openPack(packTypeId);
     if (!cards || cards.length === 0) return;
 
-    cards.sort((a, b) => (a.overall || a.rating || 0) - (b.overall || b.rating || 0));
+    cards.sort(compareCardsForPack);
 
     const openedCardsWithContracts = [];
     cards.forEach(c => {
@@ -82,6 +91,25 @@ export function registerDevHandlers(io, socket, {
     try {
       if (!card || !card.baseName) {
         if (typeof callback === 'function') callback({ ok: false, error: 'Nom de joueur manquant' });
+        return;
+      }
+
+      const rawId = card.id ? String(card.id).trim() : '';
+      if (!rawId) {
+        if (typeof callback === 'function') callback({ ok: false, error: 'Identifiant de carte (ID) manquant.' });
+        return;
+      }
+      const cardId = rawId.toLowerCase().replace(/[^a-z0-9_-]/g, '_');
+
+      const existingCard = CARD_POOL.find(c => c.id.toLowerCase() === cardId.toLowerCase());
+      const isAlreadyCreatedThisGame = (state.createdCardsThisGame || []).some(c => c.id.toLowerCase() === cardId.toLowerCase());
+      if (existingCard && !isAlreadyCreatedThisGame) {
+        if (typeof callback === 'function') {
+          callback({
+            ok: false,
+            error: `L'identifiant "${cardId}" est déjà attribué à la carte existante "${existingCard.baseName}" (${existingCard.teamTag || ''} ${existingCard.rarity}).`,
+          });
+        }
         return;
       }
 
@@ -119,7 +147,7 @@ export function registerDevHandlers(io, socket, {
 
       // 2. Structurer l'objet carte
       const cardToSave = {
-        id: card.id || `custom-${card.baseName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+        id: cardId,
         baseName: card.baseName,
         variant: card.variant || `${card.teamTag || ''} ${card.baseName}`.trim(),
         role: card.role || 'Mid',
@@ -132,7 +160,6 @@ export function registerDevHandlers(io, socket, {
       };
       if (card.themeColor) cardToSave.themeColor = card.themeColor;
       if (card.video) cardToSave.video = card.video;
-      cardToSave.isCustom = true;
 
       // 3. Persistance physique dans src/constants/cardPlayers.js
       const cardPlayersPath = path.join(PROJECT_ROOT, 'src/constants/cardPlayers.js');
@@ -154,12 +181,28 @@ export function registerDevHandlers(io, socket, {
 
       fs.writeFileSync(cardPlayersPath, fileContent, 'utf-8');
 
-      // 4. Mise à jour de CARD_POOL en mémoire vive
+      // 4. Mise à jour de CARD_POOL et de state.customCards en mémoire vive
       const existingIdx = CARD_POOL.findIndex(c => c.id === cardToSave.id);
       if (existingIdx !== -1) {
         CARD_POOL[existingIdx] = cardToSave;
       } else {
         CARD_POOL.push(cardToSave);
+      }
+
+      if (!state.createdCardsThisGame) state.createdCardsThisGame = [];
+      const cgIdx = state.createdCardsThisGame.findIndex(c => c.id === cardToSave.id);
+      if (cgIdx !== -1) {
+        state.createdCardsThisGame[cgIdx] = cardToSave;
+      } else {
+        state.createdCardsThisGame.push(cardToSave);
+      }
+
+      if (!state.customCards) state.customCards = [];
+      const cIdx = state.customCards.findIndex(c => c.id === cardToSave.id);
+      if (cIdx !== -1) {
+        state.customCards[cIdx] = cardToSave;
+      } else {
+        state.customCards.push(cardToSave);
       }
 
       // 5. Créditer la carte au joueur en session dev
@@ -204,6 +247,16 @@ export function registerDevHandlers(io, socket, {
       const poolIdx = CARD_POOL.findIndex(c => c.id === cardId);
       if (poolIdx !== -1) {
         CARD_POOL.splice(poolIdx, 1);
+      }
+
+      if (state.createdCardsThisGame) {
+        const cgIdx = state.createdCardsThisGame.findIndex(c => c.id === cardId);
+        if (cgIdx !== -1) state.createdCardsThisGame.splice(cgIdx, 1);
+      }
+
+      if (state.customCards) {
+        const cIdx = state.customCards.findIndex(c => c.id === cardId);
+        if (cIdx !== -1) state.customCards.splice(cIdx, 1);
       }
 
       io.emit('draft-update', state);

@@ -63,21 +63,21 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
   // --- RENDU PRINCIPAL ---
   return (
-    <div className="min-h-screen bg-[#080A10] text-[#F0F2F5] font-sans py-10 px-5">
+    <div className="min-h-screen bg-[#080A10] text-[#F0F2F5] font-sans py-6 sm:py-10 px-3 sm:px-6 w-full max-w-full overflow-x-hidden">
       <div className="max-w-[1280px] mx-auto">
         
-        {/* EN-TÊTE ÉLÉGANT */}
-        <div className="flex justify-between items-center border-b border-[#222838] pb-6 mb-8">
+        {/* EN-TÊTE ÉLÉGANT & RESPONSIVE */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-[#222838] pb-4 sm:pb-6 mb-6 sm:mb-8 w-full">
           <div>
-            <h1 className="font-rajdhani text-[38px] m-0 font-bold tracking-[1px] text-white">
+            <h1 className="font-rajdhani text-[28px] sm:text-[38px] m-0 font-bold tracking-[1px] text-white">
               CIRCUIT <span className="text-[#D4AF37]">PRO</span>
             </h1>
-            <span className="text-text-faint text-[13px] tracking-[2px] uppercase font-medium">
+            <span className="text-text-faint text-[11px] sm:text-[13px] tracking-[1.5px] sm:tracking-[2px] uppercase font-medium">
               Gestion de Roster Officiel — Année {state.year || 1}
             </span>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2 overflow-x-auto max-w-full pb-2 md:pb-0 w-full md:w-auto scrollbar-none">
             {[
               { id: 'roster', label: 'Gestion Équipe' },
               { id: 'shop', label: 'Boutique' },
@@ -92,7 +92,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
                   if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
                 }}
                 disabled={isReady && tab.id !== 'roster'}
-                className={`bg-transparent pb-3 px-6 text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`bg-transparent pb-2 sm:pb-3 px-3 sm:px-5 text-xs sm:text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 shrink-0 whitespace-nowrap ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 {tab.label}
               </button>

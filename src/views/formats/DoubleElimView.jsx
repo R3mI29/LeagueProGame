@@ -95,20 +95,21 @@ export default function DoubleElimView({ state, event }) {
   const getMatchesByPrefix = (prefix) => bracket.flat().filter(m => m.id.startsWith(prefix));
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-auto p-[40px_5vw]" style={{ backgroundColor: bgDark }}>
+    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-auto p-3 sm:p-[40px_5vw]" style={{ backgroundColor: bgDark }}>
       
       <div 
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-screen opacity-10 pointer-events-none blur-[50px] z-0" 
         style={{ background: `radial-gradient(circle, ${msiRed} 0%, transparent 40%)` }} 
       />
 
-      <div className="flex flex-col gap-20 relative z-[1] max-w-[1800px] mx-auto pb-[120px]">
+      <div className="flex flex-col gap-12 sm:gap-20 relative z-[1] max-w-[1800px] mx-auto pb-[160px] sm:pb-[120px]">
         
         {/* WINNER BRACKET + GRANDE FINALE */}
-        <div className="relative pl-6" style={{ borderLeft: `4px solid ${msiRed}` }}>
-          <h2 className="font-['Arial_Black'] italic text-white m-0 mb-10 text-xl tracking-[2px]">WINNER BRACKET</h2>
+        <div className="relative pl-3 sm:pl-6" style={{ borderLeft: `4px solid ${msiRed}` }}>
+          <h2 className="font-['Arial_Black'] italic text-white m-0 mb-6 sm:mb-10 text-lg sm:text-xl tracking-[2px]">WINNER BRACKET</h2>
           
-          <div className="flex gap-[6vw] items-stretch">
+          <div className="overflow-x-auto pb-4 max-w-full">
+            <div className="flex gap-4 sm:gap-[6vw] items-stretch min-w-max">
             <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('ub1').map(m => getMatchBox(m, "ROUND 1"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('ub2').map(m => getMatchBox(m, "QUARTER"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[60px]">{getMatchesByPrefix('ub3').map(m => getMatchBox(m, "SEMI"))}</div>
@@ -138,19 +139,22 @@ export default function DoubleElimView({ state, event }) {
             </div>
 
           </div>
+          </div>
         </div>
 
         {/* LOSER BRACKET */}
-        <div className="relative pl-6" style={{ borderLeft: `4px solid #555` }}>
-          <h2 className="font-['Arial_Black'] italic text-[#888] m-0 mb-10 text-xl tracking-[2px]">LOSER BRACKET</h2>
+        <div className="relative pl-3 sm:pl-6" style={{ borderLeft: `4px solid #555` }}>
+          <h2 className="font-['Arial_Black'] italic text-[#888] m-0 mb-6 sm:mb-10 text-lg sm:text-xl tracking-[2px]">LOSER BRACKET</h2>
           
-          <div className="flex gap-[4vw] items-stretch">
+          <div className="overflow-x-auto pb-4 max-w-full">
+            <div className="flex gap-4 sm:gap-[4vw] items-stretch min-w-max">
             <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('lb1').map(m => getMatchBox(m, "L-ROUND 1"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[30px]">{getMatchesByPrefix('lb2').map(m => getMatchBox(m, "L-ROUND 2"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('lb3').map(m => getMatchBox(m, "L-ROUND 3"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[40px]">{getMatchesByPrefix('lb4').map(m => getMatchBox(m, "L-ROUND 4"))}</div>
             <div className="shrink-0 flex flex-col justify-around gap-[60px]">{getMatchesByPrefix('lb5').map(m => getMatchBox(m, "L-SEMI"))}</div>
             <div className="shrink-0 flex flex-col justify-around">{getMatchesByPrefix('lb6').map(m => getMatchBox(m, "L-FINAL"))}</div>
+            </div>
           </div>
         </div>
 
@@ -158,7 +162,7 @@ export default function DoubleElimView({ state, event }) {
 
       {/* ENCART DE CONTRÔLE DÉPLACÉ EN BAS À DROITE */}
       <div 
-        className="fixed bottom-10 right-10 w-[320px] p-5 flex flex-col items-center gap-4 z-[1000]"
+        className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-10 sm:w-[320px] p-4 sm:p-5 flex flex-col items-center gap-3 sm:gap-4 z-[1000]"
         style={{ background: boxBg, border: `3px solid ${msiRed}`, boxShadow: `6px 6px 0px ${msiYellow}` }}
       >
         <h3 className="font-['Arial_Black'] text-white m-0 text-base italic uppercase text-center">

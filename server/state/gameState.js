@@ -23,6 +23,8 @@ export function createInitialGameState(overrides = {}) {
     lastOpenedPack: {},
     starterPackClaimed: {},
     teamSkins: {},
+    customCards: [],
+    createdCardsThisGame: [],
     seasonRound: 0,
     continueSeasonVotes: [],
     year: 1,

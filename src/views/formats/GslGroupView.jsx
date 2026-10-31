@@ -136,44 +136,46 @@ export default function GslGroupView({ state, event }) {
   };
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-hidden p-[40px_2vw]" style={{ backgroundColor: theme.bg, ...theme.bgStyle }}>
+    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-auto p-3 sm:p-[40px_2vw]" style={{ backgroundColor: theme.bg, ...theme.bgStyle }}>
       
       <div 
-        className="w-full max-w-[1600px] mx-auto mb-10 p-[24px_40px] flex justify-between items-center border-t-[4px]"
+        className="w-full max-w-[1600px] mx-auto mb-6 sm:mb-10 p-4 sm:p-[24px_40px] flex flex-col sm:flex-row gap-3 justify-between items-center text-center sm:text-left border-t-[4px]"
         style={{ background: theme.headerBg, borderRadius: isEWC ? '0px' : '8px', borderTopColor: theme.main, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none', boxShadow: theme.boxShadow }}
       >
-        <h2 className="m-0 text-[28px] font-extrabold tracking-[1px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
+        <h2 className="m-0 text-xl sm:text-[28px] font-extrabold tracking-[1px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
           {isFirstStand ? 'PHASE DE QUALIFICATION' : 'GROUP STAGE'}
         </h2>
-        <div className="flex items-center gap-5">
-          {event?.logo && <img src={event.logo} alt="" className="h-10 object-contain" style={{ filter: theme.logoFilter }} />}
-          <span className="text-[24px] font-extrabold tracking-[2px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
+        <div className="flex items-center gap-3 sm:gap-5">
+          {event?.logo && <img src={event.logo} alt="" className="h-8 sm:h-10 object-contain" style={{ filter: theme.logoFilter }} />}
+          <span className="text-lg sm:text-[24px] font-extrabold tracking-[2px] uppercase" style={{ fontFamily: theme.font, color: theme.headerText }}>
             {event?.name || 'TOURNAMENT'}
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-[2vw] w-full max-w-[1600px] mx-auto pb-[140px]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-[2vw] w-full max-w-[1600px] mx-auto pb-[140px]">
         {groups?.map((group) => (
           <div key={group.id} className="overflow-hidden border" style={{ background: theme.boxBg, borderRadius: isEWC ? '0px' : '8px', borderColor: theme.border, boxShadow: theme.boxShadow }}>
-            <div className="p-[16px_24px] flex justify-between items-center" style={{ background: theme.headerBg, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none' }}>
-              <h2 className="m-0 text-[20px] font-extrabold tracking-[1px]" style={{ fontFamily: theme.font, color: theme.headerText }}>GROUP {group.id}</h2>
+            <div className="p-3 sm:p-[16px_24px] flex justify-between items-center" style={{ background: theme.headerBg, borderBottom: isEWC ? `1px solid ${theme.border}` : 'none' }}>
+              <h2 className="m-0 text-base sm:text-[20px] font-extrabold tracking-[1px]" style={{ fontFamily: theme.font, color: theme.headerText }}>GROUP {group.id}</h2>
               <div className="text-[13px] font-semibold font-sans" style={{ color: isFirstStand ? '#FFFFFF' : theme.textMuted }}>
                 QUALIFIED: <span style={{ color: theme.main }}>{group.qualified?.length || 0}/2</span>
               </div>
             </div>
             
-            <div className="p-[40px_2vw] flex gap-[3vw]">
-              <div className="flex-1 flex flex-col gap-[30px]">
-                {getMatchBox(group.matches[0], "OPENING 1")}
-                {getMatchBox(group.matches[1], "OPENING 2")}
-              </div>
-              <div className="flex-1 flex flex-col gap-[30px]">
-                {getMatchBox(group.matches[2], "WINNERS")}
-                {getMatchBox(group.matches[3], "ELIMINATION")}
-              </div>
-              <div className="flex-1 flex flex-col justify-center">
-                {getMatchBox(group.matches[4], "DECIDER")}
+            <div className="p-3 sm:p-[40px_2vw] overflow-x-auto">
+              <div className="flex gap-4 sm:gap-[3vw] min-w-[560px] sm:min-w-0">
+                <div className="flex-1 flex flex-col gap-4 sm:gap-[30px]">
+                  {getMatchBox(group.matches[0], "OPENING 1")}
+                  {getMatchBox(group.matches[1], "OPENING 2")}
+                </div>
+                <div className="flex-1 flex flex-col gap-4 sm:gap-[30px]">
+                  {getMatchBox(group.matches[2], "WINNERS")}
+                  {getMatchBox(group.matches[3], "ELIMINATION")}
+                </div>
+                <div className="flex-1 flex flex-col justify-center">
+                  {getMatchBox(group.matches[4], "DECIDER")}
+                </div>
               </div>
             </div>
           </div>
@@ -181,11 +183,10 @@ export default function GslGroupView({ state, event }) {
       </div>
 
       <div 
-        className="fixed bottom-[30px] left-1/2 -translate-x-1/2 p-[12px_32px] flex gap-10 items-center z-[1000] border"
+        className="fixed bottom-4 sm:bottom-[30px] left-1/2 -translate-x-1/2 max-w-[95vw] p-3 sm:p-[12px_32px] flex flex-col sm:flex-row gap-2 sm:gap-10 items-center z-[1000] border rounded-2xl sm:rounded-full"
         style={{ 
           background: isWorlds ? 'rgba(5, 10, 25, 0.95)' : (isEWC ? '#0D0D0D' : theme.boxBg), 
           backdropFilter: isWorlds ? 'blur(16px)' : 'none', 
-          borderRadius: isEWC ? '0px' : '50px',
           borderColor: isWorlds ? 'rgba(255, 255, 255, 0.15)' : theme.border, 
           boxShadow: isWorlds ? '0 10px 40px rgba(0,0,0,0.9)' : (isEWC ? '0 10px 30px rgba(0,0,0,0.9)' : theme.boxShadow),
       }}>

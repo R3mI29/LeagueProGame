@@ -58,7 +58,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
           <strong className="text-white"> Utilisez le cadenas pour protéger vos cartes préférées.</strong>
         </p>
         
-        <div className="flex justify-center items-center gap-10 mt-6">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-10 mt-6">
           <div className="text-[28px] font-bold text-[#00e676]">
             SOLDE : 💲 {myEconomy} CRÉDITS
           </div>
@@ -76,7 +76,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
         </div>
       </div>
 
-      <div className="flex gap-6 flex-wrap justify-center">
+      <div className="flex gap-3 sm:gap-6 flex-wrap justify-center">
         {sellableCards.map(cardId => {
           const card = getCard(cardId);
           if (!card) return null;
@@ -92,7 +92,7 @@ export default function SellTab({ myCollection, myLineup, myEconomy, lockedCards
           else if (card.rarity === 'WANTED') price = 1400;
 
           return (
-            <div key={cardId} className={`relative flex flex-col items-center gap-3 bg-[#11141E] p-5 rounded-xl border transition-all shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isLocked ? 'border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.2)]' : 'border-[#222838]'}`}>
+            <div key={cardId} className={`relative flex flex-col items-center gap-3 bg-[#11141E] p-3.5 sm:p-5 rounded-xl border transition-all shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isLocked ? 'border-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.2)]' : 'border-[#222838]'}`}>
               
               {/* BOUTON CADENAS */}
               <button

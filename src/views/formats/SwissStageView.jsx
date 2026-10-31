@@ -213,35 +213,37 @@ export default function SwissStageView({ state, event }) {
   if (!bracket || bracket.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-hidden p-[40px_2vw]" style={{ backgroundColor: theme.bg, ...theme.bgStyle }}>
+    <div className="fixed inset-0 w-screen h-screen z-[100] overflow-y-auto overflow-x-auto p-4 sm:p-[40px_2vw]" style={{ backgroundColor: theme.bg, ...theme.bgStyle }}>
       
-      <div className="text-center mb-10 flex flex-col items-center">
-        {event?.logo && <img src={event.logo} alt="" className="h-[75px] object-contain mb-[15px]" style={{ filter: theme.logoFilter }} />}
+      <div className="text-center mb-6 sm:mb-10 flex flex-col items-center">
+        {event?.logo && <img src={event.logo} alt="" className="h-[55px] sm:h-[75px] object-contain mb-3 sm:mb-[15px]" style={{ filter: theme.logoFilter }} />}
         
-        <h2 className="text-[36px] m-0 uppercase tracking-[6px]" style={{ fontFamily: theme.font, color: theme.textMain, textShadow: isWorlds ? `0 0 20px rgba(0, 102, 255, 0.6)` : 'none' }}>SWISS STAGE</h2>
-        {isWorlds && <div className="w-[60px] h-[3px] mt-[15px]" style={{ background: 'linear-gradient(90deg, transparent, #0066FF, transparent)' }}></div>}
+        <h2 className="text-[24px] sm:text-[36px] m-0 uppercase tracking-[4px] sm:tracking-[6px]" style={{ fontFamily: theme.font, color: theme.textMain, textShadow: isWorlds ? `0 0 20px rgba(0, 102, 255, 0.6)` : 'none' }}>SWISS STAGE</h2>
+        {isWorlds && <div className="w-[60px] h-[3px] mt-2 sm:mt-[15px]" style={{ background: 'linear-gradient(90deg, transparent, #0066FF, transparent)' }}></div>}
       </div>
 
-      <div className="flex w-full gap-[1.5vw] justify-center items-center pb-[120px]">
-        {COLUMNS.map((col, colIdx) => {
-          const columnHasContent = col.some(hasContent);
-          if (!columnHasContent) return null;
+      <div className="w-full overflow-x-auto pb-[130px]">
+        <div className="flex gap-3 sm:gap-[1.5vw] justify-start md:justify-center items-start min-w-max mx-auto px-4">
+          {COLUMNS.map((col, colIdx) => {
+            const columnHasContent = col.some(hasContent);
+            if (!columnHasContent) return null;
 
-          return (
-            <div key={colIdx} className="flex flex-col gap-6 flex-1 max-w-[210px]">
-              {col.map(item => {
-                if (!hasContent(item)) return null;
-                if (item.startsWith('Q') || item.startsWith('E')) return <StatusBlock key={item} type={item} />;
-                return <SwissPoolBlock key={item} pool={item} />;
-              })}
-            </div>
-          );
-        })}
+            return (
+              <div key={colIdx} className="flex flex-col gap-4 sm:gap-6 w-[180px] sm:w-[210px] shrink-0">
+                {col.map(item => {
+                  if (!hasContent(item)) return null;
+                  if (item.startsWith('Q') || item.startsWith('E')) return <StatusBlock key={item} type={item} />;
+                  return <SwissPoolBlock key={item} pool={item} />;
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* BARRE DE CONTRÔLE FLOTTANTE */}
       <div 
-        className="fixed bottom-[30px] left-1/2 -translate-x-1/2 p-[12px_32px] flex gap-10 items-center z-[1000] border rounded-full"
+        className="fixed bottom-4 sm:bottom-[30px] left-1/2 -translate-x-1/2 max-w-[95vw] p-3 sm:p-[12px_32px] flex flex-col sm:flex-row gap-2 sm:gap-10 items-center z-[1000] border rounded-2xl sm:rounded-full"
         style={{ 
           background: isWorlds ? 'rgba(5, 10, 22, 0.95)' : theme.boxBg, 
           backdropFilter: 'blur(16px)',
