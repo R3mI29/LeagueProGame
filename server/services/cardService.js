@@ -1,39 +1,9 @@
 import { CARD_POOL, RARITY_WEIGHTS } from '../../src/constants/cardPlayers.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
+import { PACK_TYPES } from '../../src/constants/packConfig.js';
 
+export { PACK_TYPES };
 export const PACK_SIZE = 5;
-
-// Définition des types de packs et de leurs probabilités ajustées
-export const PACK_TYPES = {
-  standard: {
-    name: "Pack Standard",
-    price: 100,
-    size: 5,
-    // Base ~1000 total (Epique: 4%, Leg: 1%, Wanted: 0.3%)
-    weights: { Commune: 633, Rare: 290, 'Épique': 40, 'Légendaire': 10, WANTED: 3 }
-  },
-  elite: {
-    name: "Pack Élite",
-    price: 200,
-    size: 5,
-    // Chances x2 sur les cartes Rares et supérieures
-    weights: { Commune: 459, Rare: 435, 'Épique': 80, 'Légendaire': 20, WANTED: 6 }
-  },
-  legendary: {
-    name: "Pack Légende",
-    price: 400,
-    size: 5,
-    // Chances x5 sur les cartes Épiques, Légendaires et WANTED
-    weights: { Commune: 155, Rare: 580, 'Épique': 200, 'Légendaire': 50, WANTED: 15 }
-  },
-  wanted: {
-    name: "Pack WANTED",
-    price: 9000,
-    size: 5,
-    // Zéro commune. 30% Rare, 45% Épique, 17% Légendaire, 8% WANTED (par carte)
-    weights: { Commune: 0, Rare: 0, 'Épique': 0, 'Légendaire': 0, WANTED: 80 }
-  }
-};
 
 function weightedRarity(weights) {
   const total = Object.values(weights).reduce((a, b) => a + b, 0);
@@ -45,8 +15,17 @@ function weightedRarity(weights) {
   return Object.keys(weights)[0];
 }
 
-function drawCardOfRarity(rarity) {
-  const pool = CARD_POOL.filter(c => c.rarity === rarity);
+function drawCardOfRarity(rarity, filterFn = null) {
+  let pool = CARD_POOL.filter(c => c.rarity === rarity);
+  if (filterFn) {
+    const filteredPool = pool.filter(filterFn);
+    if (filteredPool.length > 0) {
+      pool = filteredPool;
+    }
+  }
+  if (pool.length === 0) {
+    pool = CARD_POOL.filter(c => c.rarity === rarity);
+  }
   if (pool.length === 0) return null;
 
   // RATIO 1/7 : Une carte normale pèse "7", une Full Art pèse "1"
@@ -71,6 +50,7 @@ function drawCardOfRarity(rarity) {
 export function openPack(packTypeId = 'standard') {
   const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
   const cards = [];
+  const filterFn = packConfig.filter || null;
   
   for (let i = 0; i < packConfig.size; i++) {
     let rarity = weightedRarity(packConfig.weights);
@@ -80,7 +60,7 @@ export function openPack(packTypeId = 'standard') {
       while (rarity === 'Commune') rarity = weightedRarity(packConfig.weights);
     }
     
-    const card = drawCardOfRarity(rarity);
+    const card = drawCardOfRarity(rarity, filterFn);
     if (card) cards.push(card);
   }
   return cards;

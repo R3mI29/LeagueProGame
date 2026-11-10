@@ -1,7 +1,8 @@
+import { openSkinPack, getOrRefreshSponsorOfferings } from '../../src/constants/sponsorContracts.js';
 import { state } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
-import { grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
+import { SKINS, grantSkin, equipRarestSkin } from '../../src/constants/teamSkins.js';
 import { isBotCheck, getUniqueBotTeam } from './playerService.js';
 import { getCardById, cardToRosterEntry, generateBotRosterFromCards, upgradeBotRoster, openPack } from '../services/cardService.js';
 import { shuffleArray, seedTeams } from '../utils/random.js';
@@ -264,6 +265,41 @@ export function awardSeasonRewards() {
     grantSkin(state, championId, 'worlds-sovereign');
   }
 
+  // Si un bot finit 2ème d'un tournoi, lui faire ouvrir un pack de skin (uniquement les bots)
+  if (finalistId) {
+    const finalist = state.participants?.find(p => p.id === finalistId);
+    if (finalist && isBotCheck(finalist)) {
+      openSkinPack(state, finalistId);
+      equipRarestSkin(state, finalistId);
+    }
+  }
+
+  // Récompense des skins d'équipe si le vainqueur a 4+ membres de cette équipe dans son roster
+  if (championId) {
+    const champion = state.participants?.find(p => p.id === championId);
+    if (champion && Array.isArray(champion.roster)) {
+      SKINS.forEach(skin => {
+        if (skin.requiredTeamTag) {
+          const minCount = skin.requiredMembers || 4;
+          const targetTag = skin.requiredTeamTag.toUpperCase();
+          const count = champion.roster.filter(p => {
+            if (!p) return false;
+            const pTag = (p.teamTag || '').toUpperCase();
+            if (pTag === targetTag) return true;
+            if (targetTag === 'T1' && (pTag === 'SKT' || pTag === 'T1')) return true;
+            if (p.id && p.id.toUpperCase().startsWith(targetTag + '_')) return true;
+            if (p.id && p.id.toUpperCase().startsWith(targetTag + '-')) return true;
+            return false;
+          }).length;
+
+          if (count >= minCount) {
+            grantSkin(state, championId, skin.id);
+          }
+        }
+      });
+    }
+  }
+
   const catchupBonuses = {};
 
   state.participants.forEach(p => {
@@ -305,6 +341,82 @@ export function awardSeasonRewards() {
 
     if (!isBotCheck(p)) {
       state.economy[p.id] += moneyEarned;
+
+      // Evaluation des contrats de sponsoring actifs
+      if (state.activeContracts?.[p.id]) {
+        const active = state.activeContracts[p.id];
+        let success = false;
+        const roster = p.roster || [];
+        const wantedCount = roster.filter(c => c.rarity === 'WANTED').length;
+        const lckCount = roster.filter(c => (c.league || '').toUpperCase() === 'LCK').length;
+        const commonCount = roster.filter(c => c.rarity === 'Commune').length;
+        const totalPower = roster.reduce((sum, c) => sum + (c.rating || c.overall || 75), 0);
+        const avgPower = roster.length > 0 ? totalPower / roster.length : 0;
+        const evaluatedPower = (active.targetValue && active.targetValue > 100) ? totalPower : avgPower;
+
+        if (active.type === 'lck_tournament_win' && p.id === championId && lckCount >= 3) success = true;
+        else if (active.type === 'has_epic_lineup' && roster.some(c => ['Épique', 'Légendaire', 'WANTED'].includes(c.rarity))) success = true;
+        else if (active.type === 'has_contract_years' && roster.filter(c => c.contract === 'LIFETIME' || (typeof c.contract === 'number' && c.contract >= (active.targetValue || 2))).length >= (active.targetCount || 3)) success = true;
+        else if (active.type === 'tournament_top8' && ['TOP1', 'TOP2', 'TOP4', 'TOP8'].includes(currentPlacement)) success = true;
+        else if (active.type === 'team_power_no_common_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && evaluatedPower >= (active.targetValue || 400) && commonCount === 0) success = true;
+        else if (active.type === 'wanted_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && wantedCount >= 1) success = true;
+        else if (active.type === 'team_power_no_common' && evaluatedPower >= (active.targetValue || 400) && commonCount === 0) success = true;
+        else if (active.type === 'wanted_top2' && ['TOP1', 'TOP2'].includes(currentPlacement) && wantedCount >= 1) success = true;
+        else if (active.type === 'wanted_tournament_win' && p.id === championId && wantedCount >= 1) success = true;
+        else if (active.type === 'team_power_reach' && evaluatedPower >= (active.targetValue || 355)) success = true;
+        else if (active.type === 'tournament_top2' && ['TOP1', 'TOP2'].includes(currentPlacement)) success = true;
+        else if (active.type === 'tournament_win' && p.id === championId) success = true;
+        else if (active.type === 'common_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && commonCount >= 2) success = true;
+        else if (active.type === 'economy_top2' && ['TOP1', 'TOP2'].includes(currentPlacement) && (state.economy[p.id] || 0) >= (active.targetValue || 1500)) success = true;
+        else if (active.type === 'multi_team_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && new Set(roster.map(c => c.team)).size >= 5) success = true;
+        else if (active.type === 'long_contracts_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && roster.length >= 5 && roster.every(c => c.contract === 'LIFETIME' || (typeof c.contract === 'number' && c.contract >= 3))) success = true;
+        else if (active.type === 'album_insert_legendary') {
+          const album = state.collectionAlbum?.[p.id] || {};
+          const legCountInAlbum = Object.keys(album).filter(id => {
+            const c = getCardById(id);
+            return c && ['Légendaire', 'WANTED'].includes(c.rarity);
+          }).length;
+          if (legCountInAlbum >= (active.targetCount || 2)) success = true;
+        }
+        else if (active.type === 'album_insert_epic') {
+          const album = state.collectionAlbum?.[p.id] || {};
+          const epicCountInAlbum = Object.keys(album).filter(id => {
+            const c = getCardById(id);
+            return c && ['Épique', 'Légendaire', 'WANTED'].includes(c.rarity);
+          }).length;
+          if (epicCountInAlbum >= (active.targetCount || 2)) success = true;
+        }
+
+        if (success) {
+          state.economy[p.id] += (active.reward?.credits || 0);
+          if (active.reward?.bonusPack) {
+            if (!state.bonusPacks) state.bonusPacks = {};
+            if (!state.bonusPacks[p.id]) state.bonusPacks[p.id] = {};
+            state.bonusPacks[p.id][active.reward.bonusPack] = (state.bonusPacks[p.id][active.reward.bonusPack] || 0) + 1;
+          } else if (active.reward?.hasSkinPack) {
+            if (!state.bonusPacks) state.bonusPacks = {};
+            if (!state.bonusPacks[p.id]) state.bonusPacks[p.id] = {};
+            state.bonusPacks[p.id]['skin_pack'] = (state.bonusPacks[p.id]['skin_pack'] || 0) + 1;
+          } else if (active.reward?.skinId) {
+            grantSkin(state, p.id, active.reward.skinId);
+          }
+          if (!state.completedContracts) state.completedContracts = {};
+          if (!state.completedContracts[p.id]) state.completedContracts[p.id] = [];
+          state.completedContracts[p.id].push(active.id);
+          delete state.activeContracts[p.id];
+          getOrRefreshSponsorOfferings(state, p.id, true);
+        } else {
+          active.remainingEvents = (active.remainingEvents || 1) - 1;
+          if (active.remainingEvents <= 0) {
+            const penalty = active.malus || 400;
+            state.economy[p.id] = Math.max(0, state.economy[p.id] - penalty);
+            delete state.activeContracts[p.id];
+            getOrRefreshSponsorOfferings(state, p.id, true);
+          }
+        }
+      } else {
+        getOrRefreshSponsorOfferings(state, p.id);
+      }
     } else {
       p.roster = p.roster.map(pro => {
         if (pro.id.toLowerCase().includes('caliste') && pro.rarity === 'WANTED') { pro.rating = (pro.rating || 89) + 1; pro.overall = (pro.overall || 89) + 1; }

@@ -238,7 +238,7 @@ function getTournamentArenaConfig(event) {
       type: 'worlds',
       name: event?.name || 'World Championship',
       shortName: 'WORLDS',
-      logo: event?.logo || '/logo/world-championship.webp',
+      logo: event?.logo || '/logo/tournament/world-championship.webp',
       badgeClass: 'border border-[#38BDF8]/60 bg-[#07132B]/90 text-[#BAE6FD] shadow-[0_0_20px_rgba(56,189,248,0.35)]',
       titleColor: 'text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#BAE6FD] to-[#38BDF8] drop-shadow-[0_0_25px_rgba(56,189,248,0.5)]',
       accentText: 'text-[#38BDF8] drop-shadow-[0_0_12px_rgba(56,189,248,0.6)]',
@@ -257,7 +257,7 @@ function getTournamentArenaConfig(event) {
       type: 'msi',
       name: event?.name || 'Mid-Season Invitational',
       shortName: 'MSI',
-      logo: event?.logo || '/logo/msi.webp',
+      logo: event?.logo || '/logo/tournament/msi.webp',
       badgeClass: 'border border-[#E6192B]/60 bg-[#E6192B]/15 text-[#FFEA00] italic shadow-[3px_3px_0px_#E6192B]',
       titleColor: 'text-white italic tracking-wider',
       accentText: 'text-[#FFEA00]',
@@ -276,7 +276,7 @@ function getTournamentArenaConfig(event) {
       type: 'ewc',
       name: event?.name || 'Esports World Cup',
       shortName: 'EWC',
-      logo: event?.logo || '/logo/ewc-2026-main-event.webp',
+      logo: event?.logo || '/logo/tournament/ewc-2026-main-event.webp',
       badgeClass: 'border border-[#FDE047]/50 bg-[#0A0907]/95 text-[#FEF08A] shadow-[0_0_25px_rgba(234,179,8,0.3)]',
       titleColor: 'text-transparent bg-clip-text bg-gradient-to-b from-[#FFFFFF] via-[#FEF08A] to-[#D4AF37] drop-shadow-[0_0_20px_rgba(212,175,55,0.4)]',
       accentText: 'text-[#FDE047] drop-shadow-[0_0_10px_rgba(234,179,8,0.4)]',
@@ -294,7 +294,7 @@ function getTournamentArenaConfig(event) {
     type: 'first_stand',
     name: event?.name || 'First Stand',
     shortName: 'FS',
-    logo: event?.logo || '/logo/first-stand.webp',
+    logo: event?.logo || '/logo/tournament/first-stand.webp',
     badgeClass: 'border-2 border-[#FF5C00] bg-[#25092C] text-white shadow-[0_4px_18px_rgba(255,92,0,0.35)]',
     titleColor: 'text-[#25092C]',
     accentText: 'text-[#FF5C00] font-black',
@@ -368,9 +368,13 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
   };
 
   /**
-   * Affichage des 5 cartes du roster verrouillé en format 3/2 (3 cartes en haut, 2 cartes en bas)
+   * Affichage agrandi des 5 cartes du roster
+   * Topside (Top, Jungle, Mid) sur la rangée supérieure
+   * Bot Duo (ADC, Support) centré sur la rangée inférieure
    */
   const renderRoster = (team, teamSide) => {
+    const cardWidth = 130;
+
     const renderCardItem = (role) => {
       const p = team.roster.find(pro => pro.role === role);
       if (!p) return null;
@@ -381,23 +385,25 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
       return (
         <div 
           key={role} 
-          className="text-center relative inline-block z-[1] flex flex-col items-center"
+          className="relative flex flex-col items-center group transition-transform duration-200 hover:-translate-y-1"
         >
           <div className="relative">
             {dynamicCard ? (
-              <CardIllustration card={dynamicCard} width={90} />
+              <CardIllustration card={dynamicCard} width={cardWidth} />
             ) : (
-              <div className="flex justify-between items-center bg-bg-card p-[10px_14px] rounded-md mb-2 text-white">
+              <div className="w-[130px] h-[182px] flex items-center justify-center bg-bg-card rounded-xl border border-white/10 text-white font-rajdhani font-bold text-sm text-center p-3 shadow-lg">
                 {p.name}
               </div>
             )}
+
+            {/* Badge de buff/nerf dynamique */}
             {buff > 0 && (
-              <div className="absolute -top-2.5 -right-2.5 bg-[#00e676] text-black font-extrabold px-2 py-1 rounded-xl text-sm shadow-[0_0_10px_#00e676] animate-[skillPopIn_0.3s_forwards] z-[999]">
+              <div className="absolute -top-3 -right-3 bg-[#00e676] text-black font-rajdhani font-black px-2.5 py-0.5 rounded-xl text-xs sm:text-sm shadow-[0_0_14px_rgba(0,230,118,0.75)] animate-[skillPopIn_0.3s_forwards] z-[999] border border-black/20">
                 +{buff}
               </div>
             )}
             {buff < 0 && (
-              <div className="absolute -top-2.5 -right-2.5 bg-[#f74242] text-black font-extrabold px-2 py-1 rounded-xl text-sm shadow-[0_0_10px_#f04646] animate-[skillPopIn_0.3s_forwards] z-[999]">
+              <div className="absolute -top-3 -right-3 bg-[#f74242] text-white font-rajdhani font-black px-2.5 py-0.5 rounded-xl text-xs sm:text-sm shadow-[0_0_14px_rgba(247,66,66,0.75)] animate-[skillPopIn_0.3s_forwards] z-[999] border border-white/20">
                 {buff}
               </div>
             )}
@@ -410,13 +416,14 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
     const bottomRowRoles = ORDERED_ROLES.slice(3, 5);
 
     return (
-      <div className="flex flex-col items-center gap-3.5 w-full">
-        {/* Ligne 1 : 3 cartes (TOP, JUNGLE, MID) */}
-        <div className="flex justify-center gap-3.5">
+      <div className="flex flex-col items-center gap-4 w-full mt-2">
+        {/* Rangée Topside : 3 cartes (TOP, JUNGLE, MID) */}
+        <div className="flex justify-center gap-3 sm:gap-4 xl:gap-5 w-full">
           {topRowRoles.map(role => renderCardItem(role))}
         </div>
-        {/* Ligne 2 : 2 cartes (ADC, SUPPORT) */}
-        <div className="flex justify-center gap-3.5">
+
+        {/* Rangée Bot Duo : 2 cartes centrées (ADC, SUPPORT) */}
+        <div className="flex justify-center gap-6 sm:gap-7 xl:gap-8 w-full">
           {bottomRowRoles.map(role => renderCardItem(role))}
         </div>
       </div>
@@ -424,7 +431,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
   };
 
   /**
-   * Panneau d'équipe calibré pour afficher les cartes en 3/2 (3 en haut, 2 en bas)
+   * Panneau d'équipe élargi et modernisé avec disposition aérée
    */
   const renderTeamPanel = (team, side) => {
     const synergy = getSynergy(team.roster);
@@ -434,30 +441,43 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
     return (
       <TeamSkinFrame
         skinId={getEquippedSkinId(state, team.id)}
-        className="w-[310px] sm:w-[380px] lg:w-[420px] shrink-0 p-4 sm:p-6 lg:p-7 flex flex-col justify-between rounded-xl"
+        className="w-[360px] sm:w-[480px] lg:w-[520px] xl:w-[560px] shrink-0 p-5 sm:p-6 lg:p-7 flex flex-col justify-between rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md border border-white/15"
       >
-        <h2 className="font-rajdhani mb-5 text-center flex flex-col items-center gap-2.5 uppercase">
-          <div className="flex flex-col items-center gap-1.5">
-            {team.logo ? (
-              <img
-                src={team.logo}
-                className="w-[54px] h-[54px] object-contain"
-                style={{ filter: 'var(--sk-logo-filter, none)' }}
-                alt={`logo ${side}`}
-              />
-            ) : (
-              <div className="w-[54px] h-[54px] bg-border rounded-xl" />
-            )}
-            <span className="text-[24px] leading-tight">{team.name}</span>
+        {/* En-tête de l'équipe (Logo au-dessus du nom) */}
+        <div className="flex flex-col items-center gap-2 mb-3 text-center">
+          {team.logo ? (
+            <img
+              src={team.logo}
+              className="w-[58px] h-[58px] object-contain drop-shadow-[0_6px_14px_rgba(0,0,0,0.55)]"
+              style={{ filter: 'var(--sk-logo-filter, none)' }}
+              alt={`logo ${side}`}
+            />
+          ) : (
+            <div className="w-[58px] h-[58px] bg-border rounded-xl" />
+          )}
+
+          <div className="flex flex-col items-center leading-tight gap-1">
+            <span className="font-rajdhani text-[24px] sm:text-[28px] font-black uppercase tracking-wide">
+              {team.name}
+            </span>
+
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xs font-rajdhani font-bold tracking-widest uppercase text-[color:var(--sk-muted,#8b9bb4)]">
+                MOYENNE :
+              </span>
+              <span className={`text-base font-rajdhani font-black ${avg > rawAvg ? 'text-[color:var(--sk-good,#00e676)] drop-shadow-[0_0_8px_rgba(0,230,118,0.5)]' : 'text-white'}`}>
+                {avg}
+              </span>
+            </div>
           </div>
 
-          <div className="text-sm text-[color:var(--sk-muted,#8b9bb4)]">
-            MOYENNE : <span className={avg > rawAvg ? 'text-[color:var(--sk-good,#00e676)]' : ''}>{avg}</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
+          {/* Jauges de synergie */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 mt-1">
             <SynergyGauges synergy={synergy} compact />
           </div>
-        </h2>
+        </div>
+
+        {/* Grille des cartes agrandies */}
         {renderRoster(team, side)}
       </TeamSkinFrame>
     );
@@ -508,18 +528,18 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
           </div>
         </div>
         
-        {/* SCÈNE PRINCIPALE : ÉQUIPE A (3/2) - CONSOLE CENTRALE - ÉQUIPE B (3/2) */}
-        <div className="w-full max-w-full overflow-x-auto pb-4">
-          <div className="flex w-max max-w-[1280px] gap-4 sm:gap-6 items-stretch mt-3 justify-start lg:justify-center mx-auto px-2">
+        {/* SCÈNE PRINCIPALE : ÉQUIPE A - CONSOLE CENTRALE - ÉQUIPE B */}
+        <div className="w-full max-w-full overflow-x-auto pb-6">
+          <div className="flex w-max max-w-[1580px] gap-4 sm:gap-6 lg:gap-8 items-stretch mt-3 justify-start lg:justify-center mx-auto px-4">
             
             {renderTeamPanel(match.teamA, 'A')}
 
-            <div className="text-center w-[220px] sm:w-[260px] lg:w-[300px] shrink-0 flex flex-col justify-center px-2 relative">
+            <div className="text-center w-[240px] sm:w-[280px] lg:w-[320px] shrink-0 flex flex-col justify-center px-2 relative">
             
             {isSimulating && !isSpectator && (
               <div className="mb-5">
                 <button 
-                  className={`bg-transparent border-2 text-xs font-rajdhani font-bold uppercase tracking-wider py-2 px-4 rounded whitespace-nowrap transition-all hover:scale-105 ${theme.skipBtnClass}`}
+                  className={`bg-transparent border-2 text-xs font-rajdhani font-bold uppercase tracking-wider py-2 px-5 rounded-lg whitespace-nowrap transition-all hover:scale-105 shadow-md ${theme.skipBtnClass}`}
                   onClick={handleSkip}
                 >
                   PASSER L'ANIMATION ⏭
@@ -528,7 +548,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
             )}
 
             <div 
-              className={`font-rajdhani text-[78px] transition-all duration-300 uppercase font-black tracking-wider ${isSimulating ? 'animate-pulse-fast' : ''}`}
+              className={`font-rajdhani text-[76px] sm:text-[88px] transition-all duration-300 uppercase font-black tracking-wider leading-none select-none ${isSimulating ? 'animate-pulse-fast' : ''}`}
               style={{
                 color: theme.scoreColor,
                 textShadow: theme.scoreGlow,
@@ -540,7 +560,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
             <div className="mt-[28px] min-h-[140px] flex flex-col justify-center items-center">
               {match.status === 'pending' && !isSpectator && (
                 <button 
-                  className={`w-full font-rajdhani font-black text-base uppercase tracking-wider py-3.5 px-7 rounded transition-all ${
+                  className={`w-full font-rajdhani font-black text-base uppercase tracking-wider py-3.5 px-7 rounded-xl transition-all shadow-lg ${
                     isReady 
                       ? 'bg-transparent border-2 border-slate-400/40 opacity-50 cursor-not-allowed ' + (theme.isLight ? 'text-[#25092C]' : 'text-slate-100')
                       : `${theme.btnPrimaryClass} hover:-translate-y-0.5 active:scale-95`
@@ -567,7 +587,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
                         return (
                           <div 
                             key={`${match.currentEvents.length}-${index}`} 
-                            className={`w-full flex flex-col gap-2 p-3.5 rounded-lg backdrop-blur-md animate-[skillPopIn_0.4s_forwards] ${theme.eventCardClass}`}
+                            className={`w-full flex flex-col gap-2.5 p-3.5 sm:p-4 rounded-xl backdrop-blur-md animate-[skillPopIn_0.4s_forwards] border shadow-lg ${theme.eventCardClass}`}
                           >
                             <div 
                               className="font-sans text-sm font-bold text-center leading-relaxed"
@@ -576,8 +596,8 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
                               {ev.label}
                             </div>
                             {ev.image && (
-                              <div className="w-full rounded bg-black/40 overflow-hidden flex justify-center">
-                                <img src={ev.image} alt="Illustration" className="w-full h-auto max-h-[160px] object-cover" />
+                              <div className="w-full rounded-lg bg-black/50 overflow-hidden flex justify-center border border-white/10 shadow-inner">
+                                <img src={ev.image} alt="Illustration" className="w-full h-auto max-h-[170px] object-cover" />
                               </div>
                             )}
                           </div>
@@ -612,7 +632,7 @@ export default function ArenaView({ match, matchReady, dismissMatch, state, even
                     </span>
                   </div>
                   <button 
-                    className={`w-full font-rajdhani font-black text-base uppercase tracking-wider py-3.5 px-7 rounded hover:-translate-y-0.5 transition-all ${theme.btnWinnerClass}`}
+                    className={`w-full font-rajdhani font-black text-base uppercase tracking-wider py-3.5 px-7 rounded-xl hover:-translate-y-0.5 transition-all shadow-lg ${theme.btnWinnerClass}`}
                     onClick={() => dismissMatch(match.id)}
                   >
                     {isSpectator ? "Quitter le mode spectateur" : "Poursuivre"}

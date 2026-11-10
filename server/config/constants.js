@@ -29,7 +29,7 @@ export const TEAMS_DB = [
   { name: "FearX", tag: "FOX", logo: "/equipes/fearx.webp" },
   { name: "FlyQuest", tag: "FLY", logo: "/equipes/flyquest.webp" },
   { name: "Fnatic", tag: "FNC", logo: "/equipes/fnatic.webp" },
-  { name: "FunPlus Pheonix", tag: "FPX", logo: "equipes/funplus-phoenix.webp" },
+  { name: "FunPlus Phoenix", tag: "FPX", logo: "/equipes/funplus-phoenix.webp" },
   { name: "G2 Esports", tag: "G2", logo: "/equipes/g2.webp" },
   { name: "Gen.G", tag: "GEN", logo: "/equipes/geng.webp" },
   { name: "GiantX", tag: "GX", logo: "/equipes/giantx.webp" },
@@ -41,6 +41,7 @@ export const TEAMS_DB = [
   { name: "KT Rolster", tag: "KT", logo: "/equipes/kt-rolster.webp" },
   { name: "LGD Gaming", tag: "LGD", logo: "/equipes/lgd-gaming.webp" },
   { name: "LNG Esports", tag: "LNG", logo: "/equipes/lng.webp" },
+  { name: "Los Ratones", tag: "LR", logo: "/equipes/los-ratones.webp" },
   { name: "Lunary", tag: "LNY", logo: "/equipes/lunary.webp" },
   { name: "Lyon Gaming", tag: "LYN", logo: "/equipes/lyon.webp" },
   { name: "Movistar KOI", tag: "MKOI", logo: "/equipes/mkoi.webp" },
@@ -50,6 +51,7 @@ export const TEAMS_DB = [
   { name: "OMG", tag: "OMG", logo: "/equipes/omg.webp" },
   { name: "RNG", tag: "RNG", logo: "/equipes/royal-never-give-up.webp" },
   { name: "ROX Tigers", tag: "ROX", logo: "/equipes/rox-tigers.webp" },
+  { name: "Samsung Galaxy", tag: "SSG", logo: "/equipes/samsung-galaxy.webp" },
   { name: "Sentinels", tag: "SEN", logo: "/equipes/sentinels.webp" },
   { name: "Shifters", tag: "SHFT", logo: "/equipes/shifters.webp" },
   { name: "Shopify Rebellion", tag: "SR", logo: "/equipes/shopify-rebellion.webp" },
@@ -65,7 +67,9 @@ export const TEAMS_DB = [
   { name: "Team Vitality", tag: "VIT", logo: "/equipes/vitality.webp" },
   { name: "Team WE", tag: "WE", logo: "/equipes/we.webp" },
   { name: "Weibo Gaming", tag: "WBG", logo: "/equipes/weibo.webp" },
-  { name: "ZyB", tag: "ZYB", logo: "/equipes/zyb.webp" }
+  { name: "ZyB", tag: "ZYB", logo: "/equipes/zyb.webp" },
+  { name: "Team SoloMid", tag: "TSM", logo: "/equipes/tsm.webp" },
+  { name: "Rogue", tag: "RGE", logo: "/equipes/giantx.webp" }
 ];
 
 // Prix de revente des cartes par rareté

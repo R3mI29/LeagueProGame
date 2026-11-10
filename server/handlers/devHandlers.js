@@ -9,7 +9,7 @@ import { CARD_POOL } from '../../src/constants/cardPlayers.js';
 import { state as defaultState } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { SKINS, SKIN_BY_ID, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
-import { openPack } from '../services/cardService.js';
+import { PACK_TYPES, openPack } from '../services/cardService.js';
 import { compareCardsForPack } from '../config/constants.js';
 
 export function registerDevHandlers(io, socket, {
@@ -71,9 +71,10 @@ export function registerDevHandlers(io, socket, {
 
     cards.sort(compareCardsForPack);
 
+    const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
     const openedCardsWithContracts = [];
     cards.forEach(c => {
-      const lifetimeChance = packTypeId === 'wanted' ? 0.10 : 0.02;
+      const lifetimeChance = packConfig.lifetimeChance ?? 0.01;
       const contractToAdd = Math.random() < lifetimeChance ? 'LIFETIME' : Math.floor(Math.random() * 9) + 1;
       openedCardsWithContracts.push({ id: c.id, contractAdded: contractToAdd });
     });
@@ -85,6 +86,54 @@ export function registerDevHandlers(io, socket, {
     state.lastOpenedPack[id] = openedCardsWithContracts;
 
     io.emit('draft-update', state);
+  });
+
+  // Ouvre un pack avec 5 cartes WANTED garanties pour les tests
+  socket.on('dev-open-guaranteed-wanted', () => {
+    const id = socket.id;
+    const wantedPool = CARD_POOL.filter(c => c.rarity === 'WANTED');
+    if (wantedPool.length === 0) return;
+
+    const pickedCards = [];
+    for (let i = 0; i < 5; i++) {
+      pickedCards.push(wantedPool[Math.floor(Math.random() * wantedPool.length)]);
+    }
+    pickedCards.sort(compareCardsForPack);
+
+    const openedCardsWithContracts = [];
+    pickedCards.forEach(c => {
+      const contractToAdd = Math.random() < 0.01 ? 'LIFETIME' : Math.floor(Math.random() * 9) + 1;
+      openedCardsWithContracts.push({ id: c.id, contractAdded: contractToAdd });
+    });
+
+    if (!state.pendingPackResults) state.pendingPackResults = {};
+    if (!state.lastOpenedPack) state.lastOpenedPack = {};
+
+    state.pendingPackResults[id] = openedCardsWithContracts;
+    state.lastOpenedPack[id] = openedCardsWithContracts;
+
+    io.emit('draft-update', state);
+  });
+
+  socket.on('dev-give-pack', (payload) => {
+    const packType = typeof payload === 'string' ? payload : (payload?.packType || 'wanted');
+    const count = typeof payload === 'object' && payload?.count ? payload.count : 1;
+    const targetId = (typeof payload === 'object' && payload?.playerId) || socket.id;
+
+    if (!state.bonusPacks) state.bonusPacks = {};
+    if (!state.bonusPacks[targetId]) state.bonusPacks[targetId] = {};
+    const qty = Math.max(1, Number(count) || 1);
+    state.bonusPacks[targetId][packType] = (state.bonusPacks[targetId][packType] || 0) + qty;
+
+    io.emit('draft-update', state);
+  });
+
+  socket.on('dev-clear-bonus-packs', (payload) => {
+    const targetId = (typeof payload === 'object' && payload?.playerId) || socket.id;
+    if (state.bonusPacks && state.bonusPacks[targetId]) {
+      delete state.bonusPacks[targetId];
+      io.emit('draft-update', state);
+    }
   });
 
   socket.on('dev-save-custom-card', ({ card, imageData, imageFolder = 'cardsImg/custom', imageFileName }, callback) => {

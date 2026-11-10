@@ -23,6 +23,13 @@ export function createInitialGameState(overrides = {}) {
     lastOpenedPack: {},
     starterPackClaimed: {},
     teamSkins: {},
+    collectionRewardsClaimed: {},
+    collectionAlbum: {},
+    tradeUpBank: {},
+    sponsorOfferings: {},
+    bonusPacks: {},
+    activeContracts: {},
+    completedContracts: {},
     customCards: [],
     createdCardsThisGame: [],
     seasonRound: 0,
@@ -136,6 +143,9 @@ export function prepareNewGame(participants = state.participants) {
     state.economy[id] = 100;
     state.lockedCards[id] = [];
     state.recentPlacements[id] = [];
+    state.collectionRewardsClaimed[id] = {};
+    state.collectionAlbum[id] = {};
+    state.bonusPacks[id] = {};
   });
 
   return state;

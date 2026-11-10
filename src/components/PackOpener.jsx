@@ -816,7 +816,7 @@ export default function PackOpener({ cardIds, onClose }) {
                       </svg>
                       <span>CONTRAT À VIE</span>
                     </>
-                  ) : `+ ${currentItem?.contractAdded || 1} TOURNOIS`}
+                  ) : `+ ${currentItem?.contractAdded || 1} ANS DE CONTRAT`}
                 </div>
               </div>
             )}

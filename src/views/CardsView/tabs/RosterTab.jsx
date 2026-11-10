@@ -29,7 +29,32 @@ export default function RosterTab({
 }) {
   const [activeRole, setActiveRole] = useState(ORDERED_ROLES[0]);
 
-  const ownedCardsForRole = (role) => CARD_POOL.filter(c => c.role === role && myCollection[c.id] !== undefined);
+  const RARITY_WEIGHT = {
+    'SECRET': 6,
+    'WANTED': 5,
+    'Légendaire': 4,
+    'Épique': 3,
+    'Rare': 2,
+    'Commune': 1,
+  };
+
+  const ownedCardsForRole = (role) => {
+    return CARD_POOL
+      .filter(c => c.role === role && myCollection[c.id] !== undefined)
+      .sort((a, b) => {
+        // 1. Rareté décroissante (WANTED -> Légendaire -> Épique -> Rare -> Commune)
+        const diffRarity = (RARITY_WEIGHT[b.rarity] || 0) - (RARITY_WEIGHT[a.rarity] || 0);
+        if (diffRarity !== 0) return diffRarity;
+
+        // 2. Note / Overall décroissant
+        const ratingA = a.rating || a.overall || 0;
+        const ratingB = b.rating || b.overall || 0;
+        if (ratingB !== ratingA) return ratingB - ratingA;
+
+        // 3. Nom alphabétique
+        return (a.baseName || a.name || '').localeCompare(b.baseName || b.name || '');
+      });
+  };
   const synergy = computeSynergy(ORDERED_ROLES.map(r => myLineup[r]).filter(Boolean));
 
   // Récupération sécurisée de l'historique des 4 derniers tournois
@@ -107,7 +132,7 @@ export default function RosterTab({
               </span>
             </div>
             <div className="text-xs text-text-faint">
-              {ownedCardsForRole(activeRole).length} carte{ownedCardsForRole(activeRole).length > 1 ? 's' : ''} — Cliquez pour titulariser
+              {ownedCardsForRole(activeRole).length} carte{ownedCardsForRole(activeRole).length > 1 ? 's' : ''} (triées par rareté) — Cliquez pour titulariser
             </div>
           </div>
 

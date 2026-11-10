@@ -5,11 +5,11 @@ import { CARD_POOL } from '../../constants/cardPlayers';
 
 // Import des sous-composants (les onglets)
 import RosterTab from './tabs/RosterTab';
+import CollectionTab from './tabs/CollectionTab';
 import ShopTab from './tabs/ShopTab';
-import SellTab from './tabs/SellTab';
-import CircuitTab from './tabs/CircuitTab';
 import HallOfFameTab from './tabs/HallOfFameTab';
 import SkinsTab from './tabs/SkinsTab';
+import { getOverallCollectionStats } from '../../constants/collectionConfig';
 
 function getCard(id) {
   return CARD_POOL.find(c => c.id === id);
@@ -35,6 +35,7 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
   };
 
   const myCollection = state.cardCollections?.[myId] || {};
+  const myAlbum = state.collectionAlbum?.[myId] || {};
   const myLineup = state.activeLineups?.[myId] || {};
   const myEconomy = state.economy?.[myId] || 0;
   const isReady = state.readyPlayers.includes(myId);
@@ -78,25 +79,33 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           </div>
 
           <div className="flex gap-1.5 sm:gap-2 overflow-x-auto max-w-full pb-2 md:pb-0 w-full md:w-auto scrollbar-none">
-            {[
-              { id: 'roster', label: 'Gestion Équipe' },
-              { id: 'shop', label: 'Boutique' },
-              { id: 'sell', label: 'Revente' },
-              { id: 'circuit', label: 'Compétitions' },
-              { id: 'skins', label: 'Casier' },
-              { id: 'halloffame', label: 'Classement' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
-                }}
-                disabled={isReady && tab.id !== 'roster'}
-                className={`bg-transparent pb-2 sm:pb-3 px-3 sm:px-5 text-xs sm:text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 shrink-0 whitespace-nowrap ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {(() => {
+              const collectionStats = getOverallCollectionStats(myAlbum, state, myId, myCollection);
+              const collectionBadge = collectionStats.unclaimedCount > 0 ? collectionStats.unclaimedCount : null;
+              return [
+                { id: 'roster', label: 'Gestion Équipe' },
+                { id: 'collection', label: 'Collection', badge: collectionBadge },
+                { id: 'shop', label: 'Boutique' },
+                { id: 'skins', label: 'Casier' },
+                { id: 'halloffame', label: 'Classement' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    if (!isReady || tab.id === 'roster') setActiveTab(tab.id);
+                  }}
+                  disabled={isReady && tab.id !== 'roster'}
+                  className={`bg-transparent pb-2 sm:pb-3 px-3 sm:px-5 text-xs sm:text-sm font-semibold transition-all duration-200 uppercase tracking-[1px] border-b-2 shrink-0 whitespace-nowrap flex items-center gap-1.5 ${activeTab === tab.id ? 'text-[#D4AF37] border-[#D4AF37]' : 'text-text-faint border-transparent'} ${(isReady && tab.id !== 'roster') ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.badge && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-black text-[10px] font-extrabold animate-pulse">
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              ));
+            })()}
           </div>
         </div>
 
@@ -118,32 +127,34 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           />
         )}
 
+        {activeTab === 'collection' && (
+          <CollectionTab 
+            state={state} 
+            myId={myId} 
+            myCollection={myCollection} 
+            myAlbum={myAlbum}
+            myEconomy={myEconomy} 
+            getDynamicCard={getDynamicCard}
+            setActiveTab={setActiveTab}
+          />
+        )}
+
         {activeTab === 'skins' && <SkinsTab state={state} myId={myId} />}
 
         {activeTab === 'shop' && (
           <ShopTab 
+            state={state}
+            myId={myId}
             myEconomy={myEconomy} 
             isReady={isReady} 
             hasStarter={hasStarter} 
+            myCollection={myCollection}
+            myLineup={myLineup}
           />
         )}
 
-        {activeTab === 'sell' && (
-          <SellTab 
-            myCollection={myCollection} 
-            myLineup={myLineup} 
-            myEconomy={myEconomy} 
-            lockedCards={state.lockedCards?.[myId] || []}
-            isReady={isReady} 
-          />
-        )}
 
-        {activeTab === 'circuit' && (
-          <CircuitTab 
-            currentEventIndex={currentEventIndex} 
-            history={state.history} 
-          />
-        )}
+
 
         {activeTab === 'halloffame' && (
           <HallOfFameTab 

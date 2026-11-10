@@ -132,3 +132,48 @@ test('startCurrentEvent creates GSL groups with 1 team from each pot', async () 
   });
 });
 
+test('awardSeasonRewards opens skin pack for bot finalist (2nd place) but not for human', async () => {
+  const { awardSeasonRewards } = await import('./tournamentService.js');
+  resetGameState();
+
+  const botFinalist = { id: 'bot-2', name: 'Bot Finalist', roster: [], isBot: true };
+  const humanWinner = { id: 'human-1', name: 'Human Winner', roster: [], isBot: false };
+
+  state.participants = [humanWinner, botFinalist];
+  state.eventIndex = 0;
+  state.champion = humanWinner;
+  // Final match: humanWinner beat botFinalist
+  state.bracket = [
+    [
+      { winner: humanWinner, teamA: humanWinner, teamB: botFinalist }
+    ]
+  ];
+
+  state.teamSkins = {};
+  awardSeasonRewards();
+
+  // Bot finalist has received a skin
+  assert.ok(state.teamSkins['bot-2'] !== undefined);
+  assert.ok(state.teamSkins['bot-2'].owned.length >= 1);
+
+  // Now test human finalist
+  resetGameState();
+  const humanFinalist = { id: 'human-2', name: 'Human Finalist', roster: [], isBot: false };
+  const botWinner = { id: 'bot-1', name: 'Bot Winner', roster: [], isBot: true };
+
+  state.participants = [botWinner, humanFinalist];
+  state.eventIndex = 0;
+  state.champion = botWinner;
+  state.bracket = [
+    [
+      { winner: botWinner, teamA: botWinner, teamB: humanFinalist }
+    ]
+  ];
+
+  state.teamSkins = {};
+  awardSeasonRewards();
+
+  // Human finalist did NOT get a skin pack automatically opened
+  assert.equal(state.teamSkins['human-2'], undefined);
+});
+

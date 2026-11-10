@@ -5,17 +5,20 @@ import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
 import DevSkinPanel from '../components/DevSkinPanel';
+import DevPackPanel from '../components/DevPackPanel';
 import CardCreator from '../components/CardCreator';
 
 const DEV_TABS = [
   { id: 'cards', label: 'CARTES' },
   { id: 'skins', label: 'SKINS' },
+  { id: 'packs', label: 'PACKS & RÉCOMPENSES' },
   { id: 'creator', label: 'CRÉATEUR' },
 ];
 
 export default function DevCardsView({ onClose, state }) {
   const [devTab, setDevTab] = useState('cards');
   const [filterRole, setFilterRole] = useState('Tous');
+  const [filterRarity, setFilterRarity] = useState('Tous');
   const [searchQuery, setSearchQuery] = useState('');
   const [poolVersion, setPoolVersion] = useState(0);
 
@@ -43,6 +46,24 @@ export default function DevCardsView({ onClose, state }) {
     return list.length;
   }, [state?.createdCardsThisGame, poolVersion]);
 
+  const rarityCounts = useMemo(() => {
+    const counts = {
+      Total: CARD_POOL.length,
+      Commune: 0,
+      Rare: 0,
+      'Épique': 0,
+      'Légendaire': 0,
+      WANTED: 0,
+      SECRET: 0,
+    };
+    CARD_POOL.forEach(card => {
+      if (counts[card.rarity] !== undefined) {
+        counts[card.rarity]++;
+      }
+    });
+    return counts;
+  }, [poolVersion, CARD_POOL.length]);
+
   const displayedCards = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     return CARD_POOL
@@ -55,6 +76,8 @@ export default function DevCardsView({ onClose, state }) {
             ? isThisGameCard
             : c.role === filterRole;
         if (!matchRole) return false;
+
+        if (filterRarity !== 'Tous' && c.rarity !== filterRarity) return false;
 
         if (!query) return true;
         return (
@@ -73,7 +96,7 @@ export default function DevCardsView({ onClose, state }) {
         }
         return (RARITY_ORDER[a.rarity] || 0) - (RARITY_ORDER[b.rarity] || 0);
       });
-  }, [filterRole, searchQuery, poolVersion, CARD_POOL.length, state?.createdCardsThisGame]);
+  }, [filterRole, filterRarity, searchQuery, poolVersion, CARD_POOL.length, state?.createdCardsThisGame]);
 
   const handleGiveCard = (cardId) => socket.emit('dev-give-card', cardId);
   const handleSetEvent = (idx) => socket.emit('dev-set-event', idx);
@@ -88,14 +111,97 @@ export default function DevCardsView({ onClose, state }) {
       <div className="max-w-[1400px] mx-auto w-full flex flex-col h-full">
         
         <div className="shrink-0 pb-5 border-b border-[#1B2333] mb-5">
-          <div className="flex justify-between items-center mb-5">
+          <div className="flex justify-between items-start mb-5 flex-wrap gap-4">
             <div>
-              <h1 className="font-rajdhani text-accent-pink text-[32px] m-0 uppercase tracking-wide">
-                PANEL DÉVELOPPEUR ⚙️
-              </h1>
-              <p className="text-text-muted mt-1 mb-0 tracking-widest text-sm uppercase">
+              <div className="flex items-center gap-3">
+                <h1 className="font-rajdhani text-accent-pink text-[32px] m-0 uppercase tracking-wide">
+                  PANEL DÉVELOPPEUR ⚙️
+                </h1>
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-white/5 border border-white/10 text-text-muted">
+                  TOTAL: {rarityCounts.Total}
+                </span>
+              </div>
+              <p className="text-text-muted mt-1 mb-3 tracking-widest text-sm uppercase">
                 TRICHE ET OUTILS DE TEST
               </p>
+
+              {/* MINI COMPTEUR PAR RARETÉ */}
+              <div className="flex items-center gap-2 flex-wrap text-xs font-rajdhani">
+                <span className="text-text-muted font-bold tracking-wider text-[11px] uppercase mr-1">
+                  RARETÉS :
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity('Tous')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'Tous' ? 'bg-white/15 text-white border-white/40 shadow-sm' : 'bg-[#0C0E14] text-text-muted border-[#1B2333] hover:text-white'}`}
+                  title="Afficher toutes les raretés"
+                >
+                  <span className="text-[10px] uppercase">TOUTES</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts.Total}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity(filterRarity === 'Commune' ? 'Tous' : 'Commune')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'Commune' ? 'bg-[#8b9bb4]/25 text-white border-[#8b9bb4] shadow-[0_0_8px_rgba(139,155,180,0.3)]' : 'bg-[#0C0E14] text-[#8b9bb4] border-[#1B2333] hover:border-[#8b9bb4]/40'}`}
+                  title="Filtrer par Commune"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#8b9bb4] inline-block" />
+                  <span>COMMUNE</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts.Commune}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity(filterRarity === 'Rare' ? 'Tous' : 'Rare')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'Rare' ? 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff] shadow-[0_0_8px_rgba(0,229,255,0.3)]' : 'bg-[#0C0E14] text-[#00e5ff]/80 border-[#1B2333] hover:border-[#00e5ff]/40'}`}
+                  title="Filtrer par Rare"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#00e5ff] inline-block shadow-[0_0_6px_#00e5ff]" />
+                  <span>RARE</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts.Rare}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity(filterRarity === 'Épique' ? 'Tous' : 'Épique')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'Épique' ? 'bg-[#ff3366]/20 text-[#ff3366] border-[#ff3366] shadow-[0_0_8px_rgba(255,51,102,0.3)]' : 'bg-[#0C0E14] text-[#ff3366]/80 border-[#1B2333] hover:border-[#ff3366]/40'}`}
+                  title="Filtrer par Épique"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#ff3366] inline-block shadow-[0_0_6px_#ff3366]" />
+                  <span>ÉPIQUE</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts['Épique']}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity(filterRarity === 'Légendaire' ? 'Tous' : 'Légendaire')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'Légendaire' ? 'bg-[#ffd700]/20 text-[#ffd700] border-[#ffd700] shadow-[0_0_8px_rgba(255,215,0,0.3)]' : 'bg-[#0C0E14] text-[#ffd700]/80 border-[#1B2333] hover:border-[#ffd700]/40'}`}
+                  title="Filtrer par Légendaire"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#ffd700] inline-block shadow-[0_0_6px_#ffd700]" />
+                  <span>LÉGENDAIRE</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts['Légendaire']}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFilterRarity(filterRarity === 'WANTED' ? 'Tous' : 'WANTED')}
+                  className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'WANTED' ? 'bg-white/20 text-white border-white shadow-[0_0_10px_rgba(255,255,255,0.4)]' : 'bg-[#0C0E14] text-white/80 border-[#1B2333] hover:border-white/40'}`}
+                  title="Filtrer par WANTED"
+                >
+                  <span className="w-2 h-2 rounded-full bg-white inline-block shadow-[0_0_6px_#fff]" />
+                  <span className="bg-gradient-to-r from-white via-amber-200 to-white bg-clip-text text-transparent font-black">WANTED</span>
+                  <span className="font-mono text-white text-xs">{rarityCounts.WANTED}</span>
+                </button>
+                {rarityCounts.SECRET > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setFilterRarity(filterRarity === 'SECRET' ? 'Tous' : 'SECRET')}
+                    className={`px-2.5 py-1 rounded border transition-all cursor-pointer font-bold tracking-wider flex items-center gap-1.5 ${filterRarity === 'SECRET' ? 'bg-purple-500/25 text-purple-300 border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.4)]' : 'bg-[#0C0E14] text-purple-400 border-[#1B2333] hover:border-purple-400/40'}`}
+                    title="Filtrer par SECRET"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-purple-400 inline-block shadow-[0_0_6px_#a855f7]" />
+                    <span>SECRET</span>
+                    <span className="font-mono text-white text-xs">{rarityCounts.SECRET}</span>
+                  </button>
+                )}
+              </div>
             </div>
             <button 
               className="font-rajdhani font-bold tracking-widest uppercase py-2.5 px-6 bg-transparent border-2 border-accent-pink text-accent-pink rounded hover:bg-accent-pink hover:text-black transition-all" 
@@ -136,10 +242,19 @@ export default function DevCardsView({ onClose, state }) {
                   💰 +1000 CRÉDITS
                 </button>
                 <button 
-                  onClick={handleOpenWantedPack}
-                  className="bg-gradient-to-r from-white via-[#ffd700] to-white text-black border-none py-2.5 px-4 rounded text-sm font-black cursor-pointer font-rajdhani tracking-wider shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-transform active:scale-95 hover:brightness-110"
+                  onClick={() => setDevTab('packs')}
+                  className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none py-2.5 px-4 rounded text-sm font-black cursor-pointer font-rajdhani tracking-wider shadow-[0_0_15px_rgba(168,85,247,0.4)] transition-transform active:scale-95 hover:brightness-110"
                 >
-                  👑 OUVRIR PACK WANTED
+                  🎁 GIVER DES PACKS
+                </button>
+                <button 
+                  onClick={() => {
+                    socket.emit('dev-open-guaranteed-wanted');
+                    onClose();
+                  }}
+                  className="bg-gradient-to-r from-rose-500 via-amber-300 to-rose-400 text-black border-none py-2.5 px-4 rounded text-sm font-black cursor-pointer font-rajdhani tracking-wider shadow-[0_0_20px_rgba(244,63,94,0.5)] transition-transform active:scale-95 hover:brightness-110"
+                >
+                  👑 OUVRIR 5 WANTED GARANTIS
                 </button>
               </div>
             </div>
@@ -251,6 +366,10 @@ export default function DevCardsView({ onClose, state }) {
           ) : devTab === 'skins' ? (
             <div className="max-w-[900px] mx-auto pb-10">
               <DevSkinPanel state={state} />
+            </div>
+          ) : devTab === 'packs' ? (
+            <div className="max-w-[1100px] mx-auto pb-10">
+              <DevPackPanel state={state} />
             </div>
           ) : (
             <div className="max-w-[1100px] mx-auto pb-10">

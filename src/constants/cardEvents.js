@@ -361,7 +361,7 @@ export const CUSTOM_CARD_EVENTS = [
             persistentBO: false,
             targetRoles: ['Jungle'], 
             label: `Le Wukong de Kanavi trouve un 3-man flank au drake !`,
-            image: "/champions/wukong.jpg" 
+            image: "/champions/Wukong.jpg" 
           });
         }
       }
@@ -401,6 +401,194 @@ export const CUSTOM_CARD_EVENTS = [
           });
         }
       }
+
+      return results.length > 0 ? results : null;
+    }
+  },
+  {
+    id: 'ruler-flash-faker',
+    uniquePerBO: true,
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const results = [];
+
+      const processRulerFlashOnFaker = (myTeam, enemyTeam, mySide, enemySide) => {
+        // La carte doit être Ruler WANTED
+        const ruler = myTeam.roster.find(p => p.id === 'ruler-worlds-mvp');
+        if (!ruler) return;
+
+        // Effet UNIQUEMENT si Faker est dans l'équipe adverse (Némésis Worlds 2017)
+        const enemyFaker = enemyTeam.roster.find(p => 
+          p.baseName?.toLowerCase().includes('faker') || p.id?.toLowerCase().includes('faker')
+        );
+        if (!enemyFaker) return;
+
+        // Calcul du numéro de game dans le BO (Game 1, Game 2, Game 3, etc.)
+        const completedGames = match?.games ? match.games.length : (scoreA + scoreB);
+        const currentGameNumber = completedGames + 1;
+
+        // Grandes chances à partir de la game 3 du BO (ex: 80% dès la G3, 15% avant)
+        const chance = currentGameNumber >= 3 ? 0.80 : 0.15;
+        if (Math.random() > chance) return;
+
+        // 1. Buff majeur pour Ruler (ADC) avec le splash art de Varus
+        results.push({
+          side: mySide,
+          ratingDelta: 20,
+          targetRoles: ['ADC'],
+          persistentBO: false,
+          label: `🎯 FLASH IN DU SIÈCLE (Worlds 2017) ! Ruler flash-in et cloue le Roi Démon Faker sur place avec la Chaîne de Corruption ! Ruler débloque le teamfight et carry la game !`,
+          image: '/champions/Varus.jpg'
+        });
+
+        // 2. Malus dévastateur infligé directement sur Faker (Mid)
+        results.push({
+          side: enemySide,
+          ratingDelta: -18,
+          targetRoles: [enemyFaker.role || 'Mid'],
+          persistentBO: false,
+          label: null
+        });
+      };
+
+      // Test pour l'équipe A
+      processRulerFlashOnFaker(teamA, teamB, 'A', 'B');
+
+      // Test pour l'équipe B
+      processRulerFlashOnFaker(teamB, teamA, 'B', 'A');
+
+      return results.length > 0 ? results : null;
+    }
+  },
+
+  // ============================================================================
+  // [WANTED] KINGEN - DRX WORLDS MVP 2022
+  // Mechanique : Underdog Miracle DRX
+  //   L'effet requiert obligatoirement une situation d'UNDERDOG (rating moyen
+  //   de l'equipe inferieur a l'adversaire).
+  //   Le buff s'enclenche face au deficit et scale selon le nombre de joueurs
+  //   de la formation DRX 2022 reunis (Kingen, Pyosik, Zeka, Deft, BeryL) :
+  //   plus il y a de membres DRX, plus le miracle des Worlds 2022 se reproduit.
+  // ============================================================================
+  {
+    id: 'kingen-drx-reverse-sweep',
+    uniquePerBO: false,
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const results = [];
+
+      const processKingen = (myTeam, enemyTeam, mySide) => {
+        const kingen = myTeam.roster.find(p => p.id === 'drx-kingen-finals-mvp');
+        if (!kingen) return;
+
+        // 1. Verification de la situation d'UNDERDOG (rating moyen inferieur)
+        const avg = roster => roster.reduce((s, p) => s + (p.rating || 80), 0) / (roster.length || 1);
+        const myAvg = avg(myTeam.roster);
+        const enemyAvg = avg(enemyTeam.roster);
+        const ratingGap = enemyAvg - myAvg;
+
+        // L'effet ne se declenche QUE si l'equipe est underdog
+        if (ratingGap <= 0) return;
+
+        // 2. Scan du nombre de freres DRX 2022 dans le roster
+        const drxNames = ['kingen', 'pyosik', 'zeka', 'deft', 'beryl'];
+        const drxCount = myTeam.roster.filter(p =>
+          drxNames.some(name =>
+            p.id?.toLowerCase().includes(name) ||
+            p.baseName?.toLowerCase().includes(name)
+          )
+        ).length;
+
+        if (drxCount === 0) return;
+
+        // 3. Probabilite qui scale avec le nombre de membres DRX et le gap de niveau
+        const CHANCE = Math.min(0.40 + (drxCount * 0.10) + (ratingGap * 0.02), 0.95);
+        if (Math.random() > CHANCE) return;
+
+        // 4. Puissance : base DRX + conversion du retard de rating
+        const drxBaseDelta = [8, 13, 18, 23, 28];
+        const gapBonus = Math.min(Math.round(ratingGap * 1.2), 12);
+        const delta = Math.min(drxBaseDelta[Math.min(drxCount - 1, 4)] + gapBonus, 35);
+
+        // Persistant si 3+ membres DRX reunis
+        const isPersistent = drxCount >= 3;
+
+        const brotherLabels = {
+          1: 'Kingen seul en underdog (' + ratingGap.toFixed(1) + ' OVR de gap)',
+          2: '2 freres DRX en sous-nombre (' + ratingGap.toFixed(1) + ' OVR de gap)',
+          3: 'Trio DRX réuni face aux favoris (' + ratingGap.toFixed(1) + ' OVR de gap)',
+          4: '4 vétérans DRX en position d underdog (' + ratingGap.toFixed(1) + ' OVR de gap)',
+          5: 'LE MIRACLE DRX 2022 COMPLET ! Roster réuni pour déjouer les pronostics (' + ratingGap.toFixed(1) + ' OVR de gap)'
+        };
+
+        results.push({
+          side: mySide,
+          ratingDelta: delta,
+          targetRoles: ['Top'],
+          persistentBO: isPersistent,
+          label: '🐉 UNDERDOG MIRACLE DRX ! ' + brotherLabels[drxCount] + ' - Kingen se transcende face aux favoris (+' + delta + ' OVR Top' + (isPersistent ? ', persistant' : '') + ') !',
+          image: '/champions/Aatrox.jpg'
+        });
+
+        // Roster complet DRX (5 joueurs) : tout le roster profite de l elan héroïque
+        if (drxCount >= 5) {
+          results.push({
+            side: mySide,
+            ratingDelta: 10,
+            targetRoles: ['Jungle', 'Mid', 'ADC', 'Support'],
+            persistentBO: true,
+            label: null
+          });
+        }
+      };
+
+      processKingen(teamA, teamB, 'A');
+      processKingen(teamB, teamA, 'B');
+
+      return results.length > 0 ? results : null;
+    }
+  },
+
+  
+  {
+    id: 'scout-game5-inevitable',
+    uniquePerBO: false,
+    apply(match, teamA, teamB, scoreA, scoreB, state) {
+      const results = [];
+
+      const processScout = (myTeam, enemyTeam, mySide) => {
+        const scout = myTeam.roster.find(p => p.id === 'edg-scout-finals-mvp');
+        if (!scout) return;
+
+        const CHANCE = 0.75;
+        if (Math.random() > CHANCE) return;
+
+        // Initialise le compteur de procs reel pour chaque side
+        if (!match._scoutProcs) match._scoutProcs = { A: 0, B: 0 };
+        const procCount = match._scoutProcs[mySide] || 0;
+
+        const delta = (procCount + 1) * 2;
+
+        // Incremente le compteur pour le prochain proc
+        match._scoutProcs[mySide] = procCount + 1;
+
+        const labels = [
+          `Scout entre dans son bo.`,
+          `Scout continue à être stable.`,
+          `Scout entre dans sa zone de confort !`,
+          `SCOUT EST INARRETABLE !`,
+          `SCOUT REUSSIT TOUT CE QU'IL ENTREPREND, MAIS QUE QUELQU'UN L'ARRETE.`
+        ];
+
+        results.push({
+          side: mySide,
+          ratingDelta: delta,
+          targetRoles: ['Mid'],
+          persistentBO: true,
+          label: labels[Math.min(procCount, 4)]
+        });
+      };
+
+      processScout(teamA, teamB, 'A');
+      processScout(teamB, teamA, 'B');
 
       return results.length > 0 ? results : null;
     }
