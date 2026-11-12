@@ -199,7 +199,10 @@ export function registerTournamentHandlers(io, socket, {
                 let texteRecompense = "";
                 if (winnerTeam && !isBotCheck(winnerTeam)) {
                     if (!state.cardCollections[winnerTeam.id]) state.cardCollections[winnerTeam.id] = {};
-                    state.cardCollections[winnerTeam.id]['golden-road'] = 1; 
+                    state.cardCollections[winnerTeam.id]['golden-road'] = 1;
+                    if (!state.collectionAlbum) state.collectionAlbum = {};
+                    if (!state.collectionAlbum[winnerTeam.id]) state.collectionAlbum[winnerTeam.id] = {};
+                    state.collectionAlbum[winnerTeam.id]['golden-road'] = true; 
                     texteRecompense = " \nRÉCOMPENSE ABSOLUE DÉBLOQUÉE.";
                 } else texteRecompense = " \nUN BOT A VOLÉ CE SUCCÈS UNIQUE !";
 

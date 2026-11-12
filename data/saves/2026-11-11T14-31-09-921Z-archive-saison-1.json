@@ -1,0 +1,1641 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-11T14:31:09.922Z",
+  "label": "Archive saison 1",
+  "gameState": {
+    "phase": "cards",
+    "participants": [
+      {
+        "id": "b0Dsy7NXvAVKQkIEAAAA",
+        "name": "Griffin",
+        "tag": "GRF",
+        "logo": "/equipes/griffin.webp",
+        "roster": [],
+        "isHost": true,
+        "isDisconnected": false,
+        "isBot": false
+      },
+      {
+        "id": "bot-1",
+        "name": "FunPlus Phoenix",
+        "tag": "FPX",
+        "logo": "/equipes/funplus-phoenix.webp",
+        "roster": [
+          {
+            "id": "NAVI-maynter",
+            "name": "NAVI Maynter",
+            "baseName": "Maynter",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "NAVI",
+            "teamTags": [
+              "NAVI"
+            ],
+            "rating": 61,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "C9-blaber",
+            "name": "C9 Blaber",
+            "baseName": "Blaber",
+            "role": "Jungle",
+            "league": "LCS",
+            "teamTag": "C9",
+            "teamTags": [
+              "C9"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DRX_ucal",
+            "name": "DRX Ucal",
+            "baseName": "Ucal",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-jopa",
+            "name": "SK Jopa",
+            "baseName": "Jopa",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 69,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-mikyx",
+            "name": "SK Mikyx",
+            "baseName": "Mikyx",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 62,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-2",
+        "name": "Sentinels",
+        "tag": "SEN",
+        "logo": "/equipes/sentinels.webp",
+        "roster": [
+          {
+            "id": "sk-wunder",
+            "name": "SK Wunder",
+            "baseName": "Wunder",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 66,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "C9-blaber",
+            "name": "C9 Blaber",
+            "baseName": "Blaber",
+            "role": "Jungle",
+            "league": "LCS",
+            "teamTag": "C9",
+            "teamTags": [
+              "C9"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "GX-jackies",
+            "name": "GX Jackies",
+            "baseName": "Jackies",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-jopa",
+            "name": "SK Jopa",
+            "baseName": "Jopa",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 69,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-mikyx",
+            "name": "SK Mikyx",
+            "baseName": "Mikyx",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 62,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-3",
+        "name": "Team Heretics",
+        "tag": "TH",
+        "logo": "/equipes/team-heretics.webp",
+        "roster": [
+          {
+            "id": "gx-oscarinin",
+            "name": "GX Oscarinin",
+            "baseName": "Oscarinin",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-lyncas",
+            "name": "VIT Lyncas",
+            "baseName": "Lyncas",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 65,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DNS_clozer",
+            "name": "DNS Clozer",
+            "baseName": "Clozer",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DNS",
+            "teamTags": [
+              "DNS"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "kc-upset",
+            "name": "KC Upset",
+            "baseName": "Upset",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "KC",
+            "teamTags": [
+              "KC"
+            ],
+            "rating": 60,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-stend",
+            "name": "TH Stend",
+            "baseName": "Stend",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 57,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-4",
+        "name": "Dplus KIA",
+        "tag": "DK",
+        "logo": "/equipes/dplus.webp",
+        "roster": [
+          {
+            "id": "mkoi-myrwn",
+            "name": "MKOI Myrwn",
+            "baseName": "Myrwn",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "MKOI",
+            "teamTags": [
+              "MKOI"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "frx-raptor",
+            "name": "FRX Raptor",
+            "baseName": "Raptor",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "FRX",
+            "teamTags": [
+              "FRX"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "fnc-vladi",
+            "name": "FNC Vladi",
+            "baseName": "Vladi",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "kc-upset",
+            "name": "KC Upset",
+            "baseName": "Upset",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "KC",
+            "teamTags": [
+              "KC"
+            ],
+            "rating": 60,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "gx-jun",
+            "name": "GX Jun",
+            "baseName": "Jun",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-5",
+        "name": "FlyQuest",
+        "tag": "FLY",
+        "logo": "/equipes/flyquest.webp",
+        "roster": [
+          {
+            "id": "fnc-soboro",
+            "name": "FNC Soboro",
+            "baseName": "Soboro",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "gx-isma",
+            "name": "GX Isma",
+            "baseName": "Isma",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "shifters-nuc",
+            "name": "SHFT Nuc",
+            "baseName": "Nuc",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "SHFT",
+            "teamTags": [
+              "SHFT"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "kc-upset",
+            "name": "KC Upset",
+            "baseName": "Upset",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "KC",
+            "teamTags": [
+              "KC"
+            ],
+            "rating": 60,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-mikyx",
+            "name": "SK Mikyx",
+            "baseName": "Mikyx",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 62,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-6",
+        "name": "Shopify Rebellion",
+        "tag": "SR",
+        "logo": "/equipes/shopify-rebellion.webp",
+        "roster": [
+          {
+            "id": "kcb-tao",
+            "name": "KCB Tao",
+            "baseName": "Tao",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "KCB",
+            "teamTags": [
+              "KCB"
+            ],
+            "rating": 54,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "gx-isma",
+            "name": "GX Isma",
+            "baseName": "Isma",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "FEARX-vicla",
+            "name": "FRX Vicla",
+            "baseName": "Vicla",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "FRX",
+            "teamTags": [
+              "FRX"
+            ],
+            "rating": 69,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-flakked",
+            "name": "TH Flakked",
+            "baseName": "Flakked",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "kt-effort",
+            "name": "KT Effort",
+            "baseName": "Effort",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "KT",
+            "teamTags": [
+              "KT"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-7",
+        "name": "Dignitas",
+        "tag": "DIG",
+        "logo": "/equipes/dignitas.webp",
+        "roster": [
+          {
+            "id": "fnc-empyros",
+            "name": "FNC Empyros",
+            "baseName": "Empyros",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 53,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DKC-sharvel",
+            "name": "DK.C Sharvel",
+            "baseName": "Sharvel",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "DK.C",
+            "teamTags": [
+              "DK.C"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DRX_ucal",
+            "name": "DRX Ucal",
+            "baseName": "Ucal",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "kc-upset",
+            "name": "KC Upset",
+            "baseName": "Upset",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "KC",
+            "teamTags": [
+              "KC"
+            ],
+            "rating": 60,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "mdk-alvaro",
+            "name": "MDK Alvaro",
+            "baseName": "Alvaro",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "MDK",
+            "teamTags": [
+              "MDK"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-8",
+        "name": "Karmine Corp",
+        "tag": "KC",
+        "logo": "/equipes/kc.webp",
+        "roster": [
+          {
+            "id": "gx-oscarinin",
+            "name": "GX Oscarinin",
+            "baseName": "Oscarinin",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "GX",
+            "teamTags": [
+              "GX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "bro-gideon",
+            "name": "BRO Gideon",
+            "baseName": "Gideon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "BRO",
+            "teamTags": [
+              "BRO"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "BRO-roamer",
+            "name": "BRO Roamer",
+            "baseName": "Roamer",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "BRO",
+            "teamTags": [
+              "BRO"
+            ],
+            "rating": 62,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-flakked",
+            "name": "TH Flakked",
+            "baseName": "Flakked",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-stend",
+            "name": "TH Stend",
+            "baseName": "Stend",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 57,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-9",
+        "name": "Gen.G",
+        "tag": "GEN",
+        "logo": "/equipes/geng.webp",
+        "roster": [
+          {
+            "id": "fnc-soboro",
+            "name": "FNC Soboro",
+            "baseName": "Soboro",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-lyncas",
+            "name": "VIT Lyncas",
+            "baseName": "Lyncas",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 65,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DRX_ucal",
+            "name": "DRX Ucal",
+            "baseName": "Ucal",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-ice",
+            "name": "TH Ice",
+            "baseName": "Ice",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-way",
+            "name": "TH Way",
+            "baseName": "Way",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 59,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-10",
+        "name": "FearX",
+        "tag": "FOX",
+        "logo": "/equipes/fearx.webp",
+        "roster": [
+          {
+            "id": "sk-wunder",
+            "name": "SK Wunder",
+            "baseName": "Wunder",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 66,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "bro-gideon",
+            "name": "BRO Gideon",
+            "baseName": "Gideon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "BRO",
+            "teamTags": [
+              "BRO"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "BRO-roamer",
+            "name": "BRO Roamer",
+            "baseName": "Roamer",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "BRO",
+            "teamTags": [
+              "BRO"
+            ],
+            "rating": 62,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "drx-jiwoo",
+            "name": "DRX Jiwoo",
+            "baseName": "Jiwoo",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-hylissang",
+            "name": "VIT Hylissang",
+            "baseName": "Hylissang",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 54,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-11",
+        "name": "KT Rolster",
+        "tag": "KT",
+        "logo": "/equipes/kt-rolster.webp",
+        "roster": [
+          {
+            "id": "fnc-soboro",
+            "name": "FNC Soboro",
+            "baseName": "Soboro",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "ns-sponge",
+            "name": "NS Sponge",
+            "baseName": "Sponge",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "NS",
+            "teamTags": [
+              "NS"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-serin",
+            "name": "SK Serin",
+            "baseName": "Serin",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 58,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-ice",
+            "name": "TH Ice",
+            "baseName": "Ice",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "frx-kellin",
+            "name": "FRX Kellin",
+            "baseName": "Kellin",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "FRX",
+            "teamTags": [
+              "FRX"
+            ],
+            "rating": 66,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-12",
+        "name": "Ninjas in Pyjamas",
+        "tag": "NIP",
+        "logo": "/equipes/nip.webp",
+        "roster": [
+          {
+            "id": "fnc-empyros",
+            "name": "FNC Empyros",
+            "baseName": "Empyros",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 53,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-lyncas",
+            "name": "VIT Lyncas",
+            "baseName": "Lyncas",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 65,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DNS_clozer",
+            "name": "DNS Clozer",
+            "baseName": "Clozer",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DNS",
+            "teamTags": [
+              "DNS"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "drx-jiwoo",
+            "name": "DRX Jiwoo",
+            "baseName": "Jiwoo",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-stend",
+            "name": "TH Stend",
+            "baseName": "Stend",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 57,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-13",
+        "name": "BRION",
+        "tag": "BRO",
+        "logo": "/equipes/brion.webp",
+        "roster": [
+          {
+            "id": "fnc-soboro",
+            "name": "FNC Soboro",
+            "baseName": "Soboro",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-lyncas",
+            "name": "VIT Lyncas",
+            "baseName": "Lyncas",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 65,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "DRX_ucal",
+            "name": "DRX Ucal",
+            "baseName": "Ucal",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-ice",
+            "name": "TH Ice",
+            "baseName": "Ice",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-hylissang",
+            "name": "VIT Hylissang",
+            "baseName": "Hylissang",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 54,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-14",
+        "name": "Team WE",
+        "tag": "WE",
+        "logo": "/equipes/we.webp",
+        "roster": [
+          {
+            "id": "sk-wunder",
+            "name": "SK Wunder",
+            "baseName": "Wunder",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 66,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "vit-lyncas",
+            "name": "VIT Lyncas",
+            "baseName": "Lyncas",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 65,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-serin",
+            "name": "SK Serin",
+            "baseName": "Serin",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 58,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-ice",
+            "name": "TH Ice",
+            "baseName": "Ice",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "mdk-alvaro",
+            "name": "MDK Alvaro",
+            "baseName": "Alvaro",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "MDK",
+            "teamTags": [
+              "MDK"
+            ],
+            "rating": 68,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      },
+      {
+        "id": "bot-15",
+        "name": "Edward Gaming",
+        "tag": "EDG",
+        "logo": "/equipes/edward-gaming.webp",
+        "roster": [
+          {
+            "id": "edg_zdz",
+            "name": "EDG zdz",
+            "baseName": "zdz",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 67,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "frx-raptor",
+            "name": "FRX Raptor",
+            "baseName": "Raptor",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "FRX",
+            "teamTags": [
+              "FRX"
+            ],
+            "rating": 63,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "sk-serin",
+            "name": "SK Serin",
+            "baseName": "Serin",
+            "role": "Mid",
+            "league": "LEC",
+            "teamTag": "SK",
+            "teamTags": [
+              "SK"
+            ],
+            "rating": 58,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-flakked",
+            "name": "TH Flakked",
+            "baseName": "Flakked",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 64,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "th-stend",
+            "name": "TH Stend",
+            "baseName": "Stend",
+            "role": "Support",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 57,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isDisconnected": false
+      }
+    ],
+    "bracket": [],
+    "groups": null,
+    "swissTeams": null,
+    "tournamentPhase": null,
+    "readyPlayers": [],
+    "resetPlayers": [],
+    "champion": null,
+    "currentRound": 0,
+    "roundComplete": false,
+    "roundReady": [],
+    "cardCollections": {
+      "bot-1": {
+        "NAVI-maynter": "LIFETIME",
+        "C9-blaber": "LIFETIME",
+        "DRX_ucal": "LIFETIME",
+        "sk-jopa": "LIFETIME",
+        "sk-mikyx": "LIFETIME"
+      },
+      "bot-2": {
+        "sk-wunder": "LIFETIME",
+        "C9-blaber": "LIFETIME",
+        "GX-jackies": "LIFETIME",
+        "sk-jopa": "LIFETIME",
+        "sk-mikyx": "LIFETIME"
+      },
+      "bot-3": {
+        "gx-oscarinin": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "bot-4": {
+        "mkoi-myrwn": "LIFETIME",
+        "frx-raptor": "LIFETIME",
+        "fnc-vladi": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-5": {
+        "fnc-soboro": "LIFETIME",
+        "gx-isma": "LIFETIME",
+        "shifters-nuc": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "sk-mikyx": "LIFETIME"
+      },
+      "bot-6": {
+        "kcb-tao": "LIFETIME",
+        "gx-isma": "LIFETIME",
+        "FEARX-vicla": "LIFETIME",
+        "th-flakked": "LIFETIME",
+        "kt-effort": "LIFETIME"
+      },
+      "bot-7": {
+        "fnc-empyros": "LIFETIME",
+        "DKC-sharvel": "LIFETIME",
+        "DRX_ucal": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "mdk-alvaro": "LIFETIME"
+      },
+      "bot-8": {
+        "gx-oscarinin": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "BRO-roamer": "LIFETIME",
+        "th-flakked": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "bot-9": {
+        "fnc-soboro": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "DRX_ucal": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "th-way": "LIFETIME"
+      },
+      "bot-10": {
+        "sk-wunder": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "BRO-roamer": "LIFETIME",
+        "drx-jiwoo": "LIFETIME",
+        "vit-hylissang": "LIFETIME"
+      },
+      "bot-11": {
+        "fnc-soboro": "LIFETIME",
+        "ns-sponge": "LIFETIME",
+        "sk-serin": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "frx-kellin": "LIFETIME"
+      },
+      "bot-12": {
+        "fnc-empyros": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "drx-jiwoo": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "bot-13": {
+        "fnc-soboro": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "DRX_ucal": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "vit-hylissang": "LIFETIME"
+      },
+      "bot-14": {
+        "sk-wunder": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "sk-serin": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "mdk-alvaro": "LIFETIME"
+      },
+      "bot-15": {
+        "edg_zdz": "LIFETIME",
+        "frx-raptor": "LIFETIME",
+        "sk-serin": "LIFETIME",
+        "th-flakked": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "activeLineups": {
+      "bot-1": {
+        "Top": "NAVI-maynter",
+        "Jungle": "C9-blaber",
+        "Mid": "DRX_ucal",
+        "ADC": "sk-jopa",
+        "Support": "sk-mikyx"
+      },
+      "bot-2": {
+        "Top": "sk-wunder",
+        "Jungle": "C9-blaber",
+        "Mid": "GX-jackies",
+        "ADC": "sk-jopa",
+        "Support": "sk-mikyx"
+      },
+      "bot-3": {
+        "Top": "gx-oscarinin",
+        "Jungle": "vit-lyncas",
+        "Mid": "DNS_clozer",
+        "ADC": "kc-upset",
+        "Support": "th-stend"
+      },
+      "bot-4": {
+        "Top": "mkoi-myrwn",
+        "Jungle": "frx-raptor",
+        "Mid": "fnc-vladi",
+        "ADC": "kc-upset",
+        "Support": "gx-jun"
+      },
+      "bot-5": {
+        "Top": "fnc-soboro",
+        "Jungle": "gx-isma",
+        "Mid": "shifters-nuc",
+        "ADC": "kc-upset",
+        "Support": "sk-mikyx"
+      },
+      "bot-6": {
+        "Top": "kcb-tao",
+        "Jungle": "gx-isma",
+        "Mid": "FEARX-vicla",
+        "ADC": "th-flakked",
+        "Support": "kt-effort"
+      },
+      "bot-7": {
+        "Top": "fnc-empyros",
+        "Jungle": "DKC-sharvel",
+        "Mid": "DRX_ucal",
+        "ADC": "kc-upset",
+        "Support": "mdk-alvaro"
+      },
+      "bot-8": {
+        "Top": "gx-oscarinin",
+        "Jungle": "bro-gideon",
+        "Mid": "BRO-roamer",
+        "ADC": "th-flakked",
+        "Support": "th-stend"
+      },
+      "bot-9": {
+        "Top": "fnc-soboro",
+        "Jungle": "vit-lyncas",
+        "Mid": "DRX_ucal",
+        "ADC": "th-ice",
+        "Support": "th-way"
+      },
+      "bot-10": {
+        "Top": "sk-wunder",
+        "Jungle": "bro-gideon",
+        "Mid": "BRO-roamer",
+        "ADC": "drx-jiwoo",
+        "Support": "vit-hylissang"
+      },
+      "bot-11": {
+        "Top": "fnc-soboro",
+        "Jungle": "ns-sponge",
+        "Mid": "sk-serin",
+        "ADC": "th-ice",
+        "Support": "frx-kellin"
+      },
+      "bot-12": {
+        "Top": "fnc-empyros",
+        "Jungle": "vit-lyncas",
+        "Mid": "DNS_clozer",
+        "ADC": "drx-jiwoo",
+        "Support": "th-stend"
+      },
+      "bot-13": {
+        "Top": "fnc-soboro",
+        "Jungle": "vit-lyncas",
+        "Mid": "DRX_ucal",
+        "ADC": "th-ice",
+        "Support": "vit-hylissang"
+      },
+      "bot-14": {
+        "Top": "sk-wunder",
+        "Jungle": "vit-lyncas",
+        "Mid": "sk-serin",
+        "ADC": "th-ice",
+        "Support": "mdk-alvaro"
+      },
+      "bot-15": {
+        "Top": "edg_zdz",
+        "Jungle": "frx-raptor",
+        "Mid": "sk-serin",
+        "ADC": "th-flakked",
+        "Support": "th-stend"
+      },
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "economy": {
+      "b0Dsy7NXvAVKQkIEAAAA": 100
+    },
+    "lockedCards": {
+      "b0Dsy7NXvAVKQkIEAAAA": []
+    },
+    "cardStats": {},
+    "globalSecrets": {},
+    "pendingPacks": {
+      "b0Dsy7NXvAVKQkIEAAAA": 1
+    },
+    "pendingPackResults": {},
+    "lastOpenedPack": {
+      "b0Dsy7NXvAVKQkIEAAAA": []
+    },
+    "starterPackClaimed": {
+      "b0Dsy7NXvAVKQkIEAAAA": false
+    },
+    "teamSkins": {},
+    "collectionRewardsClaimed": {
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "collectionMilestonesClaimed": {
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "collectionAlbum": {
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "tradeUpBank": {},
+    "sponsorOfferings": {},
+    "bonusPacks": {
+      "b0Dsy7NXvAVKQkIEAAAA": {}
+    },
+    "activeContracts": {},
+    "completedContracts": {},
+    "customCards": [],
+    "createdCardsThisGame": [],
+    "lastZeusBonuses": {},
+    "seasonRound": 1,
+    "continueSeasonVotes": [],
+    "year": 1,
+    "eventIndex": 0,
+    "history": [],
+    "seasonScores": {
+      "bot-1": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-2": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-3": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-4": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-5": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-6": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-7": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-8": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-9": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-10": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-11": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-12": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-13": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-14": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-15": {
+        "points": 0,
+        "titles": 0
+      },
+      "b0Dsy7NXvAVKQkIEAAAA": {
+        "points": 0,
+        "titles": 0
+      }
+    },
+    "recentPlacements": {
+      "b0Dsy7NXvAVKQkIEAAAA": []
+    },
+    "endOfYearRecap": null,
+    "awaitingResumeDecision": false
+  },
+  "playerSessions": [
+    {
+      "token": "fa5a5082-b5ae-4601-92b3-cfc9a3ca22bc",
+      "playerId": "b0Dsy7NXvAVKQkIEAAAA"
+    }
+  ]
+}

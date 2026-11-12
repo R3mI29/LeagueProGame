@@ -69,7 +69,21 @@ export const TEAMS_DB = [
   { name: "Weibo Gaming", tag: "WBG", logo: "/equipes/weibo.webp" },
   { name: "ZyB", tag: "ZYB", logo: "/equipes/zyb.webp" },
   { name: "Team SoloMid", tag: "TSM", logo: "/equipes/tsm.webp" },
-  { name: "Rogue", tag: "RGE", logo: "/equipes/giantx.webp" }
+  { name: "Rogue", tag: "RGE", logo: "/equipes/rogue.webp" },
+  { name: "100 Thieves", tag: "100T", logo: "/equipes/100-thieves.webp" },
+  { name: "CTBC Flying Oyster", tag: "CFO", logo: "/equipes/CTBC-flying-oysters.webp" },
+  { name: "DetonatioN FocusMe", tag: "DFM", logo: "/equipes/DetonatioN-FocusMe.webp" },
+  { name: "FURIA", tag: "FUR", logo: "/equipes/Furia.webp" },
+  { name: "GAM Esports", tag: "GAM", logo: "/equipes/GAM-esports.webp" },
+  { name: "Gambit Esports", tag: "GMB", logo: "/equipes/Gambit.webp" },
+  { name: "Griffin", tag: "GRF", logo: "/equipes/griffin.webp" },
+  { name: "LOUD", tag: "LLL", logo: "/equipes/LOUD.webp" },
+  { name: "MAD Lions", tag: "MAD", logo: "/equipes/MAD Lions.webp" },
+  { name: "Misfits Gaming", tag: "MSF", logo: "/equipes/Misfits.webp" },
+  { name: "NRG", tag: "NRG", logo: "/equipes/NRG.webp" },
+  { name: "PSG Talon", tag: "PSG", logo: "/equipes/PSG-Talon.webp" },
+  { name: "Royal Club", tag: "RYL", logo: "/equipes/Royal-Club.webp" },
+  { name: "Team Secret Whales", tag: "TSW", logo: "/equipes/Team-secret-whales.webp" }
 ];
 
 // Prix de revente des cartes par rareté

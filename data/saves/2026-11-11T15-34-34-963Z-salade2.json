@@ -1,0 +1,2940 @@
+{
+  "schemaVersion": 1,
+  "savedAt": "2026-11-11T15:34:34.963Z",
+  "label": "salade2",
+  "gameState": {
+    "phase": "cards",
+    "participants": [
+      {
+        "id": "_0Kbw_55HVTTWpuHAAAC",
+        "name": "Bilibili 2026 CHAMPIONS",
+        "tag": "BLG",
+        "logo": "/equipes/bilibili-gaming.webp",
+        "roster": [
+          {
+            "id": "theshy-legend",
+            "name": "Legend",
+            "baseName": "TheShy",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": "IG",
+            "teamTags": [
+              "IG"
+            ],
+            "rating": 96,
+            "rarity": "WANTED",
+            "isFullArt": false
+          },
+          {
+            "id": "canyon-mvp-2020",
+            "name": "Worlds MVP",
+            "baseName": "Canyon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "DWG",
+            "teamTags": [
+              "DWG"
+            ],
+            "rating": 95,
+            "rarity": "WANTED",
+            "isFullArt": false
+          },
+          {
+            "id": "showmaker-prime",
+            "name": "THE MAGICIAN",
+            "baseName": "ShowMaker",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "DWG",
+            "teamTags": [
+              "DWG"
+            ],
+            "rating": 96,
+            "rarity": "WANTED",
+            "isFullArt": false
+          },
+          {
+            "id": "gumayusi-T1-legend",
+            "name": "T1 Legend",
+            "baseName": "Gumayusi",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 92,
+            "rarity": "Légendaire",
+            "isFullArt": false
+          },
+          {
+            "id": "keria-worlds-2023",
+            "name": "3x World Champion",
+            "baseName": "Keria",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 93,
+            "rarity": "Légendaire",
+            "isFullArt": false
+          }
+        ],
+        "isHost": false,
+        "isDisconnected": false,
+        "isBot": false
+      },
+      {
+        "id": "idi4SYOmc2udMlkSAAAB",
+        "name": "Karmine Corp",
+        "tag": "KC",
+        "logo": "/equipes/kc.webp",
+        "roster": [
+          {
+            "id": "Flandre-lpl-champ",
+            "name": "3x LPL Champion",
+            "baseName": "Flandre",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": "AL",
+            "teamTags": [
+              "AL"
+            ],
+            "rating": 87,
+            "rarity": "Épique",
+            "isFullArt": false
+          },
+          {
+            "id": "xun-LPL-4x",
+            "name": "4x LPL Champion",
+            "baseName": "Xun",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 89,
+            "rarity": "Légendaire",
+            "isFullArt": false
+          },
+          {
+            "id": "edg-scout-champion",
+            "name": "LPL Champion",
+            "baseName": "Scout",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 88,
+            "rarity": "Épique",
+            "isFullArt": false
+          },
+          {
+            "id": "uzi-msi-2018",
+            "name": "MSI MVP",
+            "baseName": "Uzi",
+            "role": "ADC",
+            "league": "LPL",
+            "teamTag": "RNG",
+            "teamTags": [
+              "RNG"
+            ],
+            "rating": 91,
+            "rarity": "Légendaire",
+            "isFullArt": false
+          },
+          {
+            "id": "tl-corejj",
+            "name": "TL CoreJJ",
+            "baseName": "CoreJJ",
+            "role": "Support",
+            "league": "LCS",
+            "teamTag": "TL",
+            "teamTags": [
+              "TL"
+            ],
+            "rating": 75,
+            "rarity": "Rare",
+            "isFullArt": false
+          }
+        ],
+        "isHost": true,
+        "isDisconnected": false,
+        "isBot": false
+      },
+      {
+        "id": "bot-1",
+        "name": "Solary",
+        "tag": "SLY",
+        "logo": "/equipes/solary.webp",
+        "roster": [
+          {
+            "id": "t1-zeus",
+            "name": "T1 Zeus",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 82,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "tes-tian",
+            "name": "TES Tian",
+            "baseName": "Tian",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "TES",
+            "teamTags": [
+              "TES"
+            ],
+            "rating": 79,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "faker-t1-2022",
+            "name": "T1 Faker",
+            "baseName": "Faker",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "hle-viper",
+            "name": "HLE Viper",
+            "baseName": "Viper",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "HLE",
+            "teamTags": [
+              "HLE"
+            ],
+            "rating": 80,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "hle-delight",
+            "name": "HLE Delight",
+            "baseName": "Delight",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "HLE",
+            "teamTags": [
+              "HLE"
+            ],
+            "rating": 80,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-2",
+        "name": "SK Gaming",
+        "tag": "SK",
+        "logo": "/equipes/sk.webp",
+        "roster": [
+          {
+            "id": "VIT_Naak-Nako",
+            "name": "VIT Naak Nako",
+            "baseName": "Naak Nako",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "VIT",
+            "teamTags": [
+              "VIT"
+            ],
+            "rating": 75,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "jdg-kanavi",
+            "name": "JDG Kanavi",
+            "baseName": "Kanavi",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "JDG",
+            "teamTags": [
+              "JDG"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "rookie-ig",
+            "name": "IG Rookie",
+            "baseName": "Rookie",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "IG",
+            "teamTags": [
+              "IG"
+            ],
+            "rating": 80,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "fnc-rekkles-legend",
+            "name": "4x LEC Champion",
+            "baseName": "Rekkles",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 87,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "meiko-edg-msi",
+            "name": "MSI Champion Meiko",
+            "baseName": "Meiko",
+            "role": "Support",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 86,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-3",
+        "name": "Nongshim RedForce",
+        "tag": "NS",
+        "logo": "/equipes/nongshim.webp",
+        "roster": [
+          {
+            "id": "gen-kiin",
+            "name": "Gen.G Kiin",
+            "baseName": "Kiin",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "dwg-canyon-champion",
+            "name": "DWG Legend",
+            "baseName": "Canyon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "DWG",
+            "teamTags": [
+              "DWG"
+            ],
+            "rating": 93,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "blg-knight-finals-mvp",
+            "name": "5x LPL Finals MVP",
+            "baseName": "Knight",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": [
+              "BLG",
+              "JDG",
+              "TES"
+            ],
+            "teamTags": [
+              "BLG",
+              "JDG",
+              "TES"
+            ],
+            "rating": 93,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "ruler-worlds-mvp",
+            "name": "Worlds Finals MVP",
+            "baseName": "Ruler",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "SSG",
+            "teamTags": [
+              "SSG"
+            ],
+            "rating": 94,
+            "rarity": "WANTED",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "missing-msi-2023",
+            "name": "MSI Champion Missing",
+            "baseName": "Missing",
+            "role": "Support",
+            "league": "LPL",
+            "teamTag": "JDG",
+            "teamTags": [
+              "JDG"
+            ],
+            "rating": 86,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 2
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-4",
+        "name": "JD Gaming",
+        "tag": "JDG",
+        "logo": "/equipes/jd-gaming.webp",
+        "roster": [
+          {
+            "id": "fnc-huni-18-0",
+            "name": "18-0 LEC",
+            "baseName": "Huni",
+            "role": "Top",
+            "league": "LEC",
+            "teamTag": "FNC",
+            "teamTags": [
+              "FNC"
+            ],
+            "rating": 86,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "tian-lpl-champ",
+            "name": "LPL Champion",
+            "baseName": "Tian",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "FPX",
+            "teamTags": [
+              "FPX"
+            ],
+            "rating": 84,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "faker-t1-2022",
+            "name": "T1 Faker",
+            "baseName": "Faker",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "GenG-ruler",
+            "name": "Gen.G Ruler",
+            "baseName": "Ruler",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "geng-duro",
+            "name": "Gen.G Duro",
+            "baseName": "Duro",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-5",
+        "name": "Team SoloMid",
+        "tag": "TSM",
+        "logo": "/equipes/tsm.webp",
+        "roster": [
+          {
+            "id": "t1-zeus",
+            "name": "T1 Zeus",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 82,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "blg-xun",
+            "name": "BLG Xun",
+            "baseName": "Xun",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 79,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "nongshim-scout",
+            "name": "NS Scout",
+            "baseName": "Scout",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "NS",
+            "teamTags": [
+              "NS"
+            ],
+            "rating": 72,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "drx-deft-last-dance",
+            "name": "World Champion",
+            "baseName": "Deft",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "DRX",
+            "teamTags": [
+              "DRX"
+            ],
+            "rating": 93,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "geng-duro",
+            "name": "Gen.G Duro",
+            "baseName": "Duro",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-6",
+        "name": "DetonatioN FocusMe",
+        "tag": "DFM",
+        "logo": "/equipes/DetonatioN-FocusMe.webp",
+        "roster": [
+          {
+            "id": "zeus-mvp-msi",
+            "name": "2026 MSI MVP",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "HLE",
+            "teamTags": [
+              "HLE"
+            ],
+            "rating": 91,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "hle-peanut",
+            "name": "HLE Peanut",
+            "baseName": "Peanut",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "HLE",
+            "teamTags": [
+              "HLE"
+            ],
+            "rating": 78,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "faker-t1-2022",
+            "name": "T1 Faker",
+            "baseName": "Faker",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "peyz-finals-mvp",
+            "name": "LCK Finals MVP Peyz",
+            "baseName": "Peyz",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 88,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "t1-keria",
+            "name": "T1 Keria",
+            "baseName": "Keria",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-7",
+        "name": "Shifters",
+        "tag": "SHFT",
+        "logo": "/equipes/shifters.webp",
+        "roster": [
+          {
+            "id": "zeus-mvp-2023",
+            "name": "Worlds Finals MVP",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 94,
+            "rarity": "WANTED",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "canyon-lck-champion",
+            "name": "5x LCK champion",
+            "baseName": "Canyon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": [
+              "DWG",
+              "GENG"
+            ],
+            "teamTags": [
+              "DWG",
+              "GENG"
+            ],
+            "rating": 90,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "knight-blg-2024",
+            "name": "BLG Knight",
+            "baseName": "Knight",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "ruler-msi-2023",
+            "name": "MSI Champion",
+            "baseName": "Ruler",
+            "role": "ADC",
+            "league": "LPL",
+            "teamTag": "JDG",
+            "teamTags": [
+              "JDG"
+            ],
+            "rating": 87,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "dk_career",
+            "name": "DK Career",
+            "baseName": "Career",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "DK",
+            "teamTags": [
+              "DK"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-8",
+        "name": "Shopify Rebellion",
+        "tag": "SR",
+        "logo": "/equipes/shopify-rebellion.webp",
+        "roster": [
+          {
+            "id": "gen-kiin",
+            "name": "Gen.G Kiin",
+            "baseName": "Kiin",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "blg-xun",
+            "name": "BLG Xun",
+            "baseName": "Xun",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 79,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "bdd-kt",
+            "name": "KT Bdd",
+            "baseName": "Bdd",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "KT",
+            "teamTags": [
+              "KT"
+            ],
+            "rating": 79,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "tes-jackeylove",
+            "name": "TES JackeyLove",
+            "baseName": "JackeyLove",
+            "role": "ADC",
+            "league": "LPL",
+            "teamTag": "TES",
+            "teamTags": [
+              "TES"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "geng-duro",
+            "name": "Gen.G Duro",
+            "baseName": "Duro",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-9",
+        "name": "Misfits Gaming",
+        "tag": "MSF",
+        "logo": "/equipes/Misfits.webp",
+        "roster": [
+          {
+            "id": "bin-lpl-mvp",
+            "name": "2x LPL Finals MVP",
+            "baseName": "Bin",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": [
+              "BLG",
+              "RNG"
+            ],
+            "teamTags": [
+              "BLG",
+              "RNG"
+            ],
+            "rating": 90,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "tian-lpl-champ",
+            "name": "LPL Champion",
+            "baseName": "Tian",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "FPX",
+            "teamTags": [
+              "FPX"
+            ],
+            "rating": 84,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "edg-scout-finals-mvp",
+            "name": "Worlds Finals MVP",
+            "baseName": "Scout",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 92,
+            "rarity": "WANTED",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "peyz-finals-mvp",
+            "name": "LCK Finals MVP Peyz",
+            "baseName": "Peyz",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 88,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "FLY-busio-FinalsMVP",
+            "name": "LTA Finals MVP",
+            "baseName": "Busio",
+            "role": "Support",
+            "league": "LCS",
+            "teamTag": "FLY",
+            "teamTags": [
+              "FLY"
+            ],
+            "rating": 85,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 1
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-10",
+        "name": "OMG",
+        "tag": "OMG",
+        "logo": "/equipes/omg.webp",
+        "roster": [
+          {
+            "id": "t1-zeus",
+            "name": "T1 Zeus",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 82,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "gen-canyon",
+            "name": "Gen.G Canyon",
+            "baseName": "Canyon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "rookie-IG_2019",
+            "name": "LPL Champion",
+            "baseName": "Rookie",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "IG",
+            "teamTags": [
+              "IG"
+            ],
+            "rating": 85,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "gumayusi-t1-2022",
+            "name": "T1 Gumayusi",
+            "baseName": "Gumayusi",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "meiko-EDG-Legend",
+            "name": "EDG Legend",
+            "baseName": "Meiko",
+            "role": "Support",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 92,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-11",
+        "name": "GAM Esports",
+        "tag": "GAM",
+        "logo": "/equipes/GAM-esports.webp",
+        "roster": [
+          {
+            "id": "blg-bin",
+            "name": "BLG Bin",
+            "baseName": "Bin",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 82,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "gen-canyon",
+            "name": "Gen.G Canyon",
+            "baseName": "Canyon",
+            "role": "Jungle",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "knight-blg-2024",
+            "name": "BLG Knight",
+            "baseName": "Knight",
+            "role": "Mid",
+            "league": "LPL",
+            "teamTag": "BLG",
+            "teamTags": [
+              "BLG"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 2
+          },
+          {
+            "id": "bro-teddy",
+            "name": "BRO Teddy",
+            "baseName": "Teddy",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "BRO",
+            "teamTags": [
+              "BRO"
+            ],
+            "rating": 69,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "meiko-EDG-Legend",
+            "name": "EDG Legend",
+            "baseName": "Meiko",
+            "role": "Support",
+            "league": "LPL",
+            "teamTag": "EDG",
+            "teamTags": [
+              "EDG"
+            ],
+            "rating": 92,
+            "rarity": "Légendaire",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-12",
+        "name": "Rogue",
+        "tag": "RGE",
+        "logo": "/equipes/rogue.webp",
+        "roster": [
+          {
+            "id": "t1-zeus",
+            "name": "T1 Zeus",
+            "baseName": "Zeus",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 82,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "jdg-kanavi",
+            "name": "JDG Kanavi",
+            "baseName": "Kanavi",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "JDG",
+            "teamTags": [
+              "JDG"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "faker-t1-2022",
+            "name": "T1 Faker",
+            "baseName": "Faker",
+            "role": "Mid",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "gumayusi-t1-2022",
+            "name": "T1 Gumayusi",
+            "baseName": "Gumayusi",
+            "role": "ADC",
+            "league": "LCK",
+            "teamTag": "T1",
+            "teamTags": [
+              "T1"
+            ],
+            "rating": 81,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "meiko-tes",
+            "name": "TES Meiko",
+            "baseName": "Meiko",
+            "role": "Support",
+            "league": "LPL",
+            "teamTag": "TES",
+            "teamTags": [
+              "TES"
+            ],
+            "rating": 80,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-13",
+        "name": "RNG",
+        "tag": "RNG",
+        "logo": "/equipes/royal-never-give-up.webp",
+        "roster": [
+          {
+            "id": "kiin-lck-mvp",
+            "name": "LCK Finals MVP",
+            "baseName": "Kiin",
+            "role": "Top",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 86,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "g2-jankos-msi-champion",
+            "name": "MSI Champion",
+            "baseName": "Jankos",
+            "role": "Jungle",
+            "league": "LEC",
+            "teamTag": "G2",
+            "teamTags": [
+              "G2"
+            ],
+            "rating": 85,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "nisqy-c9",
+            "name": "C9 Nisqy",
+            "baseName": "Nisqy",
+            "role": "Mid",
+            "league": "LCS",
+            "teamTag": "C9",
+            "teamTags": [
+              "C9"
+            ],
+            "rating": 77,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "th-ice",
+            "name": "TH Ice",
+            "baseName": "Ice",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "TH",
+            "teamTags": [
+              "TH"
+            ],
+            "rating": 70,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          },
+          {
+            "id": "geng-duro",
+            "name": "Gen.G Duro",
+            "baseName": "Duro",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "GEN",
+            "teamTags": [
+              "GEN"
+            ],
+            "rating": 83,
+            "rarity": "Rare",
+            "isFullArt": false,
+            "contract": 3
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      },
+      {
+        "id": "bot-14",
+        "name": "Los Ratones",
+        "tag": "LR",
+        "logo": "/equipes/los-ratones.webp",
+        "roster": [
+          {
+            "id": "Flandre-lpl-champ",
+            "name": "3x LPL Champion",
+            "baseName": "Flandre",
+            "role": "Top",
+            "league": "LPL",
+            "teamTag": "AL",
+            "teamTags": [
+              "AL"
+            ],
+            "rating": 87,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 1
+          },
+          {
+            "id": "kanavi-msi-2023",
+            "name": "MSI Champion Kanavi",
+            "baseName": "Kanavi",
+            "role": "Jungle",
+            "league": "LPL",
+            "teamTag": "JDG",
+            "teamTags": [
+              "JDG"
+            ],
+            "rating": 88,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "tsm-bjergsen-6x-champ",
+            "name": "6x LCS Champion",
+            "baseName": "Bjergsen",
+            "role": "Mid",
+            "league": "LCS",
+            "teamTag": "TSM",
+            "teamTags": [
+              "TSM"
+            ],
+            "rating": 86,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "caliste-2026",
+            "name": "EWC 2026 Caliste",
+            "baseName": "Caliste",
+            "role": "ADC",
+            "league": "LEC",
+            "teamTag": "KC",
+            "teamTags": [
+              "KC"
+            ],
+            "rating": 85,
+            "rarity": "Épique",
+            "isFullArt": false,
+            "contract": 3
+          },
+          {
+            "id": "frx-kellin",
+            "name": "FRX Kellin",
+            "baseName": "Kellin",
+            "role": "Support",
+            "league": "LCK",
+            "teamTag": "FRX",
+            "teamTags": [
+              "FRX"
+            ],
+            "rating": 66,
+            "rarity": "Commune",
+            "isFullArt": false,
+            "contract": "LIFETIME"
+          }
+        ],
+        "isBot": true,
+        "isHost": false
+      }
+    ],
+    "bracket": [],
+    "groups": null,
+    "swissTeams": null,
+    "tournamentPhase": null,
+    "readyPlayers": [],
+    "resetPlayers": [],
+    "champion": null,
+    "currentRound": 0,
+    "roundComplete": false,
+    "roundReady": [],
+    "cardCollections": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "th-way": "LIFETIME",
+        "bro-morgan": "LIFETIME",
+        "BRO-roamer": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "gx-isma": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "lr-baus": 7,
+        "navi_poby": 2,
+        "drx-jiwoo": 6,
+        "faker-t1-2022": 3,
+        "th-daglas": 9,
+        "frx-raptor": 5,
+        "shifters-nuc": 7,
+        "tl-corejj": 4,
+        "kc-yike": 14,
+        "chovy-geng-2023": 6,
+        "Flandre-lpl-champ": 2,
+        "xun-LPL-4x": 4,
+        "sk-jopa": 4,
+        "kt-effort": 2,
+        "g2-wunder-2019": 1,
+        "chovy-msi-2024": 1,
+        "ruler-msi-2023": 1,
+        "edg-scout-champion": 2,
+        "uzi-msi-2018": 4,
+        "elk-lpl-mvp": 1,
+        "bin-FirstStand-2026": 8,
+        "caps-msi-mvp": 1,
+        "knight-lpl-legend": 5,
+        "kc-kyeahoo-2026": 2,
+        "kc-canna": 3,
+        "g2-jankos": 2,
+        "tian-lpl-champ": 1,
+        "drx-pyosik-world-champion": 6,
+        "meiko-EDG-Legend": 3,
+        "showmaker-prime": 1,
+        "zeka-FST-mvp": 1,
+        "keria-worlds-2023": 1,
+        "showmaker-DK-mentor": 5,
+        "rookie-ig": 4,
+        "peyz-finals-mvp": 4,
+        "JDG-2026-vampire": 10,
+        "blg-xun": 6,
+        "jdg-kanavi": 5,
+        "xun-3x-MSI-finalist": 4
+      },
+      "bot-1": {
+        "fnc-soboro": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "sk-serin": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-2": {
+        "lr-baus": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "shifters-nuc": "LIFETIME",
+        "bro-teddy": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-3": {
+        "szygenda": "LIFETIME",
+        "th-sheo": "LIFETIME",
+        "fnc-vladi": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-4": {
+        "bro-morgan": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "fnc-vladi": "LIFETIME",
+        "sen-rahel": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-5": {
+        "edg_zdz": "LIFETIME",
+        "C9-blaber": "LIFETIME",
+        "navi_poby": "LIFETIME",
+        "sen-rahel": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "bot-6": {
+        "fnc-empyros": "LIFETIME",
+        "vit-lyncas": "LIFETIME",
+        "sk-serin": "LIFETIME",
+        "DNS-deokdam": "LIFETIME",
+        "th-way": "LIFETIME"
+      },
+      "bot-7": {
+        "mkoi-myrwn": "LIFETIME",
+        "DKC-sharvel": "LIFETIME",
+        "shifters-nuc": "LIFETIME",
+        "kc-upset": "LIFETIME",
+        "dns-peter": "LIFETIME"
+      },
+      "bot-8": {
+        "gx-oscarinin": "LIFETIME",
+        "painter-t1-2026-sub": "LIFETIME",
+        "nongshim-scout": "LIFETIME",
+        "sk-jopa": "LIFETIME",
+        "kt-effort": "LIFETIME"
+      },
+      "bot-9": {
+        "gx-oscarinin": "LIFETIME",
+        "th-daglas": "LIFETIME",
+        "DNS_clozer": "LIFETIME",
+        "drx-jiwoo": "LIFETIME",
+        "kt-effort": "LIFETIME"
+      },
+      "bot-10": {
+        "shft-rooster": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "BRO-roamer": "LIFETIME",
+        "sk-jopa": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-11": {
+        "sen-impact": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "FEARX-vicla": "LIFETIME",
+        "bro-teddy": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-12": {
+        "edg_zdz": "LIFETIME",
+        "th-daglas": "LIFETIME",
+        "fnc-vladi": "LIFETIME",
+        "sk-jopa": "LIFETIME",
+        "th-stend": "LIFETIME"
+      },
+      "bot-13": {
+        "shft-rooster": "LIFETIME",
+        "gx-isma": "LIFETIME",
+        "navi_poby": "LIFETIME",
+        "th-ice": "LIFETIME",
+        "gx-jun": "LIFETIME"
+      },
+      "bot-14": {
+        "edg_zdz": "LIFETIME",
+        "ns-sponge": "LIFETIME",
+        "GX-jackies": "LIFETIME",
+        "sen-rahel": "LIFETIME",
+        "frx-kellin": "LIFETIME"
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "szygenda": "LIFETIME",
+        "vit-hylissang": "LIFETIME",
+        "bro-gideon": "LIFETIME",
+        "GX-jackies": "LIFETIME",
+        "bro-teddy": "LIFETIME",
+        "painter-t1-2026-sub": 15,
+        "dns-dudu": 10,
+        "mdk-alvaro": 10,
+        "t1-zeus": 16,
+        "th-stend": "LIFETIME",
+        "NAVI-maynter": 7,
+        "frx-raptor": 8,
+        "sen-impact": 14,
+        "blg-on-lpl": 20,
+        "frx-kellin": 10,
+        "ns-sponge": 15,
+        "DKC-sharvel": 11,
+        "g2-jankos": 16,
+        "kt-effort": 8,
+        "GenG-ruler": "LIFETIME",
+        "shft-rooster": 15,
+        "caps-g2-2024": 19,
+        "bro-morgan": 12,
+        "navi_poby": 9,
+        "gx-isma": 28,
+        "NAVI-adam": 2,
+        "t1-keria": 24,
+        "kc-kyeahoo-2026": 8,
+        "rookie-ig": 7,
+        "kc-targamas": 13,
+        "VIT_Naak-Nako": 19,
+        "369-lpl-champion": 11,
+        "ruler-msi-2023": 18,
+        "canyon-mvp-2020": 10,
+        "showmaker-prime": 6,
+        "oner-lck": 15,
+        "Flandre-lpl-champ": 15,
+        "peanut-lck-mvp": 1,
+        "bin-lpl-mvp": 3,
+        "th-daglas": 13,
+        "DNS-deokdam": 12,
+        "sk-jopa": 4,
+        "fnc-humanoid-champion": 32,
+        "delight-hle-2024": 10,
+        "xun-3x-MSI-finalist": 5,
+        "gumayusi-T1-legend": 6,
+        "fpx-tian-finals-mvp": 7,
+        "ROX-PraY-worlds": 20,
+        "canyon-ewc": 23,
+        "zeus-mvp-msi": 12,
+        "keria-worlds-2023": "LIFETIME",
+        "meiko-edg-msi": 16,
+        "fnc-rekkles-legend": 24,
+        "dwg-canyon-champion": 9,
+        "rookie-IG_2019": 15,
+        "bdd-lck-mvp": 8,
+        "xun-LPL-4x": 3,
+        "dwg-beryl-world-champion": 8,
+        "edg_zdz": 6,
+        "tes-tian": 1,
+        "kanavi-msi-2023": 6,
+        "kanavi-lpl-mvp": 11,
+        "meiko-EDG-Legend": 20,
+        "sk-serin": 12,
+        "g2-wunder-2019": 20,
+        "DNS_clozer": 8,
+        "gumayusi-t1-2022": 4,
+        "th-sheo": 5,
+        "sk-wunder": 16,
+        "faker-t1-2022": 5,
+        "vit-lyncas": 18,
+        "drx-jiwoo": 7,
+        "ns-lehends": 19,
+        "blg-xun": 7,
+        "gen-kiin": 12,
+        "C9-blaber": 7,
+        "tes-369": 3,
+        "kc-canna-champion": 7,
+        "keria-lck-mvp": 3,
+        "theshy-legend": 22,
+        "dk_career_ewc": 16,
+        "Hope-lpl-champ": 6,
+        "blg-knight-finals-mvp": 6,
+        "caliste-2026": 23,
+        "drx-pyosik-world-champion": 12,
+        "ssg-ambition-world-champion": 12,
+        "golden-road": 1,
+        "BRO-roamer": 1,
+        "fnc-oscarinin": 1,
+        "bin-FirstStand-2026": 7,
+        "edg-viper-world-champion": 1,
+        "drx-deft-last-dance": 6,
+        "FEARX-vicla": 16,
+        "nisqy-c9": 4,
+        "fnc-empyros": 10,
+        "ruler-worlds-mvp": 7,
+        "elk-lpl-mvp": 18,
+        "uzi-msi-2018": 23,
+        "knight-lpl-legend": 7,
+        "showmaker-dk-2024": 7,
+        "lr-baus": 9,
+        "kc-canna": 7,
+        "hle-zeus": 5,
+        "zeus-lck": 4,
+        "zeus-mvp-2023": 8,
+        "dns-peter": 5,
+        "kc-upset": 7,
+        "larssen-RGE": 8,
+        "sen-rahel": 3,
+        "mkoi-myrwn": 13,
+        "geng-duro": 9,
+        "chovy-geng-2023": 2,
+        "fnc-razork": 3,
+        "hle-delight": 1,
+        "caliste-prodige": 5,
+        "kanavi-lpl-WANTED": 7,
+        "caliste-kcorp-2024": 7,
+        "ruler-ssg": 4,
+        "nongshim-scout": 8,
+        "gx-odoamne": 7,
+        "shifters-nuc": 7,
+        "th-flakked": 15,
+        "blg-bin": 1,
+        "g2-jankos-msi-champion": 4,
+        "mad-elyoya": 3,
+        "g2-hanssama": 6,
+        "kiin-lck-mvp": 11,
+        "t1-doran-world_champion": 8,
+        "mikyx-msi-2019": 7,
+        "ssg-crown-world-champion": 11,
+        "chovy-4peat": 8,
+        "drx-zeka-world-champion": 8,
+        "showmaker-ewc-2020": 15,
+        "showmaker-DK-mentor": 13,
+        "chovy-msi-2024": 5,
+        "ig-jackeylove-world-champion": 12,
+        "zeka-FST-mvp": 3,
+        "edg-scout-champion": 2,
+        "fpx-doinb-world-champion": 8,
+        "custom-smeb-1793401108574": 1,
+        "blg-elk": 1,
+        "dk_career": 3,
+        "gx-oscarinin": 1,
+        "DRX_ucal": "LIFETIME",
+        "T1-peyz": 4,
+        "tsm-bjergsen-6x-champ": 2,
+        "fnc-huni-18-0": 3,
+        "FLY-inspired-LTA-MVP": 6,
+        "missing-msi-2023": 2,
+        "tl-doublelift-4peat": 6,
+        "gen-ruler-champion": 6,
+        "blaber-c9-lcs": 8,
+        "FLY-busio-FinalsMVP": 5,
+        "fnc-vladi": 6,
+        "hle-peanut": 6,
+        "viper-lpl-champion": 1
+      }
+    },
+    "activeLineups": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "Jungle": "xun-LPL-4x",
+        "Mid": "edg-scout-champion",
+        "ADC": "uzi-msi-2018",
+        "Support": "tl-corejj",
+        "Top": "Flandre-lpl-champ"
+      },
+      "bot-1": {
+        "Top": "t1-zeus",
+        "Jungle": "tes-tian",
+        "Mid": "faker-t1-2022",
+        "ADC": "hle-viper",
+        "Support": "hle-delight"
+      },
+      "bot-2": {
+        "Top": "VIT_Naak-Nako",
+        "Jungle": "jdg-kanavi",
+        "Mid": "rookie-ig",
+        "ADC": "fnc-rekkles-legend",
+        "Support": "meiko-edg-msi"
+      },
+      "bot-3": {
+        "Top": "gen-kiin",
+        "Jungle": "dwg-canyon-champion",
+        "Mid": "blg-knight-finals-mvp",
+        "ADC": "ruler-worlds-mvp",
+        "Support": "missing-msi-2023"
+      },
+      "bot-4": {
+        "Top": "fnc-huni-18-0",
+        "Jungle": "tian-lpl-champ",
+        "Mid": "faker-t1-2022",
+        "ADC": "GenG-ruler",
+        "Support": "geng-duro"
+      },
+      "bot-5": {
+        "Top": "t1-zeus",
+        "Jungle": "blg-xun",
+        "Mid": "nongshim-scout",
+        "ADC": "drx-deft-last-dance",
+        "Support": "geng-duro"
+      },
+      "bot-6": {
+        "Top": "zeus-mvp-msi",
+        "Jungle": "hle-peanut",
+        "Mid": "faker-t1-2022",
+        "ADC": "peyz-finals-mvp",
+        "Support": "t1-keria"
+      },
+      "bot-7": {
+        "Top": "zeus-mvp-2023",
+        "Jungle": "canyon-lck-champion",
+        "Mid": "knight-blg-2024",
+        "ADC": "ruler-msi-2023",
+        "Support": "dk_career"
+      },
+      "bot-8": {
+        "Top": "gen-kiin",
+        "Jungle": "blg-xun",
+        "Mid": "bdd-kt",
+        "ADC": "tes-jackeylove",
+        "Support": "geng-duro"
+      },
+      "bot-9": {
+        "Top": "bin-lpl-mvp",
+        "Jungle": "tian-lpl-champ",
+        "Mid": "edg-scout-finals-mvp",
+        "ADC": "peyz-finals-mvp",
+        "Support": "FLY-busio-FinalsMVP"
+      },
+      "bot-10": {
+        "Top": "t1-zeus",
+        "Jungle": "gen-canyon",
+        "Mid": "rookie-IG_2019",
+        "ADC": "gumayusi-t1-2022",
+        "Support": "meiko-EDG-Legend"
+      },
+      "bot-11": {
+        "Top": "blg-bin",
+        "Jungle": "gen-canyon",
+        "Mid": "knight-blg-2024",
+        "ADC": "bro-teddy",
+        "Support": "meiko-EDG-Legend"
+      },
+      "bot-12": {
+        "Top": "t1-zeus",
+        "Jungle": "jdg-kanavi",
+        "Mid": "faker-t1-2022",
+        "ADC": "gumayusi-t1-2022",
+        "Support": "meiko-tes"
+      },
+      "bot-13": {
+        "Top": "kiin-lck-mvp",
+        "Jungle": "g2-jankos-msi-champion",
+        "Mid": "nisqy-c9",
+        "ADC": "th-ice",
+        "Support": "geng-duro"
+      },
+      "bot-14": {
+        "Top": "Flandre-lpl-champ",
+        "Jungle": "kanavi-msi-2023",
+        "Mid": "tsm-bjergsen-6x-champ",
+        "ADC": "caliste-2026",
+        "Support": "frx-kellin"
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "Jungle": "canyon-mvp-2020",
+        "ADC": "ruler-worlds-mvp",
+        "Support": "keria-worlds-2023",
+        "Mid": "showmaker-prime",
+        "Top": "theshy-legend"
+      }
+    },
+    "economy": {
+      "idi4SYOmc2udMlkSAAAB": 2835,
+      "bot-1": 0,
+      "bot-2": 0,
+      "bot-3": 0,
+      "bot-4": 0,
+      "bot-5": 0,
+      "bot-6": 0,
+      "bot-7": 0,
+      "bot-8": 0,
+      "bot-9": 0,
+      "bot-10": 0,
+      "bot-11": 0,
+      "bot-12": 0,
+      "bot-13": 0,
+      "bot-14": 0,
+      "_0Kbw_55HVTTWpuHAAAC": 1095
+    },
+    "lockedCards": {
+      "idi4SYOmc2udMlkSAAAB": [],
+      "_0Kbw_55HVTTWpuHAAAC": []
+    },
+    "cardStats": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "bro-morgan": 1,
+        "gx-isma": 3,
+        "fnc-vladi": 2,
+        "th-ice": 3,
+        "th-way": 1,
+        "lr-baus": 1,
+        "tl-corejj": 3,
+        "blg-bin": 1,
+        "chovy-geng-2023": 1,
+        "xun-LPL-4x": 1,
+        "edg-scout-champion": 1,
+        "uzi-msi-2018": 1,
+        "Flandre-lpl-champ": 1
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "t1-zeus": 1,
+        "bro-gideon": 1,
+        "GX-jackies": 1,
+        "bro-teddy": 1,
+        "mdk-alvaro": 1,
+        "gen-kiin": 1,
+        "g2-jankos": 1,
+        "GenG-ruler": 1,
+        "blg-on-lpl": 1,
+        "caps-g2-2024": 1,
+        "canyon-mvp-2020": 2,
+        "gumayusi-T1-legend": 2,
+        "delight-hle-2024": 1,
+        "showmaker-prime": 2,
+        "bin-lpl-mvp": 1,
+        "keria-worlds-2023": 1,
+        "theshy-legend": 1
+      }
+    },
+    "globalSecrets": {
+      "golden-road-achieved": true
+    },
+    "pendingPacks": {
+      "idi4SYOmc2udMlkSAAAB": 1,
+      "_0Kbw_55HVTTWpuHAAAC": 1
+    },
+    "pendingPackResults": {},
+    "lastOpenedPack": {
+      "idi4SYOmc2udMlkSAAAB": [],
+      "_0Kbw_55HVTTWpuHAAAC": []
+    },
+    "starterPackClaimed": {
+      "idi4SYOmc2udMlkSAAAB": true,
+      "_0Kbw_55HVTTWpuHAAAC": true
+    },
+    "teamSkins": {
+      "bot-11": {
+        "owned": [
+          "default",
+          "gold-circuit"
+        ],
+        "equipped": "gold-circuit"
+      },
+      "bot-7": {
+        "owned": [
+          "default",
+          "neon-protocol"
+        ],
+        "equipped": "neon-protocol"
+      },
+      "bot-9": {
+        "owned": [
+          "default",
+          "neon-protocol"
+        ],
+        "equipped": "neon-protocol"
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "owned": [
+          "msi-clash",
+          "worlds-sovereign"
+        ],
+        "equipped": "worlds-sovereign"
+      },
+      "bot-6": {
+        "owned": [
+          "default",
+          "gold-circuit"
+        ],
+        "equipped": "gold-circuit"
+      }
+    },
+    "collectionRewardsClaimed": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "LR": {
+          "claimedAt": 1794409837006,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "BLG_25": {
+          "claimedAt": 1794410668219,
+          "amount": 200,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "TH_50": {
+          "claimedAt": 1794410959790,
+          "amount": 50,
+          "percent": 50,
+          "tier": "ACCESSIBLE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "SKT": {
+          "claimedAt": 1794411070771,
+          "amount": 200,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "JDG_25": {
+          "claimedAt": 1794411242198,
+          "amount": 175,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        }
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "NAVI": {
+          "claimedAt": 1794409046341,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "SKT": {
+          "claimedAt": 1794409500803,
+          "amount": 200,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "GEN_25": {
+          "claimedAt": 1794409781863,
+          "amount": 150,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "T1_25": {
+          "claimedAt": 1794409934416,
+          "amount": 250,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "BLG_25": {
+          "claimedAt": 1794409950937,
+          "amount": 200,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "EDG_50": {
+          "claimedAt": 1794410029629,
+          "amount": 350,
+          "percent": 50,
+          "tier": "ELITE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "TES_50": {
+          "claimedAt": 1794410037237,
+          "amount": 200,
+          "percent": 50,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "JDG_25": {
+          "claimedAt": 1794410049086,
+          "amount": 175,
+          "percent": 25,
+          "tier": "MYTHIQUE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "VIT": {
+          "claimedAt": 1794410471144,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "BRO": {
+          "claimedAt": 1794410524094,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "AL": {
+          "claimedAt": 1794410537732,
+          "amount": 400,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "FOX": {
+          "claimedAt": 1794410610777,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "T1_50": {
+          "claimedAt": 1794410624797,
+          "amount": 575,
+          "percent": 50,
+          "tier": "MYTHIQUE",
+          "bonusPack": "elite",
+          "bonusPackName": "Booster Élite"
+        },
+        "BLG_50": {
+          "claimedAt": 1794410632940,
+          "amount": 450,
+          "percent": 50,
+          "tier": "MYTHIQUE",
+          "bonusPack": "elite",
+          "bonusPackName": "Booster Élite"
+        },
+        "TH_50": {
+          "claimedAt": 1794410701097,
+          "amount": 50,
+          "percent": 50,
+          "tier": "ACCESSIBLE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "HLE_50": {
+          "claimedAt": 1794410707197,
+          "amount": 275,
+          "percent": 50,
+          "tier": "ELITE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "FNC_50": {
+          "claimedAt": 1794410713876,
+          "amount": 200,
+          "percent": 50,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "DK_50": {
+          "claimedAt": 1794410728536,
+          "amount": 250,
+          "percent": 50,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": null,
+          "bonusPackName": null
+        },
+        "DRX_50": {
+          "claimedAt": 1794410747849,
+          "amount": 400,
+          "percent": 50,
+          "tier": "ELITE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "KC_50": {
+          "claimedAt": 1794410755949,
+          "amount": 300,
+          "percent": 50,
+          "tier": "ELITE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "LR": {
+          "claimedAt": 1794410783372,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "DNS": {
+          "claimedAt": 1794410844363,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "MKOI": {
+          "claimedAt": 1794410859674,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "RGE": {
+          "claimedAt": 1794410864937,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "JDG_50": {
+          "claimedAt": 1794410876177,
+          "amount": 400,
+          "percent": 50,
+          "tier": "MYTHIQUE",
+          "bonusPack": "elite",
+          "bonusPackName": "Booster Élite"
+        },
+        "SEN": {
+          "claimedAt": 1794410881313,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "HLE": {
+          "claimedAt": 1794411039460,
+          "amount": 1400,
+          "percent": 100,
+          "tier": "ELITE",
+          "bonusPack": "elite",
+          "bonusPackName": "Booster Élite"
+        },
+        "IG": {
+          "claimedAt": 1794411049650,
+          "amount": 1150,
+          "percent": 100,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "NS": {
+          "claimedAt": 1794411057473,
+          "amount": 150,
+          "percent": 100,
+          "tier": "ACCESSIBLE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "DK": {
+          "claimedAt": 1794411229195,
+          "amount": 1200,
+          "percent": 100,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        },
+        "SSG": {
+          "claimedAt": 1794411235308,
+          "amount": 1250,
+          "percent": 100,
+          "tier": "INTERMEDIAIRE",
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard"
+        }
+      }
+    },
+    "collectionMilestonesClaimed": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "brand_deezer": {
+          "claimedAt": 1794409867352,
+          "amount": 250,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Harmonie des Ligues"
+        },
+        "teams_1": {
+          "claimedAt": 1794409869648,
+          "amount": 150,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Première Franchise"
+        },
+        "cards_20": {
+          "claimedAt": 1794409874354,
+          "amount": 150,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Première Ébauche"
+        },
+        "brand_mercedes": {
+          "claimedAt": 1794410092017,
+          "amount": 800,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "L'Étoile au Sommet"
+        },
+        "brand_ferrari": {
+          "claimedAt": 1794410626803,
+          "amount": 1200,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Scuderia Royale"
+        },
+        "brand_kia": {
+          "claimedAt": 1794410636216,
+          "amount": 500,
+          "bonusPack": "lec_pack",
+          "bonusPackName": "Booster LEC",
+          "title": "Movement That Inspires"
+        },
+        "brand_secretlab": {
+          "claimedAt": 1794410641646,
+          "amount": 400,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Trône de Champion"
+        },
+        "rarity_legendary_5": {
+          "claimedAt": 1794410647304,
+          "amount": 350,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Parterre d'Étoiles"
+        },
+        "brand_razer": {
+          "claimedAt": 1794411082992,
+          "amount": 500,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "For Gamers by Gamers"
+        },
+        "brand_intel": {
+          "claimedAt": 1794411086429,
+          "amount": 300,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Architecture i9 Extreme"
+        },
+        "rarity_wanted_1": {
+          "claimedAt": 1794411091927,
+          "amount": 400,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "L'Élu des Dieux"
+        },
+        "brand_nike": {
+          "claimedAt": 1794411167333,
+          "amount": 500,
+          "bonusPack": "lpl_pack",
+          "bonusPackName": "Booster LPL",
+          "title": "Just Do It"
+        },
+        "cards_50": {
+          "claimedAt": 1794411255889,
+          "amount": 300,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Collectionneur Averti"
+        }
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "cards_20": {
+          "claimedAt": 1794408774023,
+          "amount": 150,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Première Ébauche"
+        },
+        "teams_1": {
+          "claimedAt": 1794409052445,
+          "amount": 150,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Première Franchise"
+        },
+        "brand_deezer": {
+          "claimedAt": 1794409204042,
+          "amount": 250,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Harmonie des Ligues"
+        },
+        "brand_kia": {
+          "claimedAt": 1794409217315,
+          "amount": 500,
+          "bonusPack": "lec_pack",
+          "bonusPackName": "Booster LEC",
+          "title": "Movement That Inspires"
+        },
+        "brand_mercedes": {
+          "claimedAt": 1794409433672,
+          "amount": 800,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "L'Étoile au Sommet"
+        },
+        "rarity_wanted_1": {
+          "claimedAt": 1794409438646,
+          "amount": 400,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "L'Élu des Dieux"
+        },
+        "brand_secretlab": {
+          "claimedAt": 1794409507853,
+          "amount": 400,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Trône de Champion"
+        },
+        "brand_razer": {
+          "claimedAt": 1794409509852,
+          "amount": 500,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "For Gamers by Gamers"
+        },
+        "brand_intel": {
+          "claimedAt": 1794409510741,
+          "amount": 300,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Architecture i9 Extreme"
+        },
+        "cards_50": {
+          "claimedAt": 1794409821273,
+          "amount": 300,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Collectionneur Averti"
+        },
+        "brand_ferrari": {
+          "claimedAt": 1794409860730,
+          "amount": 1200,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Scuderia Royale"
+        },
+        "rarity_wanted_3": {
+          "claimedAt": 1794409889917,
+          "amount": 900,
+          "bonusPack": "all_stars",
+          "bonusPackName": "Pack All-Stars",
+          "title": "Dynastie Divine"
+        },
+        "brand_nike": {
+          "claimedAt": 1794409970146,
+          "amount": 500,
+          "bonusPack": "lpl_pack",
+          "bonusPackName": "Booster LPL",
+          "title": "Just Do It"
+        },
+        "brand_redbull": {
+          "claimedAt": 1794409971616,
+          "amount": 600,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Donne des Ailes"
+        },
+        "rarity_legendary_5": {
+          "claimedAt": 1794409974305,
+          "amount": 350,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Parterre d'Étoiles"
+        },
+        "teams_3": {
+          "claimedAt": 1794410478246,
+          "amount": 350,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Trilogie Compétitive"
+        },
+        "brand_mastercard": {
+          "claimedAt": 1794410544603,
+          "amount": 800,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Moments Inestimables"
+        },
+        "teams_5": {
+          "claimedAt": 1794410549215,
+          "amount": 600,
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard",
+          "title": "Légende des Cinq"
+        },
+        "league_lck_75_5": {
+          "claimedAt": 1794410648076,
+          "amount": 600,
+          "bonusPack": "lck_pack",
+          "bonusPackName": "Booster LCK",
+          "title": "L'Élite de Séoul"
+        },
+        "cards_100": {
+          "claimedAt": 1794410763288,
+          "amount": 500,
+          "bonusPack": "standard",
+          "bonusPackName": "Booster Standard",
+          "title": "Centurion de l'Album"
+        },
+        "teams_8": {
+          "claimedAt": 1794410891970,
+          "amount": 1000,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Major Franchise Club"
+        },
+        "league_lec_teams_4": {
+          "claimedAt": 1794410895686,
+          "amount": 600,
+          "bonusPack": "lec_pack",
+          "bonusPackName": "Booster LEC",
+          "title": "Quatuor du LEC"
+        },
+        "league_lec_half": {
+          "claimedAt": 1794410897268,
+          "amount": 850,
+          "bonusPack": "lec_pack",
+          "bonusPackName": "Booster LEC",
+          "title": "La Moitié du LEC"
+        },
+        "league_lck_teams_4": {
+          "claimedAt": 1794410898495,
+          "amount": 850,
+          "bonusPack": "lck_pack",
+          "bonusPackName": "Booster LCK",
+          "title": "Dynasties LCK"
+        },
+        "teams_12": {
+          "claimedAt": 1794411089888,
+          "amount": 1500,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Magnat de l'Esport"
+        },
+        "league_lck_half": {
+          "claimedAt": 1794411094641,
+          "amount": 1300,
+          "bonusPack": "wanted",
+          "bonusPackName": "Booster WANTED",
+          "title": "Maîtres de Corée"
+        },
+        "teams_16": {
+          "claimedAt": 1794411264934,
+          "amount": 2000,
+          "bonusPack": null,
+          "bonusPackName": null,
+          "title": "Empire Mondial"
+        }
+      }
+    },
+    "collectionAlbum": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "kc-yike": true,
+        "xun-LPL-4x": true,
+        "faker-t1-2022": true,
+        "chovy-geng-2023": true,
+        "Flandre-lpl-champ": true,
+        "ruler-msi-2023": true,
+        "blg-bin": true,
+        "fnc-vladi": true,
+        "drx-jiwoo": true,
+        "th-ice": true,
+        "th-daglas": true,
+        "th-way": true,
+        "gx-isma": true,
+        "DNS_clozer": true,
+        "bro-morgan": true,
+        "BRO-roamer": true,
+        "navi_poby": true,
+        "frx-raptor": true,
+        "shifters-nuc": true,
+        "tl-corejj": true,
+        "lr-baus": true,
+        "chovy-msi-2024": true,
+        "g2-wunder-2019": true,
+        "meiko-EDG-Legend": true,
+        "edg-scout-champion": true,
+        "sk-jopa": true,
+        "uzi-msi-2018": true,
+        "kt-effort": true,
+        "knight-lpl-legend": true,
+        "caps-msi-mvp": true,
+        "bin-FirstStand-2026": true,
+        "elk-lpl-mvp": true,
+        "oner-lck": true,
+        "th-tracyn": true,
+        "g2-jankos": true,
+        "drx-pyosik-world-champion": true,
+        "keria-worlds-2023": true,
+        "kc-canna": true,
+        "kc-kyeahoo-2026": true,
+        "zeka-FST-mvp": true,
+        "tian-lpl-champ": true,
+        "showmaker-DK-mentor": true,
+        "showmaker-ewc-2020": true,
+        "showmaker-prime": true,
+        "peanut-lck-mvp": true,
+        "peyz-finals-mvp": true,
+        "rookie-ig": true,
+        "xun-3x-MSI-finalist": true,
+        "blg-xun": true,
+        "jdg-kanavi": true,
+        "JDG-2026-vampire": true
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "szygenda": true,
+        "sk-serin": true,
+        "bro-gideon": true,
+        "bro-teddy": true,
+        "dns-dudu": true,
+        "GX-jackies": true,
+        "vit-hylissang": true,
+        "mdk-alvaro": true,
+        "painter-t1-2026-sub": true,
+        "chovy-geng-2023": true,
+        "GenG-ruler": true,
+        "gx-isma": true,
+        "g2-jankos": true,
+        "frx-raptor": true,
+        "frx-kellin": true,
+        "sen-impact": true,
+        "th-stend": true,
+        "kt-effort": true,
+        "ns-sponge": true,
+        "NAVI-maynter": true,
+        "bro-morgan": true,
+        "navi_poby": true,
+        "NAVI-adam": true,
+        "gen-kiin": true,
+        "t1-keria": true,
+        "t1-zeus": true,
+        "rookie-ig": true,
+        "kc-kyeahoo-2026": true,
+        "VIT_Naak-Nako": true,
+        "caps-g2-2024": true,
+        "kc-targamas": true,
+        "blg-on-lpl": true,
+        "meiko-tes": true,
+        "DKC-sharvel": true,
+        "shft-rooster": true,
+        "blg-knight-finals-mvp": true,
+        "369-lpl-champion": true,
+        "ruler-msi-2023": true,
+        "showmaker-prime": true,
+        "bin-lpl-mvp": true,
+        "Flandre-lpl-champ": true,
+        "oner-lck": true,
+        "peanut-lck-mvp": true,
+        "DNS-deokdam": true,
+        "canyon-ewc": true,
+        "sk-jopa": true,
+        "th-daglas": true,
+        "ROX-PraY-worlds": true,
+        "edg_zdz": true,
+        "fnc-humanoid-champion": true,
+        "zeus-mvp-msi": true,
+        "fpx-tian-finals-mvp": true,
+        "dwg-canyon-champion": true,
+        "canyon-mvp-2020": true,
+        "bdd-lck-mvp": true,
+        "rookie-IG_2019": true,
+        "dwg-beryl-world-champion": true,
+        "keria-worlds-2023": true,
+        "gumayusi-T1-legend": true,
+        "fnc-rekkles-legend": true,
+        "delight-hle-2024": true,
+        "xun-LPL-4x": true,
+        "meiko-edg-msi": true,
+        "meiko-EDG-Legend": true,
+        "tes-tian": true,
+        "xun-3x-MSI-finalist": true,
+        "kanavi-lpl-mvp": true,
+        "kanavi-msi-2023": true,
+        "vit-lyncas": true,
+        "edg-viper-world-champion": true,
+        "tes-369": true,
+        "BRO-roamer": true,
+        "sk-wunder": true,
+        "theshy-legend": true,
+        "DNS_clozer": true,
+        "Hope-lpl-champ": true,
+        "knight-lpl-legend": true,
+        "FEARX-vicla": true,
+        "blg-xun": true,
+        "bin-FirstStand-2026": true,
+        "elk-lpl-mvp": true,
+        "keria-lck-mvp": true,
+        "faker-t1-2022": true,
+        "gumayusi-t1-2022": true,
+        "uzi-msi-2018": true,
+        "zeus-mvp-2023": true,
+        "zeus-lck": true,
+        "ns-lehends": true,
+        "lehends-lck-2x": true,
+        "th-flakked": true,
+        "th-sheo": true,
+        "doran-lck-champ": true,
+        "hle-zeus": true,
+        "hle-viper": true,
+        "hle-peanut": true,
+        "fnc-oscarinin": true,
+        "fnc-empyros": true,
+        "nisqy-c9": true,
+        "C9-blaber": true,
+        "dk_career_ewc": true,
+        "showmaker-dk-2024": true,
+        "g2-wunder-2019": true,
+        "caliste-2026": true,
+        "drx-deft-last-dance": true,
+        "drx-pyosik-world-champion": true,
+        "drx-jiwoo": true,
+        "kc-canna-champion": true,
+        "kc-canna": true,
+        "ssg-ambition-world-champion": true,
+        "ruler-worlds-mvp": true,
+        "lr-baus": true,
+        "hle-delight": true,
+        "dns-peter": true,
+        "caliste-prodige": true,
+        "kc-upset": true,
+        "fnc-razork": true,
+        "mkoi-myrwn": true,
+        "larssen-RGE": true,
+        "geng-duro": true,
+        "kanavi-lpl-WANTED": true,
+        "sen-rahel": true,
+        "zeka-FST-mvp": true,
+        "caliste-kcorp-2024": true,
+        "ig-jackeylove-world-champion": true,
+        "edg-scout-champion": true,
+        "nongshim-scout": true,
+        "t1-doran-world_champion": true,
+        "T1-peyz": true,
+        "fnc-huni-18-0": true,
+        "drx-zeka-world-champion": true,
+        "DRX_ucal": true,
+        "blg-bin": true,
+        "blg-elk": true,
+        "missing-msi-2023": true,
+        "showmaker-DK-mentor": true,
+        "showmaker-ewc-2020": true,
+        "dk_career": true,
+        "ssg-crown-world-champion": true,
+        "ruler-ssg": true
+      }
+    },
+    "tradeUpBank": {
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "Commune": 106,
+        "Rare": 7,
+        "Épique": 0,
+        "Légendaire": 0
+      },
+      "idi4SYOmc2udMlkSAAAB": {
+        "Commune": 3,
+        "Rare": 0,
+        "Épique": 0,
+        "Légendaire": 0
+      }
+    },
+    "sponsorOfferings": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "contractIds": [
+          "intel_test",
+          "intel_overclock",
+          "ferrari_scuderia"
+        ],
+        "refreshAtEvent": 6
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "contractIds": [
+          "intel_test",
+          "intel_overclock",
+          "ferrari_scuderia"
+        ],
+        "refreshAtEvent": 6
+      }
+    },
+    "bonusPacks": {
+      "idi4SYOmc2udMlkSAAAB": {},
+      "_0Kbw_55HVTTWpuHAAAC": {}
+    },
+    "activeContracts": {},
+    "completedContracts": {},
+    "customCards": [],
+    "createdCardsThisGame": [],
+    "lastZeusBonuses": {
+      "bot-7": {
+        "bonus": 85,
+        "total": 510
+      }
+    },
+    "seasonRound": 5,
+    "continueSeasonVotes": [],
+    "year": 2,
+    "eventIndex": 0,
+    "history": [
+      {
+        "year": 1,
+        "eventId": "first_stand",
+        "winnerName": "Bilibili 2026 CHAMPIONS"
+      },
+      {
+        "year": 1,
+        "eventId": "msi",
+        "winnerName": "Bilibili 2026 CHAMPIONS"
+      },
+      {
+        "year": 1,
+        "eventId": "ewc",
+        "winnerName": "Bilibili 2026 CHAMPIONS"
+      },
+      {
+        "year": 1,
+        "eventId": "worlds",
+        "winnerName": "Bilibili 2026 CHAMPIONS"
+      }
+    ],
+    "seasonScores": {
+      "idi4SYOmc2udMlkSAAAB": {
+        "points": 1,
+        "titles": 0
+      },
+      "bot-1": {
+        "points": 5,
+        "titles": 0
+      },
+      "bot-2": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-3": {
+        "points": 4,
+        "titles": 0
+      },
+      "bot-4": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-5": {
+        "points": 1,
+        "titles": 0
+      },
+      "bot-6": {
+        "points": 7,
+        "titles": 0
+      },
+      "bot-7": {
+        "points": 8,
+        "titles": 0
+      },
+      "bot-8": {
+        "points": 5,
+        "titles": 0
+      },
+      "bot-9": {
+        "points": 5,
+        "titles": 0
+      },
+      "bot-10": {
+        "points": 0,
+        "titles": 0
+      },
+      "bot-11": {
+        "points": 6,
+        "titles": 0
+      },
+      "bot-12": {
+        "points": 1,
+        "titles": 0
+      },
+      "bot-13": {
+        "points": 2,
+        "titles": 0
+      },
+      "bot-14": {
+        "points": 3,
+        "titles": 0
+      },
+      "_0Kbw_55HVTTWpuHAAAC": {
+        "points": 23,
+        "titles": 4
+      }
+    },
+    "recentPlacements": {
+      "idi4SYOmc2udMlkSAAAB": [
+        "TOP8",
+        "N/A",
+        "N/A",
+        "N/A"
+      ],
+      "bot-1": [
+        "N/A",
+        "TOP4",
+        "TOP8",
+        "TOP8"
+      ],
+      "bot-2": [
+        "N/A",
+        "N/A",
+        "N/A",
+        "N/A"
+      ],
+      "bot-3": [
+        "N/A",
+        "N/A",
+        "N/A",
+        "TOP4"
+      ],
+      "bot-4": [
+        "N/A",
+        "N/A",
+        "TOP8",
+        "N/A"
+      ],
+      "bot-5": [
+        "TOP8",
+        "N/A",
+        "N/A",
+        "N/A"
+      ],
+      "bot-6": [
+        "N/A",
+        "N/A",
+        "N/A",
+        "TOP2"
+      ],
+      "bot-7": [
+        "TOP4",
+        "TOP2",
+        "N/A",
+        "TOP8"
+      ],
+      "bot-8": [
+        "TOP4",
+        "TOP8",
+        "TOP8",
+        "TOP8"
+      ],
+      "bot-9": [
+        "N/A",
+        "TOP8",
+        "TOP2",
+        "TOP4"
+      ],
+      "bot-10": [
+        "N/A",
+        "N/A",
+        "N/A",
+        "N/A"
+      ],
+      "bot-11": [
+        "TOP2",
+        "TOP8",
+        "TOP4",
+        "TOP8"
+      ],
+      "bot-12": [
+        "TOP8",
+        "N/A",
+        "N/A",
+        "N/A"
+      ],
+      "bot-13": [
+        "TOP8",
+        "TOP8",
+        "TOP8",
+        "N/A"
+      ],
+      "bot-14": [
+        "N/A",
+        "TOP4",
+        "TOP4",
+        "N/A"
+      ],
+      "_0Kbw_55HVTTWpuHAAAC": [
+        "TOP1",
+        "TOP1",
+        "TOP1",
+        "TOP1"
+      ]
+    },
+    "endOfYearRecap": null,
+    "awaitingResumeDecision": false
+  },
+  "playerSessions": [
+    {
+      "token": "6e8b0e18-2db2-4d54-be16-a353cc3ed74e",
+      "playerId": "_0Kbw_55HVTTWpuHAAAC"
+    },
+    {
+      "token": "a2b0b8f6-2640-46ec-a407-bf5a822bf209",
+      "playerId": "idi4SYOmc2udMlkSAAAB"
+    }
+  ]
+}

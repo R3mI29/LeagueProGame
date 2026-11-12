@@ -5,7 +5,10 @@ import { state, resetGameState } from '../state/gameState.js';
 import { registerSocketHandlers } from './socketHandlers.js';
 import { compareCardsForPack } from '../config/constants.js';
 import { DUPLICATE_SALVAGE } from '../../src/constants/packConfig.js';
-import { CARD_POOL } from '../../src/constants/cardPlayers.js';
+import { CARD_POOL, getCardTeamTags, getCardTeamDisplay, registerCardInPool, unregisterCardFromPool } from '../../src/constants/cardPlayers.js';
+import { getTeamInfo } from '../../src/constants/teams.js';
+import { computeSynergy } from '../../src/constants/synergy.js';
+import { getTeamCollectionCards } from '../../src/constants/collectionConfig.js';
 
 function createMockSocket(id = 'socket-1') {
   const handlers = {};
@@ -266,31 +269,30 @@ test('cardHandlers claim-collection-reward awards credits, enters album permanen
   state.economy = { p1: 100 };
   state.collectionRewardsClaimed = { p1: {} };
 
-  // Los Ratones only has 1 card: lr-baus
-  state.cardCollections.p1['lr-baus'] = 'LIFETIME';
-
   const enterHandler = socket.handlers['enter-card-collection'];
   const claimHandler = socket.handlers['claim-collection-reward'];
   assert.ok(typeof enterHandler === 'function', 'enter handler exists');
   assert.ok(typeof claimHandler === 'function', 'claim handler exists');
 
-  // 1. Trying to claim before entering into album should fail
+  // 1. Trying to claim before owning LR cards fails
   claimHandler('LR');
   let errorEvent = socket.emitted.find(e => e.event === 'collection-reward-error');
-  assert.ok(errorEvent, 'Must require entering card into album first');
+  assert.ok(errorEvent, 'Must require owning all cards of the team first');
   assert.equal(state.economy.p1, 100);
 
-  // 2. Enter card into album
+  // 2. Give lr-baus to player (e.g. 5 contracts) and enter into album
+  state.cardCollections.p1['lr-baus'] = 5;
   enterHandler('lr-baus');
   assert.equal(state.collectionAlbum.p1['lr-baus'], true);
-  // Card still remains in playable roster!
-  assert.equal(state.cardCollections.p1['lr-baus'], 'LIFETIME');
+  // Zero contracts deducted!
+  assert.equal(state.cardCollections.p1['lr-baus'], 5, 'Contract years are never deducted');
 
-  // 3. Claim LR reward
+  // 3. Claim LR 100% completion reward
   claimHandler('LR');
-  assert.equal(state.economy.p1, 200); // 100 + 100
+  // LR is 1 card, difficulty reward is 75 $
+  assert.equal(state.economy.p1, 175); // 100 + 75
   assert.ok(state.collectionRewardsClaimed.p1.LR);
-  assert.equal(state.collectionRewardsClaimed.p1.LR.amount, 100);
+  assert.equal(state.collectionRewardsClaimed.p1.LR.amount, 75);
 
   // 4. If card is sold or contract expires, it stays in the album permanently!
   delete state.cardCollections.p1['lr-baus'];
@@ -300,7 +302,7 @@ test('cardHandlers claim-collection-reward awards credits, enters album permanen
   claimHandler('LR');
   const duplicateError = socket.emitted.filter(e => e.event === 'collection-reward-error').pop();
   assert.ok(duplicateError, 'Should emit collection-reward-error on duplicate claim');
-  assert.equal(state.economy.p1, 200); // no change
+  assert.equal(state.economy.p1, 175); // no change
 });
 
 test('cardHandlers trade-up burns contracts and awards higher rarity card', () => {
@@ -384,7 +386,7 @@ test('cardHandlers album_insert_legendary completes when 2 legendary cards enter
   state.economy['p1'] = 0;
   state.cardCollections['p1'] = {
     't1-doran-world_champion': 'LIFETIME', // Légendaire
-    'xun-worlds-finalist': 'LIFETIME',     // Légendaire
+    'xun-LPL-4x': 'LIFETIME',              // Légendaire
   };
   state.collectionAlbum['p1'] = {};
 
@@ -396,7 +398,7 @@ test('cardHandlers album_insert_legendary completes when 2 legendary cards enter
   assert.ok(state.activeContracts['p1'], 'Contract should still be active with 1 legendary');
 
   // Insert 2nd legendary card
-  socket.handlers['enter-card-collection']('xun-worlds-finalist');
+  socket.handlers['enter-card-collection']('xun-LPL-4x');
   assert.equal(state.activeContracts['p1'], undefined, 'Contract should be completed');
   assert.equal(state.economy['p1'], 850, 'Reward credits awarded');
   assert.equal(state.bonusPacks['p1']['skin_pack'], 1, 'Skin booster pack awarded');
@@ -480,3 +482,118 @@ test('cardHandlers deposit-trade-up banks cards into gauge even if bar is not fi
   assert.equal(state.cardCollections['p1']['t1-doran'], 2);
   assert.equal(state.tradeUpBank['p1']['Rare'], 4);
 });
+
+test('multi-team card support: getCardTeamTags, display, synergy, and collection albums', () => {
+  // 1. Tag extraction
+  assert.deepEqual(getCardTeamTags({ teamTags: ['BLG', 'JDG'] }), ['BLG', 'JDG']);
+  assert.deepEqual(getCardTeamTags({ teamTag: ['BLG', 'JDG'] }), ['BLG', 'JDG']);
+  assert.deepEqual(getCardTeamTags({ teamTag: 'BLG & JDG' }), ['BLG', 'JDG']);
+  assert.deepEqual(getCardTeamTags({ teamTag: 'BLG, JDG' }), ['BLG', 'JDG']);
+  assert.deepEqual(getCardTeamTags({ teamTag: 'BLG / JDG' }), ['BLG', 'JDG']);
+  assert.deepEqual(getCardTeamTags({ teamTag: 'T1' }), ['T1']);
+  assert.deepEqual(getCardTeamTags(null), []);
+
+  // 2. Display format
+  assert.equal(getCardTeamDisplay({ teamTags: ['BLG', 'JDG'] }), 'BLG & JDG');
+  assert.equal(getCardTeamDisplay({ teamTag: 'T1' }), 'T1');
+
+  // 3. getTeamInfo
+  const blgInfo = getTeamInfo('BLG');
+  assert.equal(blgInfo.tag, 'BLG');
+  assert.ok(blgInfo.logo.includes('bilibili'));
+
+  // 4. Synergy with multi-team player
+  const mockCard = {
+    id: 'test-multi-player',
+    baseName: 'MultiPlayer',
+    role: 'Mid',
+    league: 'LPL',
+    teamTags: ['BLG', 'JDG'],
+    rarity: 'Légendaire',
+    rating: 90
+  };
+  registerCardInPool(mockCard);
+
+  try {
+    // When paired with BLG player (e.g. blg-xun), should trigger BLG synergy
+    const blgPair = computeSynergy(['test-multi-player', 'blg-xun']);
+    assert.equal(blgPair.team.key, 'BLG');
+    assert.equal(blgPair.team.count, 2);
+
+    // When paired with JDG player (e.g. jdg-kanavi), should trigger JDG synergy
+    const jdgPair = computeSynergy(['test-multi-player', 'jdg-kanavi']);
+    assert.equal(jdgPair.team.key, 'JDG');
+    assert.equal(jdgPair.team.count, 2);
+
+    // 5. Included in both collection albums
+    const blgCards = getTeamCollectionCards('BLG');
+    const jdgCards = getTeamCollectionCards('JDG');
+    assert.ok(blgCards.some(c => c.id === 'test-multi-player'));
+    assert.ok(jdgCards.some(c => c.id === 'test-multi-player'));
+  } finally {
+    unregisterCardFromPool('test-multi-player');
+  }
+});
+
+test('collection team completion: full completion reward based on difficulty without intermediate or global milestones', () => {
+  // 1. Rogue logo resolution
+  const rogueInfo = getTeamInfo('RGE');
+  assert.equal(rogueInfo.name, 'Rogue');
+  assert.equal(rogueInfo.tag, 'RGE');
+  assert.equal(rogueInfo.logo, '/equipes/rogue.webp');
+
+  resetGameState();
+  const io = createMockIo();
+  const socket = createMockSocket('p1');
+  registerSocketHandlers(io, socket);
+
+  state.phase = 'cards';
+  state.participants = [{ id: 'p1', name: 'Tester' }];
+  state.cardCollections = { p1: {} };
+  state.collectionAlbum = { p1: {} };
+  state.economy = { p1: 100 };
+  state.bonusPacks = { p1: {} };
+  state.collectionRewardsClaimed = { p1: {} };
+  state.collectionMilestonesClaimed = { p1: {} };
+
+  // 2. Intermediate milestones are not allowed
+  socket.handlers['claim-collection-reward']({ teamTag: 'GEN', percent: 50 });
+  let rewardError = socket.emitted.filter(e => e.event === 'collection-reward-error').pop();
+  assert.ok(rewardError, 'Only 100% completion can be claimed');
+
+  // 3. Complete Gen.G team
+  const genCards = getTeamCollectionCards('GEN');
+  assert.ok(genCards.length >= 10, 'Gen.G should be a large team with >= 10 cards');
+
+  // Partial team cannot claim
+  for (let i = 0; i < Math.floor(genCards.length / 2); i++) {
+    state.collectionAlbum.p1[genCards[i].id] = true;
+  }
+  socket.handlers['claim-collection-reward']({ teamTag: 'GEN', percent: 100 });
+  let partialError = socket.emitted.filter(e => e.event === 'collection-reward-error').pop();
+  assert.ok(partialError, 'Cannot claim 100% when only partially owned');
+
+  // Fill up entire team
+  genCards.forEach(c => {
+    state.collectionAlbum.p1[c.id] = true;
+  });
+
+  const prevEconomy = state.economy.p1;
+  socket.handlers['claim-collection-reward']({ teamTag: 'GEN', percent: 100 });
+  assert.ok(state.economy.p1 > prevEconomy, 'Credits awarded for 100% team completion');
+  // Reward is balanced (<= 1200 $ max)
+  assert.ok(state.economy.p1 - prevEconomy <= 1200, 'Team completion reward is balanced to protect economy');
+  assert.ok(state.collectionRewardsClaimed.p1['GEN'], 'Recorded in collectionRewardsClaimed under teamTag');
+
+  // Duplicate claim fails
+  socket.handlers['claim-collection-reward']({ teamTag: 'GEN', percent: 100 });
+  const doubleClaimError = socket.emitted.filter(e => e.event === 'collection-reward-error').pop();
+  assert.ok(doubleClaimError, 'Duplicate claim rejected');
+
+  // 4. Milestone claiming gives error as missions are removed
+  socket.handlers['claim-collection-milestone']('cards_20');
+  const milestoneRemovedError = socket.emitted.filter(e => e.event === 'collection-milestone-error').pop();
+  assert.ok(milestoneRemovedError, 'Milestones are removed');
+});
+
+

@@ -109,6 +109,25 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
           </div>
         </div>
 
+        {/* BANNIÈRE BONUS ZEUS */}
+        {state.lastZeusBonuses?.[myId]?.bonus > 0 && (
+          <div className="mb-6 p-4 rounded-xl border border-amber-500/50 bg-gradient-to-r from-amber-500/15 via-amber-950/30 to-[#0F121C] flex items-center justify-between shadow-xl">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shrink-0">
+                ⚡
+              </div>
+              <div>
+                <p className="font-bold text-amber-300 text-sm tracking-wide uppercase font-rajdhani">
+                  Bonus Zeus (Worlds Finals MVP) actif : +20% Gold !
+                </p>
+                <p className="text-xs text-amber-100/80">
+                  Zeus a disputé le tournoi dans votre alignement : vos gains de tournoi ont été augmentés de <span className="font-bold text-amber-300">+{state.lastZeusBonuses[myId].bonus} $</span> (Gain total crédité : <span className="font-bold text-white">{state.lastZeusBonuses[myId].total} $</span>).
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* CONTENU DYNAMIQUE DES ONGLETS */}
         {activeTab === 'roster' && (
           <RosterTab 
@@ -158,6 +177,8 @@ export default function CardsView({ state, setLineupCard, toggleLineupReady }) {
 
         {activeTab === 'halloffame' && (
           <HallOfFameTab 
+            state={state}
+            myId={myId}
             sortedLeaderboard={sortedLeaderboard} 
             seasonScores={state.seasonScores} 
             history={state.history} 

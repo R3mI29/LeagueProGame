@@ -29,12 +29,27 @@ export function simulateGame(match, state) {
     const resultsArray = Array.isArray(results) ? results : [results];
 
     for (const result of resultsArray) {
-      if (result.persistentBO) {
-        if (result.side === 'A') match.boBuffA = (match.boBuffA || 0) + result.ratingDelta;
-        else match.boBuffB = (match.boBuffB || 0) + result.ratingDelta;
+      // Bouclier de Smeb (Captain of the Tigers) : annule les malus infligés par l'adversaire
+      if (result.ratingDelta < 0) {
+        if ((result.side === 'A' && match.smebShieldA) || (result.side === 'B' && match.smebShieldB)) {
+          triggeredEvents.push({ 
+            label: "🛡️ BOUCLIER DU CAPITAINE : Le malus adverse est repoussé par le leadership de Smeb !",
+            side: result.side,
+            ratingDelta: 0,
+            image: '/cardsImg/custom/smeb_legend.jpg'
+          });
+          continue;
+        }
       }
+
       const multiplier = result.targetRoles ? result.targetRoles.length : 5;
       const trueImpact = (result.ratingDelta * multiplier) / 5;
+
+      if (result.persistentBO) {
+        if (result.side === 'A') match.boBuffA = (match.boBuffA || 0) + trueImpact;
+        else match.boBuffB = (match.boBuffB || 0) + trueImpact;
+      }
+
       if (result.side === 'A') ratingA += trueImpact;
       else ratingB += trueImpact;
       

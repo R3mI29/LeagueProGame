@@ -1,4 +1,5 @@
 import { openSkinPack, getOrRefreshSponsorOfferings } from '../../src/constants/sponsorContracts.js';
+import { getCardTeamTags } from '../../src/constants/cardPlayers.js';
 import { state } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
@@ -162,7 +163,7 @@ export function startCurrentEvent(io) {
     state.tournamentPhase = 'groups';
     state.groups = [];
 
-    const seeded = seedTeams(state.participants, state.seasonScores);
+    const seeded = seedTeams(state.participants, state.seasonScores, state.recentPlacements, state);
     const pot1 = shuffleArray(seeded.slice(0, 4));
     const pot2 = shuffleArray(seeded.slice(4, 8));
     const pot3 = shuffleArray(seeded.slice(8, 12));
@@ -197,9 +198,20 @@ export function startCurrentEvent(io) {
     const r3 = [...Array(3).fill(null).map((_, i) => createMatch(`sw4-w${i+1}`, '2-1')), ...Array(3).fill(null).map((_, i) => createMatch(`sw4-l${i+1}`, '1-2'))];
     const r4 = Array(3).fill(null).map((_, i) => createMatch(`sw5-m${i+1}`, '2-2'));
 
-    const shuffled = shuffleArray(state.participants);
-    for (let i = 0; i < 8; i++) {
-      r0[i].teamA = shuffled[i*2]; r0[i].teamB = shuffled[i*2+1];
+    const seeded = seedTeams(state.participants, state.seasonScores, state.recentPlacements, state);
+    const pot1 = shuffleArray(seeded.slice(0, 4));
+    const pot2 = shuffleArray(seeded.slice(4, 8));
+    const pot3 = shuffleArray(seeded.slice(8, 12));
+    const pot4 = shuffleArray(seeded.slice(12, 16));
+
+    // Tirage protégé par Power Ranking : Pot 1 affronte Pot 4, Pot 2 affronte Pot 3
+    for (let i = 0; i < 4; i++) {
+      r0[i].teamA = pot1[i];
+      r0[i].teamB = pot4[i];
+    }
+    for (let i = 0; i < 4; i++) {
+      r0[i + 4].teamA = pot2[i];
+      r0[i + 4].teamB = pot3[i];
     }
     state.bracket = [r0, r1, r2, r3, r4];
   }
@@ -210,7 +222,7 @@ export function startCurrentEvent(io) {
     });
     const r0 = [], r1 = [], r2 = [], r3 = [], r4 = [], r5 = [], r6 = [], r7 = [];
 
-    const seededTeams = seedTeams(state.participants, state.seasonScores);
+    const seededTeams = seedTeams(state.participants, state.seasonScores, state.recentPlacements, state);
     for (let i = 0; i < 8; i++) {
       r0.push(createMatch(`ub1-${i+1}`, seededTeams[i], seededTeams[15 - i], `ub2-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB', `lb1-${Math.floor(i/2)+1}`, i%2===0 ? 'teamA' : 'teamB'));
     }
@@ -284,9 +296,9 @@ export function awardSeasonRewards() {
           const targetTag = skin.requiredTeamTag.toUpperCase();
           const count = champion.roster.filter(p => {
             if (!p) return false;
-            const pTag = (p.teamTag || '').toUpperCase();
-            if (pTag === targetTag) return true;
-            if (targetTag === 'T1' && (pTag === 'SKT' || pTag === 'T1')) return true;
+            const pTags = getCardTeamTags(p).map(t => t.toUpperCase());
+            if (pTags.includes(targetTag)) return true;
+            if (targetTag === 'T1' && (pTags.includes('SKT') || pTags.includes('T1'))) return true;
             if (p.id && p.id.toUpperCase().startsWith(targetTag + '_')) return true;
             if (p.id && p.id.toUpperCase().startsWith(targetTag + '-')) return true;
             return false;
@@ -339,6 +351,18 @@ export function awardSeasonRewards() {
     moneyEarned += (catchupBonuses[p.id] || 0);
     state.seasonScores[p.id].points += pointsEarned;
 
+    // Effet Zeus (Worlds Finals MVP) : Si sa carte est jouée pendant le tournoi, gains en gold +20%
+    const hasZeus = p.roster?.some(player => player?.id === 'zeus-mvp-2023' || (player?.baseName === 'Zeus' && player?.rarity === 'WANTED'))
+      || Object.values(state.activeLineups?.[p.id] || {}).some(cardId => cardId === 'zeus-mvp-2023');
+
+    let zeusBonus = 0;
+    if (hasZeus && moneyEarned > 0) {
+      zeusBonus = Math.round(moneyEarned * 0.20);
+      moneyEarned += zeusBonus;
+      if (!state.lastZeusBonuses) state.lastZeusBonuses = {};
+      state.lastZeusBonuses[p.id] = { bonus: zeusBonus, total: moneyEarned };
+    }
+
     if (!isBotCheck(p)) {
       state.economy[p.id] += moneyEarned;
 
@@ -349,12 +373,17 @@ export function awardSeasonRewards() {
         const roster = p.roster || [];
         const wantedCount = roster.filter(c => c.rarity === 'WANTED').length;
         const lckCount = roster.filter(c => (c.league || '').toUpperCase() === 'LCK').length;
+        const lplCount = roster.filter(c => (c.league || '').toUpperCase() === 'LPL').length;
+        const lecCount = roster.filter(c => (c.league || '').toUpperCase() === 'LEC').length;
         const commonCount = roster.filter(c => c.rarity === 'Commune').length;
         const totalPower = roster.reduce((sum, c) => sum + (c.rating || c.overall || 75), 0);
         const avgPower = roster.length > 0 ? totalPower / roster.length : 0;
         const evaluatedPower = (active.targetValue && active.targetValue > 100) ? totalPower : avgPower;
 
         if (active.type === 'lck_tournament_win' && p.id === championId && lckCount >= 3) success = true;
+        else if (active.type === 'lpl_tournament_top2' && ['TOP1', 'TOP2'].includes(currentPlacement) && lplCount >= 2) success = true;
+        else if (active.type === 'lec_tournament_top4' && ['TOP1', 'TOP2', 'TOP4'].includes(currentPlacement) && lecCount >= 2) success = true;
+        else if (active.type === 'deezer_flow_lineup' && new Set(roster.map(c => (c.league || '').toUpperCase()).filter(Boolean)).size >= 3) success = true;
         else if (active.type === 'has_epic_lineup' && roster.some(c => ['Épique', 'Légendaire', 'WANTED'].includes(c.rarity))) success = true;
         else if (active.type === 'has_contract_years' && roster.filter(c => c.contract === 'LIFETIME' || (typeof c.contract === 'number' && c.contract >= (active.targetValue || 2))).length >= (active.targetCount || 3)) success = true;
         else if (active.type === 'tournament_top8' && ['TOP1', 'TOP2', 'TOP4', 'TOP8'].includes(currentPlacement)) success = true;

@@ -6,7 +6,10 @@ export const TEAM_COLORS = {
   FNC: '#FF5800', VIT: '#FFE600', SEN: '#FB3B5C', RNG: '#D4AF37', RGE: '#3D7EFF',
   NS: '#E11D2E', FLY: '#00A651', DWG: '#1E73BE', DRX: '#4E7DFF', C9: '#00AEEF',
   TL: '#1E6FD9', SSG: '#2F54EB', SKT: '#E2012D', SHFT: '#9058a1', MKOI: '#7A5AF8',
-  MAD: '#E6B422', FPX: '#D90429', KCB: '#3fd7fd',ROX: '#fcebeb',
+  MAD: '#E6B422', FPX: '#D90429', KCB: '#3fd7fd', ROX: '#fcebeb',
+  '100T': '#EF4444', CFO: '#0082CA', DFM: '#00A3E0', FUR: '#A3A3A3',
+  GAM: '#FFCC00', GMB: '#EE1C25', GRF: '#E63946', LLL: '#00FF66',
+  MSF: '#E31B23', NRG: '#00EAFF', PSG: '#004170', RYL: '#B8860B', TSW: '#004B87',
 };
 
 export const LEAGUE_COLORS = {

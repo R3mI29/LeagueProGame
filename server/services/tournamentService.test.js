@@ -177,3 +177,64 @@ test('awardSeasonRewards opens skin pack for bot finalist (2nd place) but not fo
   assert.equal(state.teamSkins['human-2'], undefined);
 });
 
+test('seedTeams prioritizes recent placements (Power Ranking) over season points', async () => {
+  const { seedTeams } = await import('../utils/random.js');
+  const teams = [
+    { id: 't1', name: 'Team Low PR High Pts' },
+    { id: 't2', name: 'Team High PR Low Pts' },
+  ];
+  const scores = {
+    t1: { points: 100 },
+    t2: { points: 10 },
+  };
+  const recentPlacements = {
+    t1: ['TOP8', 'N/A'],
+    t2: ['TOP1', 'TOP1'],
+  };
+  const seeded = seedTeams(teams, scores, recentPlacements);
+  // t2 has much higher recent placements, so it seeds #1
+  assert.equal(seeded[0].id, 't2');
+  assert.equal(seeded[1].id, 't1');
+});
+
+test('startCurrentEvent for Worlds (swiss_to_single) seeds Round 0 with Pot 1 vs Pot 4 and Pot 2 vs Pot 3', async () => {
+  const { startCurrentEvent } = await import('./tournamentService.js');
+  resetGameState();
+  const participants = Array.from({ length: 16 }, (_, i) => ({
+    id: `team-${i + 1}`,
+    name: `Team ${i + 1}`,
+    roster: [],
+    isBot: true,
+  }));
+  state.participants = participants;
+  state.seasonScores = {};
+  participants.forEach((p, i) => {
+    state.seasonScores[p.id] = { points: (16 - i) * 10 };
+  });
+  // Event 3 in EVENTS is Worlds (swiss_to_single)
+  state.eventIndex = 3;
+
+  startCurrentEvent({ emit() {} });
+
+  assert.equal(state.bracket[0].length, 8);
+  const pot1Ids = new Set(['team-1', 'team-2', 'team-3', 'team-4']);
+  const pot2Ids = new Set(['team-5', 'team-6', 'team-7', 'team-8']);
+  const pot3Ids = new Set(['team-9', 'team-10', 'team-11', 'team-12']);
+  const pot4Ids = new Set(['team-13', 'team-14', 'team-15', 'team-16']);
+
+  // First 4 matches are Pot 1 vs Pot 4
+  for (let i = 0; i < 4; i++) {
+    const match = state.bracket[0][i];
+    assert.ok(pot1Ids.has(match.teamA.id));
+    assert.ok(pot4Ids.has(match.teamB.id));
+  }
+
+  // Next 4 matches are Pot 2 vs Pot 3
+  for (let i = 4; i < 8; i++) {
+    const match = state.bracket[0][i];
+    assert.ok(pot2Ids.has(match.teamA.id));
+    assert.ok(pot3Ids.has(match.teamB.id));
+  }
+});
+
+

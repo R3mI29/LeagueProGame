@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { socket } from '../api/socket';
-import { CARD_POOL, RARITY_ORDER, registerCardInPool, unregisterCardFromPool } from '../constants/cardPlayers';
+import { CARD_POOL, RARITY_ORDER, registerCardInPool, unregisterCardFromPool, getCardTeamTags, getCardTeamDisplay } from '../constants/cardPlayers';
 import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
@@ -83,7 +83,7 @@ export default function DevCardsView({ onClose, state }) {
         return (
           c.baseName?.toLowerCase().includes(query) ||
           c.variant?.toLowerCase().includes(query) ||
-          c.teamTag?.toLowerCase().includes(query) ||
+          getCardTeamTags(c).some(t => t.toLowerCase().includes(query)) ||
           c.league?.toLowerCase().includes(query) ||
           c.rarity?.toLowerCase().includes(query) ||
           c.id?.toLowerCase().includes(query)

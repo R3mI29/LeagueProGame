@@ -231,7 +231,7 @@ export const CARD_POOL = [
     "baseName": "Keria",
     "variant": "LCK MVP Keria",
     "role": "Support",
-    "rating": 87,
+    "rating": 85,
     "rarity": "Épique",
     "image": "/cardsImg/others/T1_keria_2022.jpg",
     "nationality": "KR",
@@ -269,9 +269,9 @@ export const CARD_POOL = [
   {
     "id": "peanut-lck-mvp",
     "baseName": "Peanut",
-    "variant": "LCK MVP Peanut",
+    "variant": "2x LCK MVP Peanut",
     "role": "Jungle",
-    "rating": 85,
+    "rating": 91,
     "rarity": "Épique",
     "image": "/cardsImg/others/SKT_peanut.jpg",
     "nationality": "KR",
@@ -396,9 +396,9 @@ export const CARD_POOL = [
   {
     "id": "gen-ruler-champion",
     "baseName": "Ruler",
-    "variant": "LCK Finals MVP",
+    "variant": "3x LCK MVP",
     "role": "ADC",
-    "rating": 90,
+    "rating": 91,
     "rarity": "Légendaire",
     "image": "/cardsImg/external/ruler_wanted.jpg",
     "nationality": "KR",
@@ -580,7 +580,7 @@ export const CARD_POOL = [
   {
     "id": "delight-hle-2024",
     "baseName": "Delight",
-    "variant": "2025 First Stand Champion",
+    "variant": "First Stand Champion",
     "role": "Support",
     "rating": 84,
     "rarity": "Épique",
@@ -601,7 +601,7 @@ export const CARD_POOL = [
     "rarity": "Légendaire",
     "image": "/cardsImg/others/LCK_geng_canyon.jpg",
     "nationality": "KR",
-    "teamTag": "DK",
+    "teamTag": ["DWG","GENG"],
     "league": "LCK"
   },
   // ShowMaker
@@ -1057,6 +1057,20 @@ export const CARD_POOL = [
     "rating": 93,
     "rarity": "WANTED",
     "image": "/cardsImg/custom/smeb_legend.jpg",
+    "nationality": "KR",
+    "teamTag": "ROX",
+    "league": "LCK",
+    "video": "/videos/smeb_lck_legend.mp4",
+    "themeColor": "#fffafa"
+  },
+  {
+    "id": "ROX-PraY-worlds",
+    "baseName": "PraY",
+    "variant": "2015 Worlds Finalist",
+    "role": "ADC",
+    "rating": 85,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/ROX_pray.jpg",
     "nationality": "KR",
     "teamTag": "ROX",
     "league": "LCK",
@@ -1898,11 +1912,11 @@ export const CARD_POOL = [
     "baseName": "Bin",
     "variant": "2x LPL Finals MVP",
     "role": "Top",
-    "rating": 92,
+    "rating": 90,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/BLG_bin.jpg",
     "nationality": "CN",
-    "teamTag": "BLG",
+    "teamTag": ["BLG","RNG"],
     "league": "LPL"
   },
   // Xun
@@ -1948,7 +1962,7 @@ export const CARD_POOL = [
     "baseName": "Knight",
     "variant": "BLG Knight",
     "role": "Mid",
-    "rating": 84,
+    "rating": 83,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/blg_knight.webp",
     "nationality": "CN",
@@ -1960,7 +1974,7 @@ export const CARD_POOL = [
     "baseName": "Knight",
     "variant": "FST Champion",
     "role": "Mid",
-    "rating": 87,
+    "rating": 86,
     "rarity": "Épique",
     "image": "/cardsImg/others/FST_knight.jpg",
     "nationality": "CN",
@@ -1970,13 +1984,13 @@ export const CARD_POOL = [
   {
     "id": "blg-knight-finals-mvp",
     "baseName": "Knight",
-    "variant": "LPL Finals MVP Knight",
+    "variant": "5x LPL Finals MVP",
     "role": "Mid",
-    "rating": 91,
+    "rating": 93,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/BLG-knight-2.jpg",
     "nationality": "CN",
-    "teamTag": "BLG",
+    "teamTag": ["BLG","JDG","TES"],
     "league": "LPL"
   },
   // Elk
@@ -2058,7 +2072,7 @@ export const CARD_POOL = [
     "baseName": "Viper",
     "variant": "3x LPL Champion & MVP",
     "role": "ADC",
-    "rating": 90,
+    "rating": 88,
     "rarity": "Légendaire",
     "image": "/cardsImg/others/BLG_viper_leg.jpg",
     "nationality": "KR",
@@ -2165,7 +2179,7 @@ export const CARD_POOL = [
     "rarity": "Légendaire",
     "image": "/cardsImg/others/JDG_knight_msi.png",
     "nationality": "CN",
-    "teamTag": "JDG",
+    "teamTag": ["JDG","BLG","TES"],
     "league": "LPL"
   },
   // Ruler
@@ -2381,9 +2395,9 @@ export const CARD_POOL = [
     "league": "LPL"
   },
   {
-    "id": "meiko-LPL-Legend",
+    "id": "meiko-EDG-Legend",
     "baseName": "Meiko",
-    "variant": "LPL Legend",
+    "variant": "EDG Legend",
     "role": "Support",
     "rating": 92,
     "rarity": "Légendaire",
@@ -2557,7 +2571,7 @@ export const CARD_POOL = [
     "baseName": "Bwipo",
     "variant": "FLY Bwipo",
     "role": "Top",
-    "rating": 75,
+    "rating": 71,
     "rarity": "Rare",
     "image": "/cardsImg/2026-players/FLY_bwipo.webp",
     "nationality": "BE",
@@ -2577,15 +2591,41 @@ export const CARD_POOL = [
     "teamTag": "FLY",
     "league": "LCS"
   },
+  // Busio
+  {
+    "id": "FLY-busio-FinalsMVP",
+    "baseName": "Busio",
+    "variant": "LTA Finals MVP",
+    "role": "Support",
+    "rating": 85,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/FLY_busio.jpg",
+    "nationality": "PL",
+    "teamTag": "FLY",
+    "league": "LCS"
+  },
+  // Inspired
+  {
+    "id": "FLY-inspired-LTA-MVP",
+    "baseName": "Inspired",
+    "variant": "LTA Player of the Year",
+    "role": "Jungle",
+    "rating": 87,
+    "rarity": "Épique",
+    "image": "/cardsImg/others/FLY_inspired.jpg",
+    "nationality": "PL",
+    "teamTag": "FLY",
+    "league": "LCS"
+  },
 
   // --- [LCS] TL ---
   // Doublelift
   {
     "id": "tl-doublelift-4peat",
     "baseName": "Doublelift",
-    "variant": "8x LCS Champion",
+    "variant": "5PEAT LCS",
     "role": "ADC",
-    "rating": 88,
+    "rating": 91,
     "rarity": "Légendaire",
     "image": "/cardsImg/external/tl_doublelift.jpg",
     "nationality": "US",
@@ -2712,4 +2752,50 @@ export function unregisterCardFromPool(cardId) {
   if (idx !== -1) {
     CARD_POOL.splice(idx, 1);
   }
+}
+
+/**
+ * Retourne la liste ordonnee et normalisee des tags d'equipe associes a une carte.
+ * Accepte les formats :
+ * - card.teamTags: ['BLG', 'JDG']
+ * - card.teamTag: ['BLG', 'JDG']
+ * - card.teamTag: 'BLG & JDG' | 'BLG, JDG' | 'BLG / JDG' | 'BLG'
+ * - string ou tableau direct passe en argument
+ */
+export function getCardTeamTags(cardOrTags) {
+  if (!cardOrTags) return [];
+  if (Array.isArray(cardOrTags)) {
+    return cardOrTags.map(t => String(t).trim()).filter(Boolean);
+  }
+  if (typeof cardOrTags === 'string') {
+    const raw = cardOrTags.trim();
+    if (/[&,/|]/.test(raw)) {
+      return raw.split(/[&,/|]/).map(t => t.trim()).filter(Boolean);
+    }
+    return raw ? [raw] : [];
+  }
+  if (Array.isArray(cardOrTags.teamTags) && cardOrTags.teamTags.length > 0) {
+    return cardOrTags.teamTags.map(t => String(t).trim()).filter(Boolean);
+  }
+  if (Array.isArray(cardOrTags.teamTag) && cardOrTags.teamTag.length > 0) {
+    return cardOrTags.teamTag.map(t => String(t).trim()).filter(Boolean);
+  }
+  if (typeof cardOrTags.teamTag === 'string' && cardOrTags.teamTag.trim()) {
+    const raw = cardOrTags.teamTag.trim();
+    if (/[&,/|]/.test(raw)) {
+      return raw.split(/[&,/|]/).map(t => t.trim()).filter(Boolean);
+    }
+    return [raw];
+  }
+  return [];
+}
+
+/**
+ * Retourne une chaine formatee des equipes d'une carte (ex: "BLG & JDG" ou "T1").
+ */
+export function getCardTeamDisplay(card, separator = ' & ') {
+  if (!card) return '';
+  const tags = getCardTeamTags(card);
+  if (tags.length > 0) return tags.join(separator);
+  return typeof card.teamTag === 'string' ? card.teamTag : '';
 }

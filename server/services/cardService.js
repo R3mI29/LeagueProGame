@@ -1,4 +1,4 @@
-import { CARD_POOL, RARITY_WEIGHTS } from '../../src/constants/cardPlayers.js';
+import { CARD_POOL, RARITY_WEIGHTS, getCardTeamTags } from '../../src/constants/cardPlayers.js';
 import { ORDERED_ROLES } from '../../src/constants/roles.js';
 import { PACK_TYPES } from '../../src/constants/packConfig.js';
 
@@ -99,6 +99,7 @@ export function cardToRosterEntry(card) {
     role: card.role, 
     league: card.league,
     teamTag: card.teamTag,
+    teamTags: card.teamTags || getCardTeamTags(card),
     rating: card.rating || card.overall || 80,
     rarity: card.rarity,
     isFullArt: Boolean(card.isFullArt)

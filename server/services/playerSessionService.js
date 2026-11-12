@@ -83,6 +83,7 @@ export function transferPlayerIdentity(gameState, oldId, newId) {
     gameState.pendingPackResults,
     gameState.teamSkins,
     gameState.collectionRewardsClaimed,
+    gameState.collectionMilestonesClaimed,
     gameState.collectionAlbum,
     gameState.tradeUpBank,
     gameState.sponsorOfferings,

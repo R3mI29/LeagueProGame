@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CARD_POOL, RARITY_ORDER } from '../constants/cardPlayers'; 
+import { CARD_POOL, RARITY_ORDER, getCardTeamTags, getCardTeamDisplay } from '../constants/cardPlayers'; 
 import CardIllustration from './CardIllustration';
-import { TEAMS_DB } from '../constants/teams'; 
+import { TEAMS_DB, getTeamInfo } from '../constants/teams'; 
 
 function ScreenShatterReveal({ children, onStartVideo, onShatterComplete }) {
   // crackStep: 0: Calme (logo) | 1: Fissure NW | 2: Fissure E | 3: Fissure SE | 4: Fissure SW | 5: Tension | 6: BAM & Chute | 7: Terminé
@@ -352,7 +352,10 @@ export default function PackOpener({ cardIds, onClose }) {
   const natCode = currentCard?.nationality || "kr"; 
   const roleName = currentCard?.role || "Mid";
   const leagueName = currentCard?.league || "LCK";
-  const teamInfo = TEAMS_DB.find(t => t.tag === currentCard?.teamTag) || { logo: '/equipes/t1.webp' };
+  const cardTeamTags = getCardTeamTags(currentCard);
+  const primaryTag = (cardTeamTags && cardTeamTags.length > 0) ? cardTeamTags[0] : currentCard?.teamTag;
+  const teamInfo = getTeamInfo(primaryTag) || { tag: 'T1', logo: '/equipes/t1.webp' };
+  const teamsDisplay = getCardTeamDisplay(currentCard) || currentCard?.teamTag || '';
   
   const themeColor = currentCard?.themeColor || '#D4AF37';
 
@@ -372,7 +375,7 @@ export default function PackOpener({ cardIds, onClose }) {
     if (currentCard?.rarity === 'WANTED') glowColor = 'rgba(255, 255, 255, 1)';
   }
 
-  const marqueeBase = `${currentCard?.baseName} • ${currentCard?.teamTag} • `;
+  const marqueeBase = `${currentCard?.baseName} • ${teamsDisplay || currentCard?.teamTag || ''} • `;
   const marqueeText = marqueeBase.repeat(20);
 
   return (
@@ -622,11 +625,11 @@ export default function PackOpener({ cardIds, onClose }) {
               style={{ backgroundColor: glowColor }}
             />
 
-            <div className="relative flex flex-col items-center justify-center w-full h-[500px]">
+            <div className="relative flex items-center justify-center w-full h-[500px] px-6">
               <img 
                 src={teamInfo.logo} 
-                alt="Club" 
-                className="w-[300px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-[popInStay_0.4s_ease-out_both]" 
+                alt={teamInfo.name || teamInfo.tag || "Club"} 
+                className="w-[300px] max-h-[300px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-[popInStay_0.4s_ease-out_both]" 
               />
             </div>
 
@@ -665,7 +668,13 @@ export default function PackOpener({ cardIds, onClose }) {
                   <img src={getRoleImage(roleName)} alt={roleName} className="h-[250px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.3)] animate-[popAndFade_1.2s_both]" onError={(e) => e.target.style.display='none'}/>
                 )}
                 {revealStep === 4 && (
-                  <img src={teamInfo.logo} alt="Club" className="w-[300px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-[popAndFade_1.2s_both]" />
+                  <div className="flex items-center justify-center animate-[popAndFade_1.2s_both] px-4">
+                    <img 
+                      src={teamInfo.logo} 
+                      alt={teamInfo.name || teamInfo.tag || "Club"} 
+                      className="w-[300px] max-h-[300px] object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]" 
+                    />
+                  </div>
                 )}
               </div>
             )}
@@ -772,10 +781,14 @@ export default function PackOpener({ cardIds, onClose }) {
                         className="flex items-center gap-4 lg:gap-6 p-4 lg:p-6 rounded-2xl bg-[#000000]/40 border-l-[4px] border-white/5 shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
                         style={{ borderLeftColor: themeColor }}
                       >
-                        <img src={teamInfo.logo} alt="Club" className="h-[36px] lg:h-[50px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+                        <img 
+                          src={teamInfo.logo} 
+                          alt={teamInfo.name || teamInfo.tag || "Club"} 
+                          className="h-[36px] lg:h-[50px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" 
+                        />
                         <div className="flex flex-col">
                           <span className="text-white/50 font-rajdhani text-xs lg:text-sm uppercase tracking-[4px]">Franchise</span>
-                          <span className="font-msi text-xl lg:text-3xl text-white uppercase tracking-wider">{currentCard.teamTag}</span>
+                          <span className="font-msi text-xl lg:text-3xl text-white uppercase tracking-wider">{teamsDisplay}</span>
                         </div>
                       </div>
                     </div>

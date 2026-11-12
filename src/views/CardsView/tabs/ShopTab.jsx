@@ -100,6 +100,51 @@ function BoosterPackPouch({ pack }) {
       primaryRarity: 'Épique',
       foilText: 'BOOSTER DE SKIN',
     },
+    all_stars: {
+      patternBg: "url('/assets/booster/blue_stars.jpg')",
+      overlay: 'linear-gradient(180deg, rgba(88,28,135,0.78) 0%, rgba(59,7,100,0.88) 50%, rgba(20,2,40,0.96) 100%)',
+      accent: '#a855f7',
+      border: 'rgba(168, 85, 247, 0.85)',
+      glow: 'rgba(168, 85, 247, 0.65)',
+      primaryRarity: 'Légendaire',
+      foilText: 'ALL-STARS BOOSTER',
+    },
+    jumbo: {
+      patternBg: "url('/assets/booster/yellow_stars.jpg')",
+      overlay: 'linear-gradient(180deg, rgba(5,150,105,0.75) 0%, rgba(4,120,87,0.88) 50%, rgba(2,44,34,0.95) 100%)',
+      accent: '#34d399',
+      border: 'rgba(52, 211, 153, 0.8)',
+      glow: 'rgba(52, 211, 153, 0.55)',
+      primaryRarity: 'Rare',
+      foilText: 'JUMBO BOOSTER',
+    },
+    lck_pack: {
+      patternBg: "url('/assets/booster/blue_stars.jpg')",
+      overlay: 'linear-gradient(180deg, rgba(30,58,138,0.78) 0%, rgba(23,37,84,0.88) 50%, rgba(10,15,35,0.96) 100%)',
+      accent: '#3b82f6',
+      border: 'rgba(59, 130, 246, 0.85)',
+      glow: 'rgba(59, 130, 246, 0.65)',
+      primaryRarity: 'Rare',
+      foilText: 'LCK EXCLUSIVE',
+    },
+    lpl_pack: {
+      patternBg: "url('/assets/booster/white stars_red_background.jpg')",
+      overlay: 'linear-gradient(180deg, rgba(153,27,27,0.78) 0%, rgba(127,29,29,0.88) 50%, rgba(40,10,10,0.96) 100%)',
+      accent: '#ef4444',
+      border: 'rgba(239, 68, 68, 0.85)',
+      glow: 'rgba(239, 68, 68, 0.65)',
+      primaryRarity: 'Rare',
+      foilText: 'LPL EXCLUSIVE',
+    },
+    lec_pack: {
+      patternBg: "url('/assets/booster/blue_stars.jpg')",
+      overlay: 'linear-gradient(180deg, rgba(6,95,70,0.78) 0%, rgba(4,120,87,0.88) 50%, rgba(2,44,34,0.96) 100%)',
+      accent: '#10b981',
+      border: 'rgba(16, 185, 129, 0.85)',
+      glow: 'rgba(16, 185, 129, 0.65)',
+      primaryRarity: 'Rare',
+      foilText: 'LEC EXCLUSIVE',
+    },
   };
 
   const packId = pack?.id || 'standard';
@@ -159,8 +204,8 @@ function BoosterPackPouch({ pack }) {
             style={{ backgroundColor: theme.accent }}
           />
           <img
-            src="/logo/others/League_of_legend.svg"
-            alt="League of Legends"
+            src={pack?.logo || "/logo/others/League_of_legend.svg"}
+            alt={pack?.name || "League of Legends"}
             className="relative z-10 w-24 h-24 object-contain filter drop-shadow-[0_0_16px_rgba(255,255,255,0.45)] transition-transform duration-300 group-hover:scale-110"
           />
         </div>
@@ -306,6 +351,11 @@ export default function ShopTab({
   const [tradeAllocations, setTradeAllocations] = useState({});
   const [showConfirmAbandon, setShowConfirmAbandon] = useState(false);
   const [openedSkinData, setOpenedSkinData] = useState(null);
+  const [expandedProbs, setExpandedProbs] = useState({});
+
+  const toggleProbs = (id) => {
+    setExpandedProbs(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     const handleSkinOpened = (data) => {
@@ -325,7 +375,7 @@ export default function ShopTab({
 
   // Boosters disponibles dans la boutique
   const boosters = useMemo(() => {
-    return Object.values(PACK_TYPES).filter(p => p.id !== 'starter');
+    return Object.values(PACK_TYPES).filter(p => ['standard', 'elite', 'legendary', 'wanted'].includes(p.id));
   }, []);
 
   const starterPack = PACK_TYPES.starter;
@@ -585,10 +635,47 @@ export default function ShopTab({
                         </div>
                       </div>
 
-                      <div className="pt-4 border-t border-purple-500/20 mt-3 flex flex-col gap-2">
-                        <div className="text-center text-xs font-medium text-white/70">
-                          {isSkinPack ? 'Débloque 1 skin aléatoire' : 'Booster offert'}
-                        </div>
+                      <div className="pt-3 border-t border-purple-500/20 mt-3 flex flex-col gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleProbs(`bonus_${packKey}`)}
+                          className="w-full py-1.5 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-rajdhani font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer border border-white/5 transition-all"
+                        >
+                          <span>Probabilités</span>
+                          <span className="font-mono text-xs">{expandedProbs[`bonus_${packKey}`] ? '▲' : '▼'}</span>
+                        </button>
+
+                        {expandedProbs[`bonus_${packKey}`] && (
+                          <div className="space-y-2 py-1 animate-[fadeIn_0.15s]">
+                            {(() => {
+                              const bonusProbs = packDef.weights ? calculatePackProbabilities(packDef.weights) : null;
+                              if (!bonusProbs) return null;
+                              return (
+                                <div className="space-y-2">
+                                  <div className="grid grid-cols-2 gap-1.5">
+                                    {Object.entries(bonusProbs).map(([rarity, pct]) => {
+                                      if (pct <= 0) return null;
+                                      return (
+                                        <div key={rarity} className="flex items-center justify-between gap-1.5 bg-black/50 px-2.5 py-1 rounded-lg border border-white/5">
+                                          <RarityStar rarity={rarity} size={18} glow={true} />
+                                          <span className="text-xs font-mono text-white/90 font-bold">{pct}%</span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                  <div className="flex h-1.5 w-full rounded-full overflow-hidden bg-black/80">
+                                    {bonusProbs.Commune > 0 && <div style={{ width: `${bonusProbs.Commune}%`, backgroundColor: RARITY_COLORS.Commune }} />}
+                                    {bonusProbs.Rare > 0 && <div style={{ width: `${bonusProbs.Rare}%`, backgroundColor: RARITY_COLORS.Rare }} />}
+                                    {bonusProbs['Épique'] > 0 && <div style={{ width: `${bonusProbs['Épique']}%`, backgroundColor: RARITY_COLORS['Épique'] }} />}
+                                    {bonusProbs['Légendaire'] > 0 && <div style={{ width: `${bonusProbs['Légendaire']}%`, backgroundColor: RARITY_COLORS['Légendaire'] }} />}
+                                    {bonusProbs.WANTED > 0 && <div style={{ width: `${bonusProbs.WANTED}%`, backgroundColor: RARITY_COLORS.WANTED }} />}
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        )}
+
                         <button
                           onClick={() => handleOpenBonusPack(packKey)}
                           disabled={isReady}
@@ -639,54 +726,60 @@ export default function ShopTab({
                     </div>
                   </div>
 
-                  {/* Probabilités par carte & Bouton d'achat */}
-                  <div className="pt-5 border-t border-white/10 space-y-4">
-                    {/* Mini précision demandée par l'utilisateur */}
-                    <div className="text-[10px] font-mono text-white/50 text-center uppercase tracking-wider">
-                      Chances par carte
-                    </div>
+                  {/* Probabilités déroulantes & Bouton d'achat */}
+                  <div className="pt-4 border-t border-white/10 space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleProbs(pack.id)}
+                      className="w-full py-1.5 px-3 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white font-rajdhani font-bold text-xs uppercase tracking-wider flex items-center justify-between cursor-pointer border border-white/5 transition-all"
+                    >
+                      <span>Probabilités</span>
+                      <span className="font-mono text-xs">{expandedProbs[pack.id] ? '▲' : '▼'}</span>
+                    </button>
 
-                    {/* Probabilités avec étoiles grand format et halo */}
-                    <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(probs).map(([rarity, pct]) => {
-                        if (pct <= 0) return null;
-                        return (
-                          <div
-                            key={rarity}
-                            className="flex items-center justify-between gap-2 bg-black/50 px-3 py-1.5 rounded-xl border border-white/5"
-                          >
-                            <RarityStar rarity={rarity} size={22} glow={true} />
-                            <span className="text-xs font-mono text-white/90 font-bold">
-                              {pct}%
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {expandedProbs[pack.id] && (
+                      <div className="space-y-3 pt-1 animate-[fadeIn_0.15s]">
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(probs).map(([rarity, pct]) => {
+                            if (pct <= 0) return null;
+                            return (
+                              <div
+                                key={rarity}
+                                className="flex items-center justify-between gap-2 bg-black/50 px-3 py-1.5 rounded-xl border border-white/5"
+                              >
+                                <RarityStar rarity={rarity} size={20} glow={true} />
+                                <span className="text-xs font-mono text-white/90 font-bold">
+                                  {pct}%
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
 
-                    {/* Barre de répartition */}
-                    <div className="flex h-2 w-full rounded-full overflow-hidden bg-black/80">
-                      {probs.Commune > 0 && (
-                        <div style={{ width: `${probs.Commune}%`, backgroundColor: RARITY_COLORS.Commune }} />
-                      )}
-                      {probs.Rare > 0 && (
-                        <div style={{ width: `${probs.Rare}%`, backgroundColor: RARITY_COLORS.Rare }} />
-                      )}
-                      {probs['Épique'] > 0 && (
-                        <div style={{ width: `${probs['Épique']}%`, backgroundColor: RARITY_COLORS['Épique'] }} />
-                      )}
-                      {probs['Légendaire'] > 0 && (
-                        <div style={{ width: `${probs['Légendaire']}%`, backgroundColor: RARITY_COLORS['Légendaire'] }} />
-                      )}
-                      {probs.WANTED > 0 && (
-                        <div style={{ width: `${probs.WANTED}%`, backgroundColor: RARITY_COLORS.WANTED }} />
-                      )}
-                    </div>
+                        <div className="flex h-2 w-full rounded-full overflow-hidden bg-black/80">
+                          {probs.Commune > 0 && (
+                            <div style={{ width: `${probs.Commune}%`, backgroundColor: RARITY_COLORS.Commune }} />
+                          )}
+                          {probs.Rare > 0 && (
+                            <div style={{ width: `${probs.Rare}%`, backgroundColor: RARITY_COLORS.Rare }} />
+                          )}
+                          {probs['Épique'] > 0 && (
+                            <div style={{ width: `${probs['Épique']}%`, backgroundColor: RARITY_COLORS['Épique'] }} />
+                          )}
+                          {probs['Légendaire'] > 0 && (
+                            <div style={{ width: `${probs['Légendaire']}%`, backgroundColor: RARITY_COLORS['Légendaire'] }} />
+                          )}
+                          {probs.WANTED > 0 && (
+                            <div style={{ width: `${probs.WANTED}%`, backgroundColor: RARITY_COLORS.WANTED }} />
+                          )}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Prix & Bouton Achat */}
-                    <div className="flex items-center justify-between gap-3 pt-2">
+                    <div className="flex items-center justify-between gap-3 pt-1">
                       <span className="font-mono text-2xl font-black text-emerald-400">
-                        {pack.price} 💲
+                        {pack.price} $
                       </span>
 
                       <button
@@ -698,7 +791,7 @@ export default function ShopTab({
                             : 'bg-white/5 text-text-faint/30 cursor-not-allowed border border-white/5'
                         }`}
                       >
-                        {canAfford ? 'Acheter' : `Manque ${pack.price - myEconomy} 💲`}
+                        {canAfford ? 'Acheter' : `Manque ${pack.price - myEconomy} $`}
                       </button>
                     </div>
                   </div>

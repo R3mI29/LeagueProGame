@@ -4,10 +4,10 @@ import { PACK_TYPES, openPack, openStarterPack, getCardById } from '../services/
 import { compareCardsForPack } from '../config/constants.js';
 import { DUPLICATE_SALVAGE, TRADE_UP_TIERS } from '../../src/constants/packConfig.js';
 import { SPONSOR_CONTRACTS, getOrRefreshSponsorOfferings, openSkinPack } from '../../src/constants/sponsorContracts.js';
-import { CARD_POOL } from '../../src/constants/cardPlayers.js';
+import { CARD_POOL, getCardTeamTags } from '../../src/constants/cardPlayers.js';
 import { isBotCheck } from '../services/playerService.js';
 import { startCardTournament } from '../services/tournamentService.js';
-import { getTeamCollectionCards, calculateTeamDifficulty, COLLECTION_INSERT_COSTS } from '../../src/constants/collectionConfig.js';
+import { getTeamCollectionCards, calculateTeamDifficulty, COLLECTION_INSERT_COSTS, getTeamMilestones, COLLECTION_GLOBAL_MILESTONES, getMilestoneProgress } from '../../src/constants/collectionConfig.js';
 
 function checkSponsorAlbumContract(state, id) {
   if (!state.activeContracts?.[id]) return;
@@ -155,12 +155,13 @@ export function registerCardHandlers(io, socket, {
           state.cardCollections[id][cardId] = (currentContract || 0) + contractToAdd;
         }
 
-        if (cardObj?.rarity === 'SECRET') {
-          if (!state.collectionAlbum) state.collectionAlbum = {};
-          if (!state.collectionAlbum[id]) state.collectionAlbum[id] = {};
-          state.collectionAlbum[id][cardId] = true;
-        }
+        // Auto-rangement dans la collection permanente (sans coût de contrat)
+        if (!state.collectionAlbum) state.collectionAlbum = {};
+        if (!state.collectionAlbum[id]) state.collectionAlbum[id] = {};
+        state.collectionAlbum[id][cardId] = true;
       });
+
+      checkSponsorAlbumContract(state, id);
 
       if (totalDuplicateSalvage > 0) {
         if (!state.economy[id]) state.economy[id] = 0;
@@ -230,17 +231,34 @@ export function registerCardHandlers(io, socket, {
     io.emit('draft-update', state);
   });
 
-  socket.on('claim-collection-reward', (teamTag) => {
+    socket.on('claim-collection-reward', (payload, legacyPercent) => {
     const id = socket.id;
+    let teamTag = null;
+    let percent = 100;
+
+    if (typeof payload === 'string') {
+      teamTag = payload;
+      if (typeof legacyPercent === 'number') percent = legacyPercent;
+    } else if (payload && typeof payload === 'object') {
+      teamTag = payload.teamTag;
+      percent = payload.percent || 100;
+    }
+
     if (!teamTag) return;
     if (!state.participants.some(p => p.id === id)) return;
+
+    // Seule la complétion d'équipe à 100% est récompensée
+    if (percent !== 100) {
+      socket.emit('collection-reward-error', { message: 'Seule la complétion complète de l\'équipe donne droit à la prime.' });
+      return;
+    }
 
     if (!state.collectionRewardsClaimed) state.collectionRewardsClaimed = {};
     if (!state.collectionRewardsClaimed[id]) state.collectionRewardsClaimed[id] = {};
 
     // Déjà réclamé ?
-    if (state.collectionRewardsClaimed[id][teamTag]) {
-      socket.emit('collection-reward-error', { message: 'Récompense déjà réclamée pour cette page !' });
+    if (state.collectionRewardsClaimed[id][teamTag] || state.collectionRewardsClaimed[id][`${teamTag}_100`]) {
+      socket.emit('collection-reward-error', { message: 'La prime de cette équipe a déjà été réclamée !' });
       return;
     }
 
@@ -248,15 +266,18 @@ export function registerCardHandlers(io, socket, {
     if (!teamCards || teamCards.length === 0) return;
 
     const album = state.collectionAlbum?.[id] || {};
-    const hasAll = teamCards.every(c => album[c.id]);
+    const collection = state.cardCollections?.[id] || {};
+    const ownedCount = teamCards.filter(card => album[card.id] || (collection[card.id] !== undefined && collection[card.id] !== 0)).length;
 
-    if (!hasAll) {
-      socket.emit('collection-reward-error', { message: 'Toutes les cartes de cette équipe doivent être insérées dans l\'album !' });
+    if (ownedCount < teamCards.length) {
+      socket.emit('collection-reward-error', { 
+        message: `Toutes les cartes de l'équipe ne sont pas encore réunies (${ownedCount}/${teamCards.length}) !` 
+      });
       return;
     }
 
     const difficulty = calculateTeamDifficulty(teamCards);
-    const rewardAmount = difficulty.rewardCredits;
+    const rewardAmount = difficulty.rewardCredits || 75;
 
     if (!state.economy) state.economy = {};
     if (state.economy[id] === undefined) state.economy[id] = 0;
@@ -265,15 +286,22 @@ export function registerCardHandlers(io, socket, {
     state.collectionRewardsClaimed[id][teamTag] = {
       claimedAt: Date.now(),
       amount: rewardAmount,
+      percent: 100,
       tier: difficulty.tier,
     };
 
     io.emit('draft-update', state);
     socket.emit('collection-reward-claimed', {
       teamTag,
+      percent: 100,
       rewardAmount,
       difficultyTier: difficulty.tier,
+      claimKey: teamTag
     });
+  });
+
+  socket.on('claim-collection-milestone', () => {
+    socket.emit('collection-milestone-error', { message: 'Les missions de collection ont été retirées.' });
   });
 
   const autoEnterSecretCards = (userId) => {
@@ -284,10 +312,7 @@ export function registerCardHandlers(io, socket, {
     Object.keys(collection).forEach(cardId => {
       const contract = collection[cardId];
       if (contract !== undefined && contract !== 0) {
-        const card = getCardById(cardId);
-        if (card?.rarity === 'SECRET') {
-          state.collectionAlbum[userId][cardId] = true;
-        }
+        state.collectionAlbum[userId][cardId] = true;
       }
     });
   };
@@ -297,66 +322,20 @@ export function registerCardHandlers(io, socket, {
     if (!cardId) return;
     if (!state.participants.some(p => p.id === id)) return;
 
-    autoEnterSecretCards(id);
-
-    const collection = state.cardCollections?.[id] || {};
-    const currentContract = collection[cardId];
-    if (currentContract === undefined || currentContract === 0) {
-      socket.emit('collection-error', { message: 'Vous ne possédez pas cette carte dans votre effectif !' });
-      return;
-    }
-
     if (!state.collectionAlbum) state.collectionAlbum = {};
     if (!state.collectionAlbum[id]) state.collectionAlbum[id] = {};
-
-    if (state.collectionAlbum[id][cardId]) return;
-
-    const card = getCardById(cardId);
-    const rarity = card?.rarity || 'Commune';
-
-    // Règle de coût en contrats TRN :
-    // - SECRETE : 0 TRN (s'entre automatiquement)
-    // - À VIE (LIFETIME) : 0 TRN (n'enlève rien)
-    // - WANTED : 2 TRN
-    // - Légendaire : 3 TRN
-    // - Épique : 4 TRN
-    // - Rare : 5 TRN
-    // - Commune : 6 TRN
-    const cost = rarity === 'SECRET' ? 0 : (COLLECTION_INSERT_COSTS[rarity] ?? 6);
-
-    if (currentContract !== 'LIFETIME') {
-      if (typeof currentContract !== 'number' || currentContract < cost) {
-        socket.emit('collection-error', { message: `Pas assez de contrats : ${cost} TRN requis (${currentContract} actuels)` });
-        return;
-      }
-
-      const remaining = currentContract - cost;
-      if (remaining <= 0) {
-        delete state.cardCollections[id][cardId];
-        if (state.activeLineups?.[id]) {
-          for (const role of Object.keys(state.activeLineups[id])) {
-            if (state.activeLineups[id][role] === cardId) {
-              delete state.activeLineups[id][role];
-            }
-          }
-        }
-      } else {
-        state.cardCollections[id][cardId] = remaining;
-      }
-    }
 
     state.collectionAlbum[id][cardId] = true;
     checkSponsorAlbumContract(state, id);
 
+    const card = getCardById(cardId);
     io.emit('draft-update', state);
-    socket.emit('card-entered-collection', { cardId });
+    socket.emit('card-entered-collection', { cardId, teams: getCardTeamTags(card) });
   });
 
   socket.on('enter-all-cards-collection', (teamTag) => {
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
-
-    autoEnterSecretCards(id);
 
     const collection = state.cardCollections?.[id] || {};
     if (!state.collectionAlbum) state.collectionAlbum = {};
@@ -366,30 +345,7 @@ export function registerCardHandlers(io, socket, {
     let insertedCount = 0;
 
     targetCards.forEach(c => {
-      if (state.collectionAlbum[id][c.id]) return;
-      const currentContract = collection[c.id];
-      if (currentContract === undefined || currentContract === 0) return;
-
-      const rarity = c.rarity || 'Commune';
-      const cost = rarity === 'SECRET' ? 0 : (COLLECTION_INSERT_COSTS[rarity] ?? 6);
-
-      if (currentContract === 'LIFETIME') {
-        state.collectionAlbum[id][c.id] = true;
-        insertedCount++;
-      } else if (typeof currentContract === 'number' && currentContract >= cost) {
-        const remaining = currentContract - cost;
-        if (remaining <= 0) {
-          delete state.cardCollections[id][c.id];
-          if (state.activeLineups?.[id]) {
-            for (const role of Object.keys(state.activeLineups[id])) {
-              if (state.activeLineups[id][role] === c.id) {
-                delete state.activeLineups[id][role];
-              }
-            }
-          }
-        } else {
-          state.cardCollections[id][c.id] = remaining;
-        }
+      if (c && !state.collectionAlbum[id][c.id]) {
         state.collectionAlbum[id][c.id] = true;
         insertedCount++;
       }
@@ -502,6 +458,12 @@ export function registerCardHandlers(io, socket, {
     } else {
       collection[rewardCard.id] = (currentRewardContract || 0) + tier.rewardYears;
     }
+
+    // Auto-enregistrement dans la collection permanente
+    if (!state.collectionAlbum) state.collectionAlbum = {};
+    if (!state.collectionAlbum[id]) state.collectionAlbum[id] = {};
+    state.collectionAlbum[id][rewardCard.id] = true;
+    checkSponsorAlbumContract(state, id);
 
     // Déclenchement de l'animation d'ouverture pour Épique+
     if (tier.animate) {

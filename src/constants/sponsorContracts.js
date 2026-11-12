@@ -36,7 +36,7 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 1,
     reward: {
       credits: 350,
-      description: '+350 💲',
+      description: '+350 $',
     },
     malus: 150,
   },
@@ -53,7 +53,7 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 1,
     reward: {
       credits: 350,
-      description: '+350 💲',
+      description: '+350 $',
     },
     malus: 180,
   },
@@ -68,7 +68,7 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 1,
     reward: {
       credits: 300,
-      description: '+300 💲',
+      description: '+300 $',
     },
     malus: 150,
   },
@@ -84,13 +84,28 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 1,
     reward: {
       credits: 400,
-      description: '+400 💲',
+      description: '+400 $',
+    },
+    malus: 180,
+  },
+  {
+    id: 'deezer_flow',
+    difficulty: 'easy',
+    brandName: 'Deezer',
+    logo: '/logo/marque/DEEZER.svg',
+    title: 'Tempo des Champions',
+    conditionText: 'Aligner un cinq titulaire composé de joueurs d\'au moins 3 ligues distinctes.',
+    type: 'deezer_flow_lineup',
+    deadlineEvents: 1,
+    reward: {
+      credits: 450,
+      description: '+450 $',
     },
     malus: 180,
   },
 
   // ==========================================
-  // CONTRATS MOYENS (Objectifs équilibrés & Booster de Skin)
+  // CONTRATS MOYENS (Objectifs équilibrés & Boosters)
   // ==========================================
   {
     id: 'intel_overclock',
@@ -104,8 +119,8 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 2,
     reward: {
       credits: 650,
-      bonusPack: 'skin_pack',
-      description: '+650 💲 & 1 Booster de Skin',
+      bonusPack: 'elite',
+      description: '+650 $ & 1 Booster Élite',
     },
     malus: 350,
   },
@@ -122,7 +137,7 @@ export const SPONSOR_CONTRACTS = [
     reward: {
       credits: 850,
       bonusPack: 'skin_pack',
-      description: '+850 💲 & 1 Booster de Skin',
+      description: '+850 $ & 1 Booster de Skin',
     },
     malus: 400,
   },
@@ -137,8 +152,8 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 2,
     reward: {
       credits: 800,
-      bonusPack: 'skin_pack',
-      description: '+800 💲 & 1 Booster de Skin',
+      bonusPack: 'jumbo',
+      description: '+800 $ & 1 Jumbo Booster',
     },
     malus: 400,
   },
@@ -152,11 +167,42 @@ export const SPONSOR_CONTRACTS = [
     type: 'common_top4',
     deadlineEvents: 2,
     reward: {
-      credits: 800,
-      bonusPack: 'skin_pack',
-      description: '+800 💲 & 1 Booster de Skin',
+      credits: 1100,
+      description: '+1 100 $',
     },
     malus: 420,
+  },
+  {
+    id: 'nike_just_do_it',
+    difficulty: 'medium',
+    brandName: 'Nike',
+    logo: '/logo/marque/nike.png',
+    title: 'Just Do It',
+    conditionText: 'Finir dans le Top 2 d\'un tournoi officiel avec au moins 2 joueurs LPL titulaires.',
+    type: 'lpl_tournament_top2',
+    deadlineEvents: 2,
+    reward: {
+      credits: 1000,
+      bonusPack: 'lpl_pack',
+      description: '+1 000 $ & 1 Booster LPL',
+    },
+    malus: 480,
+  },
+  {
+    id: 'kia_movement',
+    difficulty: 'medium',
+    brandName: 'Kia',
+    logo: '/logo/marque/kia_logo.avif',
+    title: 'Movement That Inspires',
+    conditionText: 'Finir dans le Top 4 d\'un tournoi officiel avec au moins 2 joueurs LEC titulaires.',
+    type: 'lec_tournament_top4',
+    deadlineEvents: 2,
+    reward: {
+      credits: 950,
+      bonusPack: 'lec_pack',
+      description: '+950 $ & 1 Booster LEC',
+    },
+    malus: 450,
   },
   {
     id: 'mercedes_silver_arrow',
@@ -170,8 +216,8 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 2,
     reward: {
       credits: 900,
-      bonusPack: 'skin_pack',
-      description: '+900 💲 & 1 Booster de Skin',
+      bonusPack: 'all_stars',
+      description: '+900 $ & 1 Pack All-Stars',
     },
     malus: 480,
   },
@@ -186,15 +232,32 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 2,
     reward: {
       credits: 900,
-      bonusPack: 'skin_pack',
-      description: '+900 💲 & 1 Booster de Skin',
+      bonusPack: 'all_stars',
+      description: '+900 $ & 1 Pack All-Stars',
     },
     malus: 480,
   },
 
   // ==========================================
-  // CONTRATS DIFFICILES (Haut niveau, gros gains, gros malus)
+  // CONTRATS DIFFICILES (Haut niveau, prestige & grands défis)
   // ==========================================
+  {
+    id: 'ferrari_scuderia',
+    difficulty: 'hard',
+    brandName: 'Ferrari',
+    logo: '/logo/marque/FERRARI.svg',
+    title: 'Scuderia Royale',
+    conditionText: 'Aligner un cinq titulaire avec une note de 410+ et remporter un match officiel.',
+    type: 'team_power_reach',
+    targetValue: 410,
+    deadlineEvents: 2,
+    reward: {
+      credits: 2400,
+      bonusPack: 'all_stars',
+      description: '+2 400 $ & 1 Pack All-Stars',
+    },
+    malus: 1100,
+  },
   {
     id: 'mercedes_precision',
     difficulty: 'hard',
@@ -205,9 +268,9 @@ export const SPONSOR_CONTRACTS = [
     type: 'lck_tournament_win',
     deadlineEvents: 2,
     reward: {
-      credits: 1300,
+      credits: 1400,
       bonusPack: 'skin_pack',
-      description: '+1 300 💲 & 1 Booster de Skin',
+      description: '+1 400 $ & 1 Booster de Skin',
     },
     malus: 800,
   },
@@ -222,8 +285,8 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 3,
     reward: {
       credits: 1600,
-      bonusPack: 'skin_pack',
-      description: '+1 600 💲 & 1 Booster de Skin',
+      bonusPack: 'wanted',
+      description: '+1 600 $ & 1 Booster WANTED',
     },
     malus: 950,
   },
@@ -238,8 +301,8 @@ export const SPONSOR_CONTRACTS = [
     deadlineEvents: 3,
     reward: {
       credits: 1400,
-      bonusPack: 'skin_pack',
-      description: '+1 400 💲 & 1 Booster de Skin',
+      bonusPack: 'legendary',
+      description: '+1 400 $ & 1 Booster Légendaire',
     },
     malus: 850,
   },
@@ -249,14 +312,13 @@ export const SPONSOR_CONTRACTS = [
     brandName: 'Mastercard',
     logo: '/logo/marque/mastercard.svg',
     title: 'Réserve d\'Or',
-    conditionText: 'Avoir au moins 2 000 💲 en trésorerie et finir dans le Top 2 d\'un tournoi.',
+    conditionText: 'Avoir au moins 2 000 $ en trésorerie et finir dans le Top 2 d\'un tournoi.',
     type: 'economy_top2',
     targetValue: 2000,
     deadlineEvents: 2,
     reward: {
-      credits: 1250,
-      bonusPack: 'skin_pack',
-      description: '+1 250 💲 & 1 Booster de Skin',
+      credits: 2200,
+      description: '+2 200 $',
     },
     malus: 750,
   },
@@ -269,10 +331,21 @@ export function openSkinPack(gameState, playerId) {
   }
   const owned = gameState.teamSkins[playerId].owned || ['default'];
 
-  // Tirage aléatoire parmi TOUS les skins du booster (pas seulement les non-obtenus)
-  const rolledSkinId = NON_QUEST_SKIN_IDS[Math.floor(Math.random() * NON_QUEST_SKIN_IDS.length)];
+  // Tirage pondéré par rareté : Rare (60%), Épique (30%), Légendaire (10%)
+  const rand = Math.random() * 1000;
+  let targetRarity = 'Rare';
+  if (rand >= 900) targetRarity = 'Légendaire';
+  else if (rand >= 600) targetRarity = 'Épique';
+  else targetRarity = 'Rare';
+
+  const candidateSkins = NON_QUEST_SKIN_IDS.filter(id => {
+    const s = SKIN_BY_ID[id];
+    return s && s.rarity === targetRarity;
+  });
+  const pool = candidateSkins.length > 0 ? candidateSkins : NON_QUEST_SKIN_IDS;
+  const rolledSkinId = pool[Math.floor(Math.random() * pool.length)];
   const skinObj = SKIN_BY_ID[rolledSkinId];
-  const rarity = skinObj?.rarity || 'Rare';
+  const rarity = skinObj?.rarity || targetRarity;
 
   const isDuplicate = owned.includes(rolledSkinId);
 

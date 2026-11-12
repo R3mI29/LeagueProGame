@@ -34,6 +34,9 @@ export const SECRET_UNLOCKS = [
       if (!state.cardCollections[winnerId]) state.cardCollections[winnerId] = {};
       if (state.cardCollections[winnerId][REDEMPTION_ID]) return false;
       state.cardCollections[winnerId][REDEMPTION_ID] = 'LIFETIME';
+      if (!state.collectionAlbum) state.collectionAlbum = {};
+      if (!state.collectionAlbum[winnerId]) state.collectionAlbum[winnerId] = {};
+      state.collectionAlbum[winnerId][REDEMPTION_ID] = true;
 
       // 5. La carte prend la place de Missing dans la lineup active...
       const lineup = state.activeLineups?.[winnerId];

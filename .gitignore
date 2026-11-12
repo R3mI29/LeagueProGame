@@ -1,5 +1,6 @@
 node_modules/
 dist/
+cloudflared.exe
 
 # Sauvegardes locales du jeu (générées au runtime, ne pas committer)
 server/data/*.json

@@ -9,7 +9,8 @@ import { CARD_POOL } from '../../src/constants/cardPlayers.js';
 import { state as defaultState } from '../state/gameState.js';
 import { EVENTS } from '../../src/constants/seasonConfig.js';
 import { SKINS, SKIN_BY_ID, grantSkin, revokeSkin } from '../../src/constants/teamSkins.js';
-import { PACK_TYPES, openPack } from '../services/cardService.js';
+import { PACK_TYPES, openPack, openStarterPack } from '../services/cardService.js';
+import { openSkinPack } from '../../src/constants/sponsorContracts.js';
 import { compareCardsForPack } from '../config/constants.js';
 
 export function registerDevHandlers(io, socket, {
@@ -33,6 +34,9 @@ export function registerDevHandlers(io, socket, {
     if (!state.cardCollections[id]) state.cardCollections[id] = {};
     let currentContract = state.cardCollections[id][cardId] || 0;
     if (currentContract !== 'LIFETIME') state.cardCollections[id][cardId] = currentContract + 5; 
+    if (!state.collectionAlbum) state.collectionAlbum = {};
+    if (!state.collectionAlbum[id]) state.collectionAlbum[id] = {};
+    state.collectionAlbum[id][cardId] = true;
     io.emit('draft-update', state);
   });
 
@@ -66,6 +70,31 @@ export function registerDevHandlers(io, socket, {
 
   socket.on('dev-open-pack', (packTypeId = 'wanted') => {
     const id = socket.id;
+
+    if (packTypeId === 'skin_pack') {
+      const result = openSkinPack(state, id);
+      socket.emit('skin-pack-opened', {
+        skinId: result.skinId || null,
+        compensation: Boolean(result.compensation),
+        credits: result.credits || 0,
+        rarity: result.rarity,
+      });
+      io.emit('draft-update', state);
+      return;
+    }
+
+    if (packTypeId === 'starter') {
+      const cards = openStarterPack();
+      cards.sort(compareCardsForPack);
+      const openedCardsWithContracts = cards.map(c => ({ id: c.id, contractAdded: 'LIFETIME' }));
+      if (!state.pendingPackResults) state.pendingPackResults = {};
+      if (!state.lastOpenedPack) state.lastOpenedPack = {};
+      state.pendingPackResults[id] = openedCardsWithContracts;
+      state.lastOpenedPack[id] = openedCardsWithContracts;
+      io.emit('draft-update', state);
+      return;
+    }
+
     const cards = openPack(packTypeId);
     if (!cards || cards.length === 0) return;
 

@@ -1,46 +1,46 @@
-import { CARD_POOL } from './cardPlayers.js';
+import { CARD_POOL, getCardTeamTags } from './cardPlayers.js';
 import { TEAMS_DB } from './teams.js';
 
 // Normalisation des tags d'équipe secondaires vers leur franchise principale
 export const TEAM_TAG_ALIASES = {
   'FRX': 'FOX',
   'MDK': 'MKOI',
-  'MAD': 'MKOI',
   'DK.C': 'DK',
+  'GENG': 'GEN',
+  '100': '100T',
+  'SHR': 'RYL',
+  'LOUD': 'LLL',
+  'TW': 'TSW',
 };
 
 // Équipes ayant remporté les Worlds de League of Legends
 export const WORLDS_CHAMPION_TAGS = ['FNC', 'T1', 'SKT', 'SSG', 'IG', 'FPX', 'DWG', 'EDG', 'DRX'];
 
-// Coût d'insertion des cartes dans la collection permanente (en contrats TRN)
-// - Cartes À VIE : 0 TRN (ne consomme rien)
-// - Cartes SECRÈTES : 0 TRN (s'insèrent automatiquement)
+// Coût d'insertion des cartes dans la collection permanente : 0 contrat (gratuit et automatique)
 export const COLLECTION_INSERT_COSTS = {
-  'WANTED': 2,
-  'Légendaire': 3,
-  'Épique': 4,
-  'Rare': 5,
-  'Commune': 6,
+  'WANTED': 0,
+  'Légendaire': 0,
+  'Épique': 0,
+  'Rare': 0,
+  'Commune': 0,
   'SECRET': 0,
 };
 
 export function resolveTeamTag(tag) {
   if (!tag) return 'AUTRE';
-  const upper = tag.toUpperCase();
+  if (Array.isArray(tag)) {
+    return tag.map(t => resolveTeamTag(t));
+  }
+  const clean = String(tag).trim();
+  if (!clean) return 'AUTRE';
+  const upper = clean.toUpperCase();
   return TEAM_TAG_ALIASES[upper] || upper;
 }
 
-const RARITY_BASE_VALUE = {
-  'Commune': 40,
-  'Rare': 80,
-  'Épique': 180,
-  'Légendaire': 380,
-  'WANTED': 750,
-  'SECRET': 900,
-};
-
 /**
- * Calcule la difficulté et la prime d'une page d'album de façon non-linéaire
+ * Calcule la difficulté et la prime d'une page d'album de façon équilibrée.
+ * Basé à la fois sur le nombre de cartes à réunir et sur leur rareté.
+ * Plafond à 1 200 $ pour l'équipe la plus difficile (T1).
  */
 export function calculateTeamDifficulty(cards = []) {
   const n = cards.length;
@@ -51,39 +51,50 @@ export function calculateTeamDifficulty(cards = []) {
       stars: 1,
       score: 0,
       color: '#34D399',
-      rewardCredits: 100,
-      rewardDescription: '100 💲 Crédits de Collectionneur'
+      rewardCredits: 75,
+      rewardDescription: '75 $'
     };
   }
 
-  let baseSum = 0;
+  const RARITY_POINTS = {
+    'Commune': 5,
+    'Rare': 15,
+    'Épique': 30,
+    'Légendaire': 55,
+    'WANTED': 90,
+    'SECRET': 90,
+  };
+
+  let rarityScore = 0;
   cards.forEach(c => {
-    baseSum += RARITY_BASE_VALUE[c.rarity] || 40;
+    rarityScore += RARITY_POINTS[c.rarity] || 5;
   });
 
-  // Multiplicateur non linéaire basé sur la difficulté exponentielle de compléter un album complet (Coupon Collector)
-  const countMult = 1 + (Math.pow(Math.max(1, n) - 1, 1.05) * 0.028);
-  const rawReward = baseSum * countMult;
-  
-  // Arrondi au 50 le plus proche, minimum 100
-  const rewardCredits = Math.max(100, Math.round(rawReward / 50) * 50);
+  // Mélange volume (nombre de cartes) + rareté des cartes
+  const volumeWeight = n * 25;
+  const rarityWeight = rarityScore * 1.1;
+  const rawReward = volumeWeight + rarityWeight;
+
+  // Arrondi propre par tranche de 25 $, plafonné à 1 200 $
+  let rewardCredits = Math.round(rawReward / 25) * 25;
+  rewardCredits = Math.max(75, Math.min(1200, rewardCredits));
 
   let tier = 'ACCESSIBLE';
   let label = 'Accessible';
   let stars = 1;
   let color = '#34D399';
 
-  if (rewardCredits >= 3000) {
+  if (rewardCredits >= 775) {
     tier = 'MYTHIQUE';
     label = 'Mythique';
     stars = 4;
     color = '#A855F7';
-  } else if (rewardCredits >= 1200) {
+  } else if (rewardCredits >= 375) {
     tier = 'ELITE';
     label = 'Élite';
     stars = 3;
     color = '#EAB308';
-  } else if (rewardCredits >= 300) {
+  } else if (rewardCredits >= 175) {
     tier = 'INTERMEDIAIRE';
     label = 'Intermédiaire';
     stars = 2;
@@ -94,16 +105,15 @@ export function calculateTeamDifficulty(cards = []) {
     tier,
     label,
     stars,
-    score: Math.round(baseSum),
+    score: Math.round(rawReward),
     color,
     rewardCredits,
-    rewardDescription: `${rewardCredits.toLocaleString('fr-FR')} 💲 Crédits de Collectionneur`
+    rewardDescription: `${rewardCredits.toLocaleString('fr-FR')} $`
   };
 }
 
 /**
  * Récupère les cartes d'une équipe ou d'une catégorie secrète triées par rareté décroissante.
- * Les cartes SECRETE sont exclues des albums d'équipe et regroupées par ligue (SECRET_LPL, SECRET_LCK...)
  */
 export function getTeamCollectionCards(targetTeamTag) {
   if (!targetTeamTag) return [];
@@ -115,9 +125,13 @@ export function getTeamCollectionCards(targetTeamTag) {
   } else {
     const normalizedTarget = resolveTeamTag(targetTeamTag);
     cards = CARD_POOL.filter(c => {
-      if (c.rarity === 'SECRET') return false; // Les secrètes ont leur propre catégorie hors équipe
-      const cardTag = resolveTeamTag(c.teamTag);
-      return cardTag === normalizedTarget;
+      if (c.rarity === 'SECRET') return false;
+      const cardTags = getCardTeamTags(c);
+      const normalizedCardTags = cardTags.flatMap(t => {
+        const resolved = resolveTeamTag(t);
+        return Array.isArray(resolved) ? resolved : [resolved];
+      });
+      return normalizedCardTags.includes(normalizedTarget);
     });
   }
 
@@ -150,13 +164,20 @@ export function getAllCollectionTeams() {
       if (!secretLeaguesMap[l]) secretLeaguesMap[l] = [];
       secretLeaguesMap[l].push(card);
     } else {
-      const tag = resolveTeamTag(card.teamTag);
-      if (!teamCardsMap[tag]) teamCardsMap[tag] = [];
-      teamCardsMap[tag].push(card);
+      const cardTags = getCardTeamTags(card);
+      cardTags.forEach(rawTag => {
+        const resolved = resolveTeamTag(rawTag);
+        const resolvedList = Array.isArray(resolved) ? resolved : [resolved];
+        resolvedList.forEach(tag => {
+          if (!teamCardsMap[tag]) teamCardsMap[tag] = [];
+          if (!teamCardsMap[tag].some(c => c.id === card.id)) {
+            teamCardsMap[tag].push(card);
+          }
+        });
+      });
     }
   });
 
-  // Équipes normales
   const teams = Object.entries(teamCardsMap).map(([tag, cards]) => {
     const teamDbEntry = TEAMS_DB.find(t => t.tag === tag);
     const difficulty = calculateTeamDifficulty(cards);
@@ -198,7 +219,6 @@ export function getAllCollectionTeams() {
     });
   });
 
-  // Tri par difficulté (Mythique -> Accessible) puis par nombre de cartes décroissant
   const tierWeight = { 'MYTHIQUE': 4, 'ELITE': 3, 'INTERMEDIAIRE': 2, 'ACCESSIBLE': 1 };
   return teams.sort((a, b) => {
     const diff = (tierWeight[b.difficulty.tier] || 0) - (tierWeight[a.difficulty.tier] || 0);
@@ -209,68 +229,32 @@ export function getAllCollectionTeams() {
 
 /**
  * Vérifie si une carte est enregistrée dans l'album permanent de collection
+ * ou présente dans l'inventaire du joueur (auto-inclus).
  */
-export function isCardInAlbum(cardId, album = {}) {
-  return Boolean(album && album[cardId]);
+export function isCardInAlbum(cardId, album = {}, collection = {}) {
+  if (album && album[cardId]) return true;
+  if (collection && collection[cardId] !== undefined && collection[cardId] !== 0) return true;
+  return false;
 }
 
-/**
- * Vérifie si le joueur peut insérer la carte et calcule le coût en TRN
- */
 export function getCardInsertionStatus(card, myCollection = {}, album = {}) {
-  if (!card) return { canEnter: false, inAlbum: false, cost: 0, currentContract: 0 };
-  const cardId = card.id;
-
-  if (isCardInAlbum(cardId, album)) {
-    return { canEnter: false, inAlbum: true, cost: 0, currentContract: 0 };
-  }
-
-  const currentContract = myCollection?.[cardId];
-  const hasInInventory = currentContract !== undefined && currentContract !== 0;
-
-  if (!hasInInventory) {
-    return { canEnter: false, inAlbum: false, notOwned: true, cost: 0, currentContract: 0 };
-  }
-
-  // Si SECRETE : gratuit et automatique
-  if (card.rarity === 'SECRET') {
-    return { canEnter: true, inAlbum: false, cost: 0, isSecret: true, currentContract };
-  }
-
-  // Si À VIE : 0 TRN
-  if (currentContract === 'LIFETIME') {
-    return { canEnter: true, inAlbum: false, cost: 0, isLifetime: true, currentContract: 'LIFETIME' };
-  }
-
-  const cost = COLLECTION_INSERT_COSTS[card.rarity] || 0;
-  const hasEnough = typeof currentContract === 'number' && currentContract >= cost;
-
-  return {
-    canEnter: hasEnough,
-    inAlbum: false,
-    cost,
-    currentContract,
-    notEnough: !hasEnough,
-    missingContracts: cost - (typeof currentContract === 'number' ? currentContract : 0)
-  };
+  const inAlbum = isCardInAlbum(card?.id, album, myCollection);
+  return { canEnter: false, inAlbum, cost: 0, currentContract: 0 };
 }
 
 export function canEnterCard(cardId, myCollection = {}, album = {}) {
-  const card = CARD_POOL.find(c => c.id === cardId);
-  if (!card) return false;
-  const status = getCardInsertionStatus(card, myCollection, album);
-  return status.canEnter;
+  return false;
 }
 
 /**
  * Calcule la progression dans l'album permanent
  */
-export function getTeamProgress(teamTag, album = {}) {
+export function getTeamProgress(teamTag, album = {}, collection = {}) {
   const cards = getTeamCollectionCards(teamTag);
   const total = cards.length;
   if (total === 0) return { ownedCount: 0, totalCount: 0, percentage: 0, isComplete: false, missingCount: 0 };
 
-  const ownedCount = cards.filter(c => isCardInAlbum(c.id, album)).length;
+  const ownedCount = cards.filter(c => isCardInAlbum(c.id, album, collection)).length;
   const percentage = Math.round((ownedCount / total) * 100);
   const isComplete = ownedCount === total;
 
@@ -283,33 +267,27 @@ export function getTeamProgress(teamTag, album = {}) {
   };
 }
 
-/**
- * Nombre de cartes insérées prêtes (pour affichage / badge)
- */
-export function getPendingEnterCount(teamTag, myCollection = {}, album = {}) {
-  const cards = teamTag ? getTeamCollectionCards(teamTag) : CARD_POOL;
-  return cards.filter(c => canEnterCard(c.id, myCollection, album)).length;
+export function getPendingEnterCount() {
+  return 0;
 }
 
-/**
- * Calcule les statistiques globales de l'album
- */
 export function getOverallCollectionStats(album = {}, state = {}, myId = '', myCollection = {}) {
   const allTeams = getAllCollectionTeams();
   const totalCards = CARD_POOL.length;
-  const uniqueOwnedCount = CARD_POOL.filter(c => isCardInAlbum(c.id, album)).length;
+  const uniqueOwnedCount = CARD_POOL.filter(c => isCardInAlbum(c.id, album, myCollection)).length;
   const overallPercentage = totalCards > 0 ? Math.round((uniqueOwnedCount / totalCards) * 100) : 0;
 
   const claimedMap = state?.collectionRewardsClaimed?.[myId] || {};
+
   let completedTeams = 0;
   let unclaimedCount = 0;
   let totalCreditsEarned = 0;
 
   allTeams.forEach(team => {
-    const { isComplete } = getTeamProgress(team.tag, album);
+    const { isComplete } = getTeamProgress(team.tag, album, myCollection);
     if (isComplete) {
       completedTeams += 1;
-      if (!claimedMap[team.tag]) {
+      if (!isTeamMilestoneClaimed(team.tag, 100, claimedMap)) {
         unclaimedCount += 1;
       }
     }
@@ -325,7 +303,60 @@ export function getOverallCollectionStats(album = {}, state = {}, myId = '', myC
     overallPercentage,
     totalTeams: allTeams.length,
     completedTeams,
+    unclaimedTeamMilestones: unclaimedCount,
+    unclaimedGlobalMilestones: 0,
     unclaimedCount,
     totalCreditsEarned,
   };
+}
+
+/**
+ * Récompense unique à 100% de complétion de l'équipe
+ */
+export function getTeamMilestones(teamTag, cards = null) {
+  const teamCards = cards || getTeamCollectionCards(teamTag);
+  const total = teamCards.length;
+  if (total === 0) return [];
+
+  const difficulty = calculateTeamDifficulty(teamCards);
+
+  return [
+    {
+      percent: 100,
+      requiredCount: total,
+      label: '100%',
+      credits: difficulty.rewardCredits,
+      description: `Compléter l'équipe (${total}/${total})`
+    }
+  ];
+}
+
+export function isTeamMilestoneClaimed(teamTag, percent = 100, claimedRewardsMap = {}) {
+  if (!claimedRewardsMap) return false;
+  return Boolean(
+    claimedRewardsMap[teamTag] ||
+    claimedRewardsMap[`${teamTag}_100`] ||
+    claimedRewardsMap[`${teamTag}_${percent}`]
+  );
+}
+
+export function getClaimableTeamMilestones(teamTag, album = {}, claimedRewardsMap = {}, collection = {}) {
+  const cards = getTeamCollectionCards(teamTag);
+  const ownedCount = cards.filter(c => isCardInAlbum(c.id, album, collection)).length;
+  const isComplete = ownedCount === cards.length && cards.length > 0;
+  const isClaimed = isTeamMilestoneClaimed(teamTag, 100, claimedRewardsMap);
+
+  if (isComplete && !isClaimed) {
+    return getTeamMilestones(teamTag, cards);
+  }
+  return [];
+}
+
+// Stubs de compatibilité pour les anciennes références éventuelles
+export const COLLECTION_GLOBAL_MILESTONES = [];
+export function getMilestoneProgress() {
+  return { current: 0, target: 0, percentage: 0, isCompleted: false };
+}
+export function getClaimableGlobalMilestones() {
+  return [];
 }

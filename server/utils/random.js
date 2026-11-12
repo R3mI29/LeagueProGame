@@ -1,4 +1,5 @@
 // server/utils/random.js
+import { calculatePowerRankingScore } from '../../src/constants/rankingConfig.js';
 
 /**
  * Algorithme Fisher-Yates — shuffle uniforme.
@@ -14,16 +15,34 @@ export function shuffleArray(array) {
 }
 
 /**
- * Trie les équipes par points de saison décroissants (seed 1 = le plus de points).
- * En cas d'égalité ou d'absence de scores, l'ordre est randomisé uniformément.
+ * Trie les équipes pour le seeding des tournois.
+ * Si des résultats récents existent, le seeding est basé sur le Power Ranking (forme récente).
+ * Sinon, il s'appuie sur les points de saison acquis ou la force initiale d'équipe.
+ * En cas d'égalité, l'ordre est départagé avec un tiebreak aléatoire uniforme.
  * Retourne un NOUVEAU tableau.
  */
-export function seedTeams(participants, seasonScores) {
-  const withMeta = participants.map(p => ({
-    team: p,
-    points: seasonScores?.[p.id]?.points ?? 0,
-    tiebreak: Math.random(),
-  }));
-  withMeta.sort((a, b) => b.points - a.points || b.tiebreak - a.tiebreak);
+export function seedTeams(participants, seasonScores = {}, recentPlacements = {}, state = {}) {
+  const hasRecentResults = Object.values(recentPlacements || {}).some(arr => Array.isArray(arr) && arr.length > 0);
+
+  const withMeta = participants.map(p => {
+    let prScore = 0;
+    if (hasRecentResults) {
+      prScore = calculatePowerRankingScore(p.id, recentPlacements, participants, state);
+    }
+    const points = seasonScores?.[p.id]?.points ?? 0;
+    return {
+      team: p,
+      prScore,
+      points,
+      tiebreak: Math.random(),
+    };
+  });
+
+  if (hasRecentResults) {
+    withMeta.sort((a, b) => b.prScore - a.prScore || b.points - a.points || b.tiebreak - a.tiebreak);
+  } else {
+    withMeta.sort((a, b) => b.points - a.points || b.tiebreak - a.tiebreak);
+  }
+
   return withMeta.map(x => x.team);
 }
