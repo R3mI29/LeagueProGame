@@ -313,6 +313,7 @@ export function awardSeasonRewards() {
   }
 
   const catchupBonuses = {};
+  const currentPlacements = {};
 
   state.participants.forEach(p => {
     if (!state.seasonScores[p.id]) state.seasonScores[p.id] = { points: 0, titles: 0 };
@@ -325,6 +326,8 @@ export function awardSeasonRewards() {
     else if (p.id === finalistId) currentPlacement = 'TOP2';
     else if (top4Ids.includes(p.id)) currentPlacement = 'TOP4';
     else if (top8Ids.includes(p.id)) currentPlacement = 'TOP8';
+
+    currentPlacements[p.id] = currentPlacement;
 
     // 2. Garder les 4 derniers tournois
     state.recentPlacements[p.id].push(currentPlacement);
@@ -340,6 +343,7 @@ export function awardSeasonRewards() {
 
   const rewards = eventConfig.rewards;
   state.participants.forEach(p => {
+    const currentPlacement = currentPlacements[p.id] || 'N/A';
     let pointsEarned = rewards.points.base || 0;
     let moneyEarned = rewards.money.base || 0;
 
@@ -447,39 +451,61 @@ export function awardSeasonRewards() {
         getOrRefreshSponsorOfferings(state, p.id);
       }
     } else {
-      p.roster = p.roster.map(pro => {
-        if (pro.id.toLowerCase().includes('caliste') && pro.rarity === 'WANTED') { pro.rating = (pro.rating || 89) + 1; pro.overall = (pro.overall || 89) + 1; }
-        if (pro.contract === 'LIFETIME') return pro; 
-        let currentContract = pro.contract !== undefined ? pro.contract : 3;
-        currentContract -= 1;
-        
-        if (currentContract <= 0) {
-          const collection = state.cardCollections[p.id] || {};
-          const lifetimeIds = Object.keys(collection).filter(id => collection[id] === 'LIFETIME');
-          let bestLifetime = null;
-          lifetimeIds.forEach(id => {
-              const card = getCardById(id);
-              if (card && card.role === pro.role) {
-                  if (!bestLifetime || (card.rating || card.overall || 0) > (bestLifetime.rating || bestLifetime.overall || 0)) bestLifetime = card;
-              }
-          });
-          if (bestLifetime) {
-              const newPro = cardToRosterEntry(bestLifetime); newPro.contract = 'LIFETIME'; 
-              if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {};
-              state.activeLineups[p.id][pro.role] = newPro.id; return newPro;
-          } else {
-              let replacement = null;
-              while(!replacement) replacement = openPack('standard').find(c => c.role === pro.role);
-              const newPro = cardToRosterEntry(replacement); newPro.contract = 3; 
-              if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {};
-              state.activeLineups[p.id][pro.role] = newPro.id; return newPro;
+      if (Array.isArray(p.roster)) {
+        p.roster = p.roster.map(pro => {
+          if (!pro) return pro;
+          if (pro.id && typeof pro.id === 'string' && pro.id.toLowerCase().includes('caliste') && pro.rarity === 'WANTED') {
+            pro.rating = (pro.rating || 89) + 1;
+            pro.overall = (pro.overall || 89) + 1;
           }
-        } else {
-          pro.contract = currentContract; return pro;
-        }
-      });
-      p.roster = upgradeBotRoster(p.roster, Math.floor(moneyEarned / 100));
-      p.roster.forEach(c => { if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {}; state.activeLineups[p.id][c.role] = c.id; });
+          if (pro.contract === 'LIFETIME') return pro; 
+          let currentContract = pro.contract !== undefined ? pro.contract : 3;
+          currentContract -= 1;
+          
+          if (currentContract <= 0) {
+            const collection = state.cardCollections?.[p.id] || {};
+            const lifetimeIds = Object.keys(collection).filter(id => collection[id] === 'LIFETIME');
+            let bestLifetime = null;
+            lifetimeIds.forEach(id => {
+                const card = getCardById(id);
+                if (card && card.role === pro.role) {
+                    if (!bestLifetime || (card.rating || card.overall || 0) > (bestLifetime.rating || bestLifetime.overall || 0)) bestLifetime = card;
+                }
+            });
+            if (bestLifetime) {
+                const newPro = cardToRosterEntry(bestLifetime);
+                newPro.contract = 'LIFETIME'; 
+                if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {};
+                state.activeLineups[p.id][pro.role] = newPro.id;
+                return newPro;
+            } else {
+                let replacement = null;
+                let attempts = 0;
+                while (!replacement && attempts++ < 30) {
+                  replacement = openPack('standard').find(c => c.role === pro.role);
+                }
+                if (!replacement) {
+                  replacement = getCardById('fnc-humanoid') || { id: `bot-fallback-${pro.role}`, name: `Bot ${pro.role}`, role: pro.role, rating: 70, overall: 70 };
+                }
+                const newPro = cardToRosterEntry(replacement);
+                newPro.contract = 3; 
+                if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {};
+                state.activeLineups[p.id][pro.role] = newPro.id;
+                return newPro;
+            }
+          } else {
+            pro.contract = currentContract;
+            return pro;
+          }
+        });
+        p.roster = upgradeBotRoster(p.roster, Math.floor(moneyEarned / 100));
+        p.roster.forEach(c => {
+          if (c && c.role && c.id) {
+            if (!state.activeLineups[p.id]) state.activeLineups[p.id] = {};
+            state.activeLineups[p.id][c.role] = c.id;
+          }
+        });
+      }
       equipRarestSkin(state, p.id);
     }
   });

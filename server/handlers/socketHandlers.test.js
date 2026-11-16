@@ -49,6 +49,8 @@ test('registerSocketHandlers registers all handlers across all domains', () => {
     'reconnect-player',
     'takeover-bot',
     'equip-skin',
+    'enter-lobby',
+    'set-host',
     'join-lobby',
     'resume-game',
     'leave-game',
@@ -80,6 +82,8 @@ test('registerSocketHandlers registers all handlers across all domains', () => {
     // Save
     'list-game-saves',
     'save-game',
+    'overwrite-game-save',
+    'save-and-quit',
     'delete-game-save',
     'new-game',
     'load-game',
@@ -594,6 +598,67 @@ test('collection team completion: full completion reward based on difficulty wit
   socket.handlers['claim-collection-milestone']('cards_20');
   const milestoneRemovedError = socket.emitted.filter(e => e.event === 'collection-milestone-error').pop();
   assert.ok(milestoneRemovedError, 'Milestones are removed');
+});
+
+test('lobby and save handlers: enter-lobby, set-host, overwrite-game-save, and save-and-quit', async () => {
+  resetGameState();
+  const io = createMockIo();
+  const socketP1 = createMockSocket('p1');
+  const socketP2 = createMockSocket('p2');
+
+  let archivedLabel = null;
+  let overwrittenSaveId = null;
+  const mockGameManager = {
+    async archive(label) { archivedLabel = label; return { saveId: 'save-123.json', label }; },
+    async overwrite(saveId) { overwrittenSaveId = saveId; return { saveId, label: 'Saved' }; },
+    async list() { return [{ id: 'save-123.json', label: 'Test Save' }]; },
+    async load() { return { restored: true }; },
+  };
+
+  registerSocketHandlers(io, socketP1, { gameManager: mockGameManager });
+  registerSocketHandlers(io, socketP2, { gameManager: mockGameManager });
+
+  // 1. enter-lobby registers p1 as first player (host)
+  let p1Res = null;
+  socketP1.handlers['enter-lobby']((res) => { p1Res = res; });
+  assert.equal(p1Res?.ok, true);
+  assert.equal(state.participants.length, 1);
+  assert.equal(state.participants[0].id, 'p1');
+  assert.equal(state.participants[0].isHost, true);
+
+  // 2. enter-lobby registers p2 as second player (member)
+  let p2Res = null;
+  socketP2.handlers['enter-lobby']((res) => { p2Res = res; });
+  assert.equal(p2Res?.ok, true);
+  assert.equal(state.participants.length, 2);
+  assert.equal(state.participants[1].id, 'p2');
+  assert.equal(state.participants[1].isHost, false);
+
+  // 3. p1 transfers host role to p2
+  let hostRes = null;
+  socketP1.handlers['set-host']('p2', (res) => { hostRes = res; });
+  assert.equal(hostRes?.ok, true);
+  assert.equal(state.participants[0].isHost, false);
+  assert.equal(state.participants[1].isHost, true);
+
+  // 4. Overwrite game save by new host p2
+  let overwriteRes = null;
+  await socketP2.handlers['overwrite-game-save']('save-123.json', (res) => { overwriteRes = res; });
+  assert.equal(overwriteRes?.ok, true);
+  assert.equal(overwrittenSaveId, 'save-123.json');
+
+  // 5. Non-host p1 cannot overwrite
+  let failRes = null;
+  await socketP1.handlers['overwrite-game-save']('save-123.json', (res) => { failRes = res; });
+  assert.equal(failRes?.ok, false);
+
+  // 6. save-and-quit archives and resets to lobby
+  let quitRes = null;
+  state.phase = 'cards';
+  await socketP2.handlers['save-and-quit']('Ma fin de session', (res) => { quitRes = res; });
+  assert.equal(quitRes?.ok, true);
+  assert.equal(archivedLabel, 'Ma fin de session');
+  assert.equal(state.phase, 'lobby');
 });
 
 

@@ -1,5 +1,5 @@
 import { constants as fsConstants } from 'node:fs';
-import { access, copyFile, mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { access, copyFile, mkdir, readdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { restoreGameState } from '../state/gameState.js';
@@ -115,7 +115,16 @@ async function writeSnapshot(snapshot, filePath) {
   if (await fileExists(filePath)) {
     await copyFile(filePath, backupPath);
   }
-  await rename(temporaryPath, filePath);
+  try {
+    await rename(temporaryPath, filePath);
+  } catch (err) {
+    if (err.code === 'EPERM' || err.code === 'EBUSY') {
+      await copyFile(temporaryPath, filePath);
+      await unlink(temporaryPath).catch(() => {});
+    } else {
+      throw err;
+    }
+  }
 }
 
 export async function persistGameSnapshot(gameState, { filePath = DEFAULT_SAVE_PATH } = {}) {
@@ -285,6 +294,33 @@ export async function loadArchivedGame(
   const snapshot = await readSnapshot(filePath);
   applySnapshot(gameState, snapshot);
   return { restored: true, filePath, savedAt: snapshot.savedAt };
+}
+
+export async function overwriteGameSnapshot(
+  gameState,
+  saveId,
+  { savesDirectory = DEFAULT_SAVES_DIRECTORY } = {},
+) {
+  const filePath = getSavePath(saveId, savesDirectory);
+  if (!(await fileExists(filePath))) {
+    throw new Error('La sauvegarde sélectionnée est introuvable.');
+  }
+
+  let label = `Saison ${gameState.year || 1}`;
+  try {
+    const existing = await readSnapshot(filePath);
+    if (existing.label) label = existing.label;
+  } catch (err) {
+    console.warn('[SAVE] Could not read existing label:', err);
+  }
+
+  if (isGameStateStable(gameState)) {
+    await writeSnapshot(createGameSnapshot(gameState, { label }), filePath);
+  } else {
+    throw new Error('Impossible de sauvegarder pendant une simulation de match.');
+  }
+
+  return { saveId, label, filePath, savedAt: new Date().toISOString() };
 }
 
 export async function flushGameSnapshot(

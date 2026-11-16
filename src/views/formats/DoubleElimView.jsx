@@ -2,7 +2,7 @@ import React from 'react';
 import { socket } from '../../api/socket';
 
 export default function DoubleElimView({ state, event }) {
-  const { bracket, currentRound, roundComplete, readyPlayers } = state;
+  const { bracket = [], currentRound = 0, roundComplete, readyPlayers } = state;
   const myId = socket.id;
 
   const msiRed = '#E6192B';
@@ -11,9 +11,10 @@ export default function DoubleElimView({ state, event }) {
   const boxBg = '#141824';
   const borderMuted = '#2A3042';
 
-  const humanCount = state.participants.filter(p => !p.id.startsWith('bot-') && !p.isBot).length;
+  const humanCount = state.participants?.filter(p => !p.id.startsWith('bot-') && !p.isBot).length || 1;
   const isGlobalReady = readyPlayers?.includes(myId);
   const isRoundReady = state.roundReady?.includes(myId);
+  const isContinueReady = state.continueSeasonVotes?.includes(myId);
 
   const toggleReady = () => socket.emit('toggle-ready');
   const advanceRound = () => socket.emit('advance-round');
@@ -92,7 +93,7 @@ export default function DoubleElimView({ state, event }) {
     );
   };
 
-  const getMatchesByPrefix = (prefix) => bracket.flat().filter(m => m.id.startsWith(prefix));
+  const getMatchesByPrefix = (prefix) => (bracket ? bracket.flat() : []).filter(m => m && m.id && m.id.startsWith(prefix));
 
   return (
     <div className="fixed inset-0 w-screen h-screen z-[100] overflow-auto p-3 sm:p-[40px_5vw]" style={{ backgroundColor: bgDark }}>
@@ -172,25 +173,32 @@ export default function DoubleElimView({ state, event }) {
         {state.champion ? (
           <button 
             onClick={() => socket.emit('continue-season')} 
-            className="w-full text-black border-none p-3 font-['Arial_Black'] text-sm italic cursor-pointer"
-            style={{ backgroundColor: msiYellow }}
+            disabled={isContinueReady}
+            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic cursor-pointer uppercase transition-all"
+            style={{
+              backgroundColor: isContinueReady ? borderMuted : msiYellow,
+              color: isContinueReady ? '#888' : '#000',
+              cursor: isContinueReady ? 'wait' : 'pointer',
+            }}
           >
-            TERMINER SAISON
+            {isContinueReady
+              ? `EN ATTENTE (${state.continueSeasonVotes?.length || 0}/${humanCount})`
+              : (state.eventIndex === 3 ? 'TERMINER LA SAISON' : 'CONTINUER LA SAISON')}
           </button>
         ) : roundComplete ? (
           <button 
             onClick={advanceRound} 
             disabled={isRoundReady} 
-            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic"
+            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic cursor-pointer"
             style={{ backgroundColor: isRoundReady ? borderMuted : '#FFF', color: isRoundReady ? '#888' : '#000', cursor: isRoundReady ? 'wait' : 'pointer', boxShadow: isRoundReady ? 'none' : `3px 3px 0px ${msiRed}` }}
           >
-            {isRoundReady ? `EN ATTENTE (${state.roundReady.length}/${humanCount})` : "TOUR SUIVANT"}
+            {isRoundReady ? `EN ATTENTE (${state.roundReady?.length || 0}/${humanCount})` : "TOUR SUIVANT"}
           </button>
         ) : (
           <button 
             onClick={toggleReady} 
             disabled={isGlobalReady} 
-            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic"
+            className="w-full border-none p-3 font-['Arial_Black'] text-sm italic cursor-pointer"
             style={{ backgroundColor: isGlobalReady ? borderMuted : msiYellow, color: isGlobalReady ? '#888' : '#000', cursor: isGlobalReady ? 'wait' : 'pointer', boxShadow: isGlobalReady ? 'none' : `3px 3px 0px ${msiRed}` }}
           >
             {isGlobalReady ? `EN ATTENTE (${readyPlayers?.length || 0}/${humanCount})` : 'LANCER MATCH'}

@@ -237,4 +237,55 @@ test('startCurrentEvent for Worlds (swiss_to_single) seeds Round 0 with Pot 1 vs
   }
 });
 
+test('awardSeasonRewards handles human finishing 2nd at MSI with sponsor contract without throwing ReferenceError', async () => {
+  const { awardSeasonRewards } = await import('./tournamentService.js');
+  resetGameState();
+
+  const human = { id: 'human-p1', name: 'Human Team', roster: [], isBot: false };
+  const botChampion = { id: 'bot-champ', name: 'Bot Champion', roster: [], isBot: true };
+
+  state.participants = [human, botChampion];
+  // MSI is eventIndex 1 (double_elim)
+  state.eventIndex = 1;
+  state.champion = botChampion;
+
+  // Double elim bracket with 8 rounds
+  const gfMatch = { id: 'gf-1', winner: botChampion, teamA: human, teamB: botChampion, status: 'finished' };
+  const lbFinalMatch = { id: 'lb6-1', winner: human, teamA: human, teamB: { id: 'bot-3' }, status: 'finished' };
+  const lbSemiMatch = { id: 'lb5-1', winner: human, teamA: human, teamB: { id: 'bot-4' }, status: 'finished' };
+  const lb4_1 = { id: 'lb4-1', winner: human, teamA: human, teamB: { id: 'bot-5' }, status: 'finished' };
+  const lb4_2 = { id: 'lb4-2', winner: botChampion, teamA: botChampion, teamB: { id: 'bot-6' }, status: 'finished' };
+  const lb3_1 = { id: 'lb3-1', winner: human, teamA: human, teamB: { id: 'bot-7' }, status: 'finished' };
+  const lb3_2 = { id: 'lb3-2', winner: botChampion, teamA: botChampion, teamB: { id: 'bot-8' }, status: 'finished' };
+
+  state.bracket = [
+    [], // r0
+    [], // r1
+    [], // r2
+    [null, lb3_1, lb3_2], // r3
+    [lb4_1, lb4_2], // r4
+    [lbSemiMatch], // r5
+    [lbFinalMatch], // r6
+    [gfMatch], // r7
+  ];
+
+  // Active sponsor contract for human requiring TOP 8
+  state.activeContracts = {
+    'human-p1': {
+      id: 'mastercard_presence',
+      type: 'tournament_top8',
+      reward: { credits: 300 },
+      remainingEvents: 1,
+    },
+  };
+
+  awardSeasonRewards();
+
+  assert.equal(state.seasonScores['human-p1'].points, 4); // finalist points for MSI
+  assert.equal(state.recentPlacements['human-p1'][0], 'TOP2');
+  assert.ok(state.completedContracts['human-p1'].includes('mastercard_presence'));
+  assert.equal(state.activeContracts['human-p1'], undefined);
+});
+
+
 

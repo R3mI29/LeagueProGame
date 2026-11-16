@@ -174,9 +174,9 @@ export function registerTournamentHandlers(io, socket, {
         if (lineup) {
           Object.keys(lineup).forEach(role => {
             const cardId = lineup[role];
-            let currentContract = state.cardCollections[p.id][cardId];
+            let currentContract = state.cardCollections?.[p.id]?.[cardId];
             if (currentContract !== 'LIFETIME' && typeof currentContract === 'number') {
-              state.cardCollections[p.id][cardId] = Math.max(0, currentContract - 1);
+              if (!state.cardCollections[p.id]) state.cardCollections[p.id] = {}; state.cardCollections[p.id][cardId] = Math.max(0, currentContract - 1);
               if (state.cardCollections[p.id][cardId] === 0) delete lineup[role];
             }
           });

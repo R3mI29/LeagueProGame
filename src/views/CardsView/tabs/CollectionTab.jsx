@@ -330,14 +330,6 @@ export default function CollectionTab({
                       onClick={() => setInspectedCard(dynamicCard)}
                       className="group relative flex flex-col items-center cursor-pointer transition-all duration-200 hover:-translate-y-2 select-none"
                     >
-                      {isMultiTeam && (
-                        <div
-                          className="absolute -top-2 -left-2 z-30 px-2 py-0.5 rounded-md bg-[#0F1422]/95 border border-[#4CE0D2]/70 text-[#4CE0D2] font-rajdhani font-black text-[10px] tracking-wider shadow-md backdrop-blur-sm"
-                          title={`Appartient à : ${cardTeams.join(' & ')} (Inscrite dans toutes ses équipes)`}
-                        >
-                          {cardTeams.join(' & ')}
-                        </div>
-                      )}
                       <CardIllustration card={dynamicCard} width={140} />
                     </div>
                   );
@@ -658,14 +650,6 @@ export default function CollectionTab({
               <div className="text-xs font-semibold text-emerald-400">
                 Inscrite à vie dans votre collection
               </div>
-              {getCardTeamTags(inspectedCard).length > 1 && (
-                <div className="mt-2 text-xs font-rajdhani font-bold text-[#4CE0D2] bg-[#4CE0D2]/10 border border-[#4CE0D2]/30 px-3 py-1.5 rounded-lg">
-                  Franchises : {getCardTeamTags(inspectedCard).join(' & ')}<br />
-                  <span className="text-[11px] text-white/60 font-normal">
-                    Inscrite automatiquement dans toutes ses équipes
-                  </span>
-                </div>
-              )}
             </div>
           </div>
         </div>

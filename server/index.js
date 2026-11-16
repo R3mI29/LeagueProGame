@@ -15,6 +15,7 @@ import {
   listGameSnapshots,
   loadArchivedGame,
   loadGameSnapshot,
+  overwriteGameSnapshot,
 } from './services/gamePersistenceService.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +43,7 @@ if (restoreResult.restored) {
 const persistentIo = createPersistentIo(io, state);
 const gameManager = {
   archive: label => archiveGameSnapshot(state, { label }),
+  overwrite: saveId => overwriteGameSnapshot(state, saveId),
   list: () => listGameSnapshots(),
   load: saveId => loadArchivedGame(state, saveId),
 };
@@ -63,9 +65,38 @@ server.listen(port, '0.0.0.0', () => {
 
 const shutdown = async (signal) => {
   console.log(`${signal} reçu, sauvegarde de la partie…`);
+  if (state.phase !== 'lobby') {
+    try {
+      await archiveGameSnapshot(state, {
+        label: `[AutoSave] Coupure serveur (${signal}) - Saison ${state.year || 1}`,
+      });
+      console.log('[AUTOSAVE] Sauvegarde automatique de coupure créée dans saves/');
+    } catch (err) {
+      console.error('[AUTOSAVE] Erreur lors de la sauvegarde de coupure:', err);
+    }
+  }
   await flushGameSnapshot(state);
   server.close(() => process.exit(0));
 };
 
+const handleCrash = async (error, type) => {
+  console.error(`[CRASH] ${type}:`, error);
+  if (state.phase !== 'lobby') {
+    try {
+      await archiveGameSnapshot(state, {
+        label: `[AutoSave] Crash (${type}) - Saison ${state.year || 1}`,
+      });
+      await flushGameSnapshot(state);
+      console.log('[AUTOSAVE] Sauvegarde automatique d\'urgence créée dans saves/');
+    } catch (err) {
+      console.error('[AUTOSAVE] Erreur lors de la sauvegarde de crash:', err);
+    }
+  }
+  process.exit(1);
+};
+
+process.on('uncaughtException', (err) => handleCrash(err, 'uncaughtException'));
+process.on('unhandledRejection', (err) => handleCrash(err, 'unhandledRejection'));
 process.once('SIGINT', () => shutdown('SIGINT'));
 process.once('SIGTERM', () => shutdown('SIGTERM'));
+process.once('SIGBREAK', () => shutdown('SIGBREAK'));

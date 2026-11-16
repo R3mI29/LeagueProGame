@@ -620,7 +620,7 @@ export const CARD_POOL = [
   {
     "id": "showmaker-ewc-2020",
     "baseName": "ShowMaker",
-    "variant": "2026 EWC ShowMaker",
+    "variant": "2026 EWC Champion",
     "role": "Mid",
     "rating": 86,
     "rarity": "Épique",
@@ -692,7 +692,8 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/DWG_canyon_WORLDS.jpeg",
     "nationality": "KR",
     "teamTag": "DWG",
-    "league": "LCK"
+    "league": "LCK",
+    "video": "/videos/canyon_edit.mp4"
   },
   // ShowMaker
   {
@@ -1436,6 +1437,19 @@ export const CARD_POOL = [
     "teamTag": "KC",
     "league": "LEC"
   },
+  // Busio
+  {
+    "id": "kc-busio",
+    "baseName": "Busio",
+    "variant": "KC Busio",
+    "role": "Support",
+    "rating": 76,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/KC_busio.webp",
+    "nationality": "PL",
+    "teamTag": "KC",
+    "league": "LEC"
+  },
 
   // --- [LEC] KCB ---
   // Tao
@@ -2085,8 +2099,8 @@ export const CARD_POOL = [
     "baseName": "ON",
     "variant": "5x LPL champion",
     "role": "Support",
-    "rating": 87,
-    "rarity": "Épique",
+    "rating": 90,
+    "rarity": "Légendaire",
     "image": "/cardsImg/others/BLG-ON-LPL.jpg",
     "nationality": "CN",
     "teamTag": "BLG",
@@ -2136,7 +2150,7 @@ export const CARD_POOL = [
   {
     "id": "kanavi-msi-2023",
     "baseName": "Kanavi",
-    "variant": "MSI Champion Kanavi",
+    "variant": "MSI Champion",
     "role": "Jungle",
     "rating": 88,
     "rarity": "Épique",
@@ -2167,7 +2181,8 @@ export const CARD_POOL = [
     "image": "/cardsImg/others/kanavi_chinese.jpg",
     "nationality": "KR",
     "teamTag": "JDG",
-    "league": "LPL"
+    "league": "LPL",
+    "video": "/videos/kanavi_edit.mp4"
   },
   // Knight
   {
@@ -2528,7 +2543,72 @@ export const CARD_POOL = [
     "teamTag": "FPX",
     "league": "LPL"
   },
-  // --- [LPL] FPX ---
+  // --- [LPL] AL ---
+  // Breathe
+  {
+    "id": "al-breathe",
+    "baseName": "Breathe",
+    "variant": "AL Breathe",
+    "role": "Top",
+    "rating": 79,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/AL_breathe.webp",
+    "nationality": "CN",
+    "teamTag": "AL",
+    "league": "LPL"
+  },
+  // Tarzan
+  {
+    "id": "al-tarzan",
+    "baseName": "Tarzan",
+    "variant": "AL Tarzan",
+    "role": "Jungle",
+    "rating": 83,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/AL_tarzan.webp",
+    "nationality": "KR",
+    "teamTag": "AL",
+    "league": "LPL"
+  },
+  // Shanks
+  {
+    "id": "al-shanks",
+    "baseName": "Shanks",
+    "variant": "AL Shanks",
+    "role": "Mid",
+    "rating": 78,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/AL_shanks.webp",
+    "nationality": "CN",
+    "teamTag": "AL",
+    "league": "LPL"
+  },
+  // Hope
+  {
+    "id": "al-hope",
+    "baseName": "Hope",
+    "variant": "AL Hope",
+    "role": "ADC",
+    "rating": 79,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/AL_hope.webp",
+    "nationality": "CN",
+    "teamTag": "AL",
+    "league": "LPL"
+  },
+  // Kael
+  {
+    "id": "al-kael",
+    "baseName": "Kael",
+    "variant": "AL Kael",
+    "role": "Support",
+    "rating": 82,
+    "rarity": "Rare",
+    "image": "/cardsImg/2026-players/AL_kael.webp",
+    "nationality": "KR",
+    "teamTag": "AL",
+    "league": "LPL"
+  },
   // FLandre
   {
     "id": "Flandre-lpl-champ",

@@ -12,6 +12,7 @@ import {
 import { startAllBotMatchesInCurrentRound } from '../services/matchService.js';
 import { SKIN_BY_ID, canUseSkin } from '../../src/constants/teamSkins.js';
 import { initializeSeasonBots } from '../services/tournamentService.js';
+import { TEAMS_DB } from '../../src/constants/teams.js';
 
 export function registerLobbyHandlers(io, socket, {
   state = defaultState,
@@ -24,6 +25,7 @@ export function registerLobbyHandlers(io, socket, {
     if (result.ok) {
       if (!hadConnectedPlayers) assignHost(state, socket.id);
       else ensureConnectedHost(state, socket.id);
+      state.awaitingResumeDecision = false;
     }
     acknowledge(result);
     if (result.ok) io.emit('draft-update', state);
@@ -60,9 +62,52 @@ export function registerLobbyHandlers(io, socket, {
     io.emit('draft-update', state);
   });
 
+  socket.on('enter-lobby', (acknowledge = () => {}) => {
+    if (state.phase !== 'lobby') return acknowledge({ ok: false, error: "La saison a déjà commencé." });
+    let participant = state.participants.find(p => p.id === socket.id);
+    let playerToken = null;
+    if (!participant) {
+      const humanCount = state.participants.filter(p => !p.isBot).length;
+      if (humanCount >= 16) return acknowledge({ ok: false, error: "Le salon est complet (16 max)." });
+
+      const usedLogos = state.participants.map(p => p.logo).filter(Boolean);
+      const available = TEAMS_DB.filter(t => !usedLogos.includes(t.logo));
+      const defaultTeam = available[0] || { name: `Joueur ${humanCount + 1}`, tag: `J${humanCount + 1}`, logo: '' };
+
+      const isFirst = humanCount === 0;
+      participant = {
+        id: socket.id,
+        name: defaultTeam.name,
+        tag: defaultTeam.tag,
+        logo: defaultTeam.logo || '',
+        roster: [],
+        isHost: isFirst,
+        isDisconnected: false,
+        hasCustomTeam: false,
+      };
+      state.participants.push(participant);
+      playerToken = createPlayerSession(socket.id);
+      ensureConnectedHost(state, socket.id);
+      io.emit('draft-update', state);
+    }
+    acknowledge({ ok: true, playerToken, participant });
+  });
+
+  socket.on('set-host', (targetPlayerId, acknowledge = () => {}) => {
+    const connectedPlayers = getConnectedPlayers(state);
+    const hasHost = connectedPlayers.some(p => p.isHost);
+    if (hasHost && !isCurrentPlayerHost()) {
+      return acknowledge({ ok: false, error: "Seul le chef du groupe peut transférer son rôle." });
+    }
+    const target = state.participants.find(p => p.id === targetPlayerId && !p.isBot);
+    if (!target) return acknowledge({ ok: false, error: "Joueur introuvable." });
+    assignHost(state, targetPlayerId);
+    io.emit('draft-update', state);
+    acknowledge({ ok: true });
+  });
+
   socket.on('join-lobby', (name, tag, logo, acknowledge = () => {}) => {
     if (state.phase !== 'lobby') return acknowledge({ ok: false, error: "La saison a déjà commencé." });
-    if (state.participants.length >= 16) return acknowledge({ ok: false, error: "Le lobby est complet." });
     if (typeof name !== 'string' || typeof tag !== 'string' || typeof logo !== 'string') {
       return acknowledge({ ok: false, error: "Les informations de l'équipe sont invalides." });
     }
@@ -78,20 +123,29 @@ export function registerLobbyHandlers(io, socket, {
     }
 
     let playerToken = null;
-    if (!state.participants.find(p => p.id === socket.id)) {
-      state.participants.push({
+    let participant = state.participants.find(p => p.id === socket.id);
+    if (!participant) {
+      if (state.participants.length >= 16) return acknowledge({ ok: false, error: "Le lobby est complet." });
+      participant = {
         id: socket.id,
         name: cleanName,
         tag: cleanTag,
         logo: logo,
         roster: [],
-        isHost: false,
+        isHost: state.participants.filter(p => !p.isBot).length === 0,
         isDisconnected: false,
-      });
+        hasCustomTeam: true,
+      };
+      state.participants.push(participant);
       playerToken = createPlayerSession(socket.id);
       ensureConnectedHost(state, socket.id);
-      io.emit('draft-update', state);
+    } else {
+      participant.name = cleanName;
+      participant.tag = cleanTag;
+      participant.logo = logo;
+      participant.hasCustomTeam = true;
     }
+    io.emit('draft-update', state);
     acknowledge({ ok: true, playerToken });
   });
 
@@ -133,8 +187,7 @@ export function registerLobbyHandlers(io, socket, {
       player.isPermanentBot = true;
     }
 
-    const nextHost = ensureConnectedHost(state);
-    if (!nextHost) state.awaitingResumeDecision = true;
+    ensureConnectedHost(state);
     socket.emit('player-session-cleared');
     io.emit('draft-update', state);
     acknowledge({ ok: true });
@@ -173,17 +226,18 @@ export function registerLobbyHandlers(io, socket, {
     const player = state.participants.find(p => p.id === socket.id);
 
     if (player) {
-      player.isBot = true;
-      player.isDisconnected = true;
-      state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
-      state.roundReady = state.roundReady.filter(id => id !== socket.id);
-      state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
-      state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
+      if (state.phase === 'lobby') {
+        state.participants = state.participants.filter(p => p.id !== socket.id);
+      } else {
+        player.isBot = true;
+        player.isDisconnected = true;
+        state.readyPlayers = state.readyPlayers.filter(id => id !== socket.id);
+        state.roundReady = state.roundReady.filter(id => id !== socket.id);
+        state.resetPlayers = state.resetPlayers.filter(id => id !== socket.id);
+        state.continueSeasonVotes = state.continueSeasonVotes.filter(id => id !== socket.id);
+      }
     }
-    const nextHost = ensureConnectedHost(state);
-    if (!nextHost && state.participants.length > 0) {
-      state.awaitingResumeDecision = true;
-    }
+    ensureConnectedHost(state);
     if (state.phase === 'simulation') startAllBotMatchesInCurrentRound(io);
     io.emit('draft-update', state);
   });

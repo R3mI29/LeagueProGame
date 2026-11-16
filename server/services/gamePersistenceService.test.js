@@ -11,6 +11,7 @@ import {
   listGameSnapshots,
   loadArchivedGame,
   loadGameSnapshot,
+  overwriteGameSnapshot,
   persistGameSnapshot,
 } from './gamePersistenceService.js';
 import {
@@ -103,6 +104,13 @@ test('named archives can be listed and loaded', async () => {
     assert.equal(state.year, 4);
     assert.equal(state.participants[0].name, 'Archive Team');
     assert.equal(state.awaitingResumeDecision, true);
+
+    // Test overwriteGameSnapshot
+    state.year = 5;
+    await overwriteGameSnapshot(state, archived.saveId, { savesDirectory });
+    resetGameState();
+    await loadArchivedGame(state, archived.saveId, { savesDirectory });
+    assert.equal(state.year, 5, 'Overwritten save should reflect updated year');
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
