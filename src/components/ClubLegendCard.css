@@ -1,0 +1,55 @@
+/* src/components/ClubLegendCard.css */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&display=swap');
+
+.cl-pantheon-stage {
+  position: relative;
+  display: inline-block;
+  perspective: 1000px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+  filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.85))
+          drop-shadow(0 0 14px var(--club-glow));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+}
+
+.cl-pantheon-stage:hover {
+  transform: translateY(-6px) scale(1.03);
+  filter: drop-shadow(0 20px 28px rgba(0, 0, 0, 0.92))
+          drop-shadow(0 0 24px var(--club-glow));
+  z-index: 20;
+}
+
+.cl-pantheon-tilt {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cl-pantheon-tilt.is-active {
+  transition: transform 0.08s linear;
+}
+
+.cl-pantheon-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.cl-pantheon-sweep {
+  animation: clPantheonSweep 7.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes clPantheonSweep {
+  0%, 35% {
+    transform: translateX(-125px);
+  }
+  65%, 100% {
+    transform: translateX(305px);
+  }
+}

@@ -1,6 +1,14 @@
 import { RARITY_COLORS } from '../constants/cardPlayers';
+import { isClubLegendCard } from '../constants/clubLegends';
+import ClubLegendCard from './ClubLegendCard';
 
 export default function CardIllustration({ card, width = 140 }) {
+  if (!card) return null;
+
+  if (isClubLegendCard(card)) {
+    return <ClubLegendCard card={card} width={width} />;
+  }
+
   const height = width * 1.4;
 
   const isWanted = card.rarity === 'WANTED';

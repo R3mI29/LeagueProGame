@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CARD_POOL, RARITY_ORDER, getCardTeamTags, getCardTeamDisplay } from '../constants/cardPlayers'; 
 import CardIllustration from './CardIllustration';
-import { TEAMS_DB, getTeamInfo } from '../constants/teams'; 
+import { getTeamInfo } from '../constants/teams'; 
 
 function ScreenShatterReveal({ children, onStartVideo, onShatterComplete }) {
   // crackStep: 0: Calme (logo) | 1: Fissure NW | 2: Fissure E | 3: Fissure SE | 4: Fissure SW | 5: Tension | 6: BAM & Chute | 7: Terminé
@@ -177,12 +177,30 @@ export default function PackOpener({ cardIds, onClose }) {
   const currentCardId = currentItem?.id || currentItem;
   const currentCard = CARD_POOL.find(c => c.id === currentCardId);
 
-  const isWalkout = currentCard && ['Épique', 'Légendaire', 'WANTED', 'SECRET'].includes(currentCard.rarity);
+  const cardVideo = currentCard?.video || null;
+  const hasVideo = Boolean(cardVideo);
+  const isWalkout = Boolean(hasVideo || (currentCard && ['Épique', 'Légendaire', 'WANTED', 'Légende de club', 'SECRET'].includes(currentCard.rarity)));
   const finalStep = currentCard?.rarity === 'WANTED' ? 6 : 5;
-  const wantedVideo = currentCard?.video || null;
 
   const [hadVideoTransition, setHadVideoTransition] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [summaryReadyTime, setSummaryReadyTime] = useState(0);
+
+  // Retirer immédiatement le focus de tout bouton d'arrière-plan (ex: bouton "Acheter" de la boutique)
+  useEffect(() => {
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+      document.activeElement.blur();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (showSummary) {
+      setSummaryReadyTime(Date.now() + 400);
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+    }
+  }, [showSummary]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -199,26 +217,55 @@ export default function PackOpener({ cardIds, onClose }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleSkip = () => {
-    if (isCracking || isPlayingVideo) {
-      setIsCracking(false);
-      finishVideo(true);
-      return;
-    }
-    if (revealStep < finalStep) {
-      setRevealStep(finalStep);
-    }
-  };
-
-  const finishVideo = (wasPlayed = false) => {
+  const finishVideo = useCallback((wasPlayed = false) => {
     setIsPlayingVideo(false);
     setIsCracking(false);
     setVideoWatched(true);
     if (wasPlayed) {
       setHadVideoTransition(true);
     }
-    setRevealStep(currentCard?.videoTiming === 'start' ? 1 : 5);
-  };
+    setRevealStep(currentCard?.videoTiming === 'start' ? 1 : (currentCard?.rarity === 'WANTED' ? 5 : finalStep));
+  }, [currentCard, finalStep]);
+
+  const handleSkip = useCallback(() => {
+    // 1. Si la vidéo est en cours : passer la vidéo
+    if (isPlayingVideo) {
+      finishVideo(true);
+      return;
+    }
+
+    // 2. Si l'écran est en train de se briser : passer le bris et démarrer la vidéo directement
+    if (isCracking) {
+      setIsCracking(false);
+      setIsPlayingVideo(true);
+      const v = videoRef.current;
+      if (v) {
+        v.currentTime = 0;
+        v.volume = 1;
+        v.muted = false;
+        v.play().catch(() => {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            videoRef.current.play();
+          }
+        });
+      }
+      return;
+    }
+
+    // 3. Si la carte a une vidéo qui n'a pas encore été vue :
+    // Skip l'anime de base pour amener directement à l'écran qui se brise puis la vidéo
+    if (hasVideo && !videoWatched) {
+      setRevealStep(4);
+      setIsCracking(true);
+      return;
+    }
+
+    // 4. Sinon (pas de vidéo, ou vidéo déjà vue) : montrer directement la carte obtenue
+    if (revealStep < finalStep) {
+      setRevealStep(finalStep);
+    }
+  }, [isPlayingVideo, isCracking, hasVideo, videoWatched, revealStep, finalStep, finishVideo]);
 
   // Sécurité : si la vidéo ne se charge pas ou plante, on passe directement
   useEffect(() => {
@@ -229,7 +276,7 @@ export default function PackOpener({ cardIds, onClose }) {
       }
     }, 1200);
     return () => clearTimeout(timeout);
-  }, [isPlayingVideo]);
+  }, [isPlayingVideo, finishVideo]);
 
   // Démarrage de la vidéo avec son normal (volume 1) dès qu'elle devient active
   useEffect(() => {
@@ -258,19 +305,19 @@ export default function PackOpener({ cardIds, onClose }) {
     if (revealStep >= finalStep) return;
 
     // Déclenchement vidéo au début (si configuré avec videoTiming === 'start')
-    if (revealStep === 0 && currentCard?.rarity === 'WANTED' && wantedVideo && !videoWatched && currentCard?.videoTiming === 'start') {
+    if (revealStep === 0 && hasVideo && !videoWatched && currentCard?.videoTiming === 'start') {
       setIsPlayingVideo(true);
       return;
     }
 
     // Déclenchement de l'effet d'écran qui se brise avant la vidéo (directement à l'arrivée sur l'étape 4)
-    if (revealStep === 4 && currentCard?.rarity === 'WANTED' && wantedVideo && !videoWatched && !isCracking && currentCard?.videoTiming !== 'start') {
+    if (revealStep === 4 && hasVideo && !videoWatched && !isCracking && currentCard?.videoTiming !== 'start') {
       setIsCracking(true);
       return;
     }
 
-    // Si une vidéo WANTED doit se jouer après l'étape 4, NE PAS passer à l'étape 5 automatiquement !
-    if (revealStep === 4 && currentCard?.rarity === 'WANTED' && wantedVideo && !videoWatched) {
+    // Si une vidéo doit se jouer après l'étape 4, NE PAS passer à l'étape 5 automatiquement !
+    if (revealStep === 4 && hasVideo && !videoWatched) {
       return;
     }
 
@@ -285,22 +332,37 @@ export default function PackOpener({ cardIds, onClose }) {
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [revealStep, showSummary, isClosing, currentCard, isWalkout, finalStep, isPlayingVideo, videoWatched, wantedVideo]);
+  }, [revealStep, showSummary, isClosing, currentCard, isWalkout, finalStep, isPlayingVideo, isCracking, videoWatched, hasVideo]);
 
-  // Passage avec ESPACE (Permet le SKIP et le NEXT)
+  const handleClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true); 
+    onClose(); 
+  }, [isClosing, onClose]);
+
+  // Passage avec ESPACE / ENTRÉE (Permet le SKIP, le NEXT et la validation du récapitulatif)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.code === 'Space' && !showSummary) {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        // Bloquer impérativement la propagation par défaut pour empêcher l'activation d'un bouton de fond (ex: Boutique)
         e.preventDefault();
-        if (isCracking || isPlayingVideo) {
-          setIsCracking(false);
-          finishVideo(true);
+        e.stopPropagation();
+        if (e.repeat || isClosing) return;
+
+        // Si on est sur l'écran récapitulatif de fin de pack :
+        if (showSummary) {
+          // Cooldown de 400ms pour éviter de valider involontairement si le joueur spammait ESPACE
+          if (Date.now() >= summaryReadyTime) {
+            handleClose();
+          }
           return;
         }
-        if (revealStep < finalStep) {
-          setRevealStep(finalStep); // Skip
+
+        const isAnimationRunning = isCracking || isPlayingVideo || (hasVideo && !videoWatched) || revealStep < finalStep;
+        if (isAnimationRunning) {
+          handleSkip();
         } else {
-          setCurrentIndex(prev => prev + 1); // Next
+          setCurrentIndex(prev => prev + 1); 
           setRevealStep(0); 
           setVideoWatched(false);
           setIsPlayingVideo(false);
@@ -310,9 +372,9 @@ export default function PackOpener({ cardIds, onClose }) {
       }
     };
     
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSummary, revealStep, finalStep, isPlayingVideo, isCracking]);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [showSummary, summaryReadyTime, isClosing, isCracking, isPlayingVideo, hasVideo, videoWatched, revealStep, finalStep, handleSkip, handleClose]);
 
   if (!cardIds || cardIds.length === 0 || isClosing) return null;
 
@@ -320,7 +382,7 @@ export default function PackOpener({ cardIds, onClose }) {
   const handleNext = () => {
     if (showSummary) return;
 
-    const isAnimationRunning = isCracking || isPlayingVideo || revealStep < finalStep;
+    const isAnimationRunning = isCracking || isPlayingVideo || (hasVideo && !videoWatched) || revealStep < finalStep;
 
     // Sur ordi : le clic NE PEUT PAS skip les animations, ça doit rester ESPACE uniquement
     if (!isMobileDevice && isAnimationRunning) {
@@ -342,11 +404,6 @@ export default function PackOpener({ cardIds, onClose }) {
       setIsCracking(false);
       setHadVideoTransition(false);
     }
-  };
-
-  const handleClose = () => {
-    setIsClosing(true); 
-    onClose(); 
   };
 
   const natCode = currentCard?.nationality || "kr"; 
@@ -372,6 +429,7 @@ export default function PackOpener({ cardIds, onClose }) {
     if (currentCard?.rarity === 'Rare') glowColor = 'rgba(0, 229, 255, 0.5)';
     if (currentCard?.rarity === 'Épique') glowColor = 'rgba(255, 51, 102, 0.6)';
     if (currentCard?.rarity === 'Légendaire') glowColor = 'rgba(255, 215, 0, 0.8)';
+    if (currentCard?.rarity === 'Légende de club') glowColor = 'rgba(245, 158, 11, 0.9)';
     if (currentCard?.rarity === 'WANTED') glowColor = 'rgba(255, 255, 255, 1)';
   }
 
@@ -381,7 +439,7 @@ export default function PackOpener({ cardIds, onClose }) {
   return (
     <div
       onClick={showSummary ? undefined : handleNext}
-      className={`fixed inset-0 bg-[#050508]/98 backdrop-blur-xl z-[10000] flex flex-col items-center justify-center font-sans overflow-hidden ${(showSummary || revealStep < finalStep) ? 'cursor-default' : 'cursor-pointer'}`}
+      className={`fixed inset-0 bg-[#050508]/98 backdrop-blur-xl z-[10000] flex flex-col items-center justify-center font-sans overflow-hidden ${(showSummary || isCracking || isPlayingVideo || (hasVideo && !videoWatched) || revealStep < finalStep) ? 'cursor-default' : 'cursor-pointer'}`}
       style={{ '--theme-color': themeColor }}
     >
       <style>{`
@@ -522,8 +580,8 @@ export default function PackOpener({ cardIds, onClose }) {
           }
         }`}</style>
 
-      {/* LECTEUR VIDÉO AVANT ANIMATION WANTED (Actif dès isCracking en arrière-plan) */}
-      {(isCracking || isPlayingVideo) && wantedVideo && (
+      {/* LECTEUR VIDÉO AVANT ANIMATION (Actif dès isCracking en arrière-plan) */}
+      {(isCracking || isPlayingVideo) && cardVideo && (
         <div 
           className={`fixed inset-0 bg-black flex items-center justify-center select-none ${
             isPlayingVideo ? 'z-[9999] cursor-pointer pointer-events-auto' : 'z-[9990] pointer-events-none'
@@ -534,7 +592,7 @@ export default function PackOpener({ cardIds, onClose }) {
         >
           <video
             ref={videoRef}
-            src={wantedVideo}
+            src={cardVideo}
             playsInline
             className="w-full h-full object-contain pointer-events-none"
             onEnded={() => finishVideo(true)}
@@ -546,11 +604,11 @@ export default function PackOpener({ cardIds, onClose }) {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (isMobileDevice) finishVideo(true);
+                  finishVideo(true);
                 }}
-                className="text-white/70 font-rajdhani text-xs tracking-[2px] uppercase bg-black/70 px-4 py-2 rounded-full border border-white/15 backdrop-blur-md cursor-pointer"
+                className="text-white/70 hover:text-white font-rajdhani text-xs tracking-[2px] uppercase bg-black/70 hover:bg-black/90 px-4 py-2 rounded-full border border-white/15 hover:border-white/30 backdrop-blur-md cursor-pointer transition-all"
               >
-                {isMobileDevice ? "Passer la vidéo (Touchez) ⏭" : "Passer la vidéo (ESPACE) ⏭"}
+                {isMobileDevice ? "Passer la vidéo (Touchez) ⏭" : "Passer la vidéo (ESPACE ou Clic) ⏭"}
               </button>
             </div>
           )}
@@ -558,7 +616,7 @@ export default function PackOpener({ cardIds, onClose }) {
       )}
 
       {/* Bouton passer dédié sur mobile lors d'une animation en cours */}
-      {isMobileDevice && !showSummary && (revealStep < finalStep || isCracking || isPlayingVideo) && (
+      {isMobileDevice && !showSummary && ((hasVideo && !videoWatched) || revealStep < finalStep || isCracking || isPlayingVideo) && (
         <button
           type="button"
           onClick={(e) => {
@@ -593,6 +651,9 @@ export default function PackOpener({ cardIds, onClose }) {
           >
             AJOUTER À LA COLLECTION
           </button>
+          <div className="mt-3 text-white/40 text-xs font-rajdhani uppercase tracking-widest text-center">
+            {isMobileDevice ? "Touchez le bouton pour valider" : "Appuyez sur ESPACE ou cliquez pour valider"}
+          </div>
         </div>
       ) : isCracking ? (
         <ScreenShatterReveal
@@ -817,7 +878,7 @@ export default function PackOpener({ cardIds, onClose }) {
             {/* REVEAL FINAL POUR TOUTES LES CARTES (Étape 6 pour WANTED, Étape 5 pour les autres) */}
             {revealStep >= finalStep && currentCard && (
               <div 
-                className={`flex flex-col items-center gap-6 z-50 ${currentCard.rarity === 'WANTED' ? 'animate-[wantedCardDrop_0.6s_ease-out_forwards]' : currentCard.rarity === 'Légendaire' ? 'animate-[legendaryBoom_0.8s_ease-out_forwards]' : 'animate-[popUpStat_0.4s_ease-out_forwards]'}`}
+                className={`flex flex-col items-center gap-6 z-50 ${currentCard.rarity === 'WANTED' ? 'animate-[wantedCardDrop_0.6s_ease-out_forwards]' : (currentCard.rarity === 'Légendaire' || currentCard.rarity === 'Légende de club') ? 'animate-[legendaryBoom_0.8s_ease-out_forwards]' : 'animate-[popUpStat_0.4s_ease-out_forwards]'}`}
               >
                 <CardIllustration card={currentCard} width={280} />
                 
@@ -837,7 +898,7 @@ export default function PackOpener({ cardIds, onClose }) {
           </div>
 
           <div className="absolute bottom-10 text-white/30 text-xs sm:text-sm font-rajdhani tracking-widest uppercase z-50 text-center px-4">
-            {revealStep < finalStep 
+            {((hasVideo && !videoWatched) || revealStep < finalStep || isCracking || isPlayingVideo)
               ? (isMobileDevice 
                   ? "Touchez l'écran ou « Passer » pour passer l'animation" 
                   : "Appuyez sur ESPACE pour passer l'animation")

@@ -102,7 +102,8 @@ export const RARITY_ORDER = {
   'Épique': 3,
   'Légendaire': 4,
   'WANTED': 5,
-  'SECRET': 6,
+  'Légende de club': 6,
+  'SECRET': 7,
 };
 
 /**

@@ -16,7 +16,9 @@ function weightedRarity(weights) {
 }
 
 function drawCardOfRarity(rarity, filterFn = null) {
-  let pool = CARD_POOL.filter(c => c.rarity === rarity);
+  // Temporaire : inclure les Légendes de club dans la probabilité des Légendaires
+  const isMatchRarity = (c) => c.rarity === rarity || (rarity === 'Légendaire' && c.rarity === 'Légende de club');
+  let pool = CARD_POOL.filter(isMatchRarity);
   if (filterFn) {
     const filteredPool = pool.filter(filterFn);
     if (filteredPool.length > 0) {
@@ -24,13 +26,14 @@ function drawCardOfRarity(rarity, filterFn = null) {
     }
   }
   if (pool.length === 0) {
-    pool = CARD_POOL.filter(c => c.rarity === rarity);
+    pool = CARD_POOL.filter(isMatchRarity);
   }
   if (pool.length === 0) return null;
 
   // RATIO 1/7 : Une carte normale pèse "7", une Full Art pèse "1"
   // Les Full Arts sont donc 7 fois plus rares à tirage équivalent
-  const getCardWeight = (c) => c.isFullArt ? 1 : 7;
+  // Légende de club : ultra-rare (poids 1, équivalent Full Art pour préserver leur rareté)
+  const getCardWeight = (c) => (c.isFullArt || c.rarity === 'Légende de club') ? 1 : 7;
 
   // On calcule la taille totale de la pile virtuelle
   const totalWeight = pool.reduce((sum, c) => sum + getCardWeight(c), 0);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "savedAt": "2026-11-13T22:43:15.548Z",
+  "savedAt": "2026-11-19T23:35:08.390Z",
   "label": null,
   "gameState": {
     "phase": "cards",
@@ -70,11 +70,11 @@
   },
   "playerSessions": [
     {
-      "token": "620a4e3f-16e5-427e-86c6-ef54ccc916de",
+      "token": "78eec348-6b84-47fc-b1fe-39818a9f099e",
       "playerId": "p1"
     },
     {
-      "token": "bc4a821b-bcb0-4666-8440-603cb391255c",
+      "token": "e922c98a-5ca5-4ba3-8f0e-f7a6be4178a3",
       "playerId": "p2"
     }
   ]

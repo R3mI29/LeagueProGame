@@ -47,6 +47,14 @@ export function registerCardHandlers(io, socket, {
     if (!state.economy) state.economy = {};
     if (state.economy[id] === undefined) state.economy[id] = 0;
 
+    // Protection anti-glitch : interdire l'achat si un pack est déjà ouvert / en attente de clôture
+    if (
+      (state.pendingPackResults && state.pendingPackResults[id] && state.pendingPackResults[id].length > 0) ||
+      (state.lastOpenedPack && state.lastOpenedPack[id] && state.lastOpenedPack[id].length > 0)
+    ) {
+      return;
+    }
+
     const isStarter = !state.starterPackClaimed[id];
     const packConfig = PACK_TYPES[packTypeId] || PACK_TYPES.standard;
     const PACK_PRICE = packConfig.price;
@@ -78,6 +86,14 @@ export function registerCardHandlers(io, socket, {
     if (state.phase !== 'cards') return;
     const id = socket.id;
     if (!state.participants.some(p => p.id === id)) return;
+
+    // Protection anti-glitch : interdire l'ouverture si un pack est déjà ouvert / en attente de clôture
+    if (
+      (state.pendingPackResults && state.pendingPackResults[id] && state.pendingPackResults[id].length > 0) ||
+      (state.lastOpenedPack && state.lastOpenedPack[id] && state.lastOpenedPack[id].length > 0)
+    ) {
+      return;
+    }
 
     if (!state.bonusPacks || !state.bonusPacks[id] || !state.bonusPacks[id][packType] || state.bonusPacks[id][packType] <= 0) {
       return;
@@ -147,7 +163,7 @@ export function registerCardHandlers(io, socket, {
         if (currentContract === 'LIFETIME') {
           const yearsToAdd = typeof contractToAdd === 'number' ? contractToAdd : 5;
           if (!state.tradeUpBank) state.tradeUpBank = {};
-          if (!state.tradeUpBank[id]) state.tradeUpBank[id] = { Commune: 0, Rare: 0, 'Épique': 0, 'Légendaire': 0 };
+          if (!state.tradeUpBank[id]) state.tradeUpBank[id] = { Commune: 0, Rare: 0, 'Épique': 0, 'Légendaire': 0, 'Légende de club': 0 };
           state.tradeUpBank[id][rarity] = (state.tradeUpBank[id][rarity] || 0) + yearsToAdd;
         } else if (contractToAdd === 'LIFETIME') {
           state.cardCollections[id][cardId] = 'LIFETIME';

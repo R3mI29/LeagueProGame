@@ -4,7 +4,7 @@ import { CARD_POOL, registerCardInPool, unregisterCardFromPool } from '../consta
 import { socket } from '../api/socket';
 
 const ROLES = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
-const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED'];
+const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED', 'Légende de club'];
 const LEAGUES = ['LCK', 'LPL', 'LEC', 'LCS', 'CBLOL', 'PCS', 'VCS', 'LLA', 'LJL'];
 
 const FOLDER_PRESETS = [
@@ -52,6 +52,7 @@ export default function CardCreator({ state, onNavigateToCards } = {}) {
     video: '',
     themeColor: '#4C60D2',
     variant: '',
+    cardType: '',
   });
 
   const [isManualId, setIsManualId] = useState(false);
@@ -184,6 +185,7 @@ export default function CardCreator({ state, onNavigateToCards } = {}) {
       ...form,
       id: cleanId,
       rating: Number(form.rating),
+      cardType: form.cardType || undefined,
       video: form.video?.trim() ? form.video.trim() : undefined,
       themeColor: form.themeColor || undefined,
       variant: form.variant?.trim() || undefined,
@@ -579,6 +581,40 @@ export default function CardCreator({ state, onNavigateToCards } = {}) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* TYPE SPÉCIAL : LÉGENDE DE CLUB */}
+            <div className="mt-4 p-3.5 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-300 text-xs font-bold font-rajdhani tracking-wider uppercase">
+                    ★ TYPE : LÉGENDE DE CLUB
+                  </span>
+                  {(form.rarity === 'Légende de club' || form.cardType === 'club_legend') && (
+                    <span className="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[9px] font-black uppercase tracking-wider shadow-[0_0_8px_rgba(251,191,36,0.5)]">
+                      Actif
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const isLegend = form.rarity === 'Légende de club' || form.cardType === 'club_legend';
+                    set('rarity', isLegend ? 'Légendaire' : 'Légende de club');
+                    set('cardType', isLegend ? '' : 'club_legend');
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-rajdhani font-bold uppercase transition-all cursor-pointer ${
+                    form.rarity === 'Légende de club' || form.cardType === 'club_legend'
+                      ? 'bg-amber-400 text-black shadow-[0_0_12px_rgba(251,191,36,0.5)]'
+                      : 'bg-white/10 text-white/70 hover:text-white border border-white/15'
+                  }`}
+                >
+                  {form.rarity === 'Légende de club' || form.cardType === 'club_legend' ? 'Activé (Légende)' : 'Activer'}
+                </button>
+              </div>
+              <p className="text-[11px] text-white/70 m-0">
+                Transforme cette carte en <strong>Légende de club</strong>. Son visuel du Panthéon (socle antique, sceau du club et lauriers dorés) s'adapte automatiquement à l'équipe sélectionnée (actuellement : <strong>{form.teamTag}</strong>).
+              </p>
             </div>
 
             <div className="mt-4">

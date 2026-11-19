@@ -386,14 +386,19 @@ export default function ShopTab({
     return Object.entries(packs).filter(([, count]) => count > 0);
   }, [state.bonusPacks, myId]);
 
+  const isPackOpening = Boolean(
+    (state.lastOpenedPack?.[myId] && state.lastOpenedPack[myId].length > 0) ||
+    (state.pendingPackResults?.[myId] && state.pendingPackResults[myId].length > 0)
+  );
+
   // --- ACTIONS BOUTIQUE ---
   const handleBuyPack = (packId, price) => {
-    if (isReady || myEconomy < price) return;
+    if (isReady || isPackOpening || myEconomy < price) return;
     socket.emit('buy-pack', packId);
   };
 
   const handleOpenBonusPack = (packKey) => {
-    if (isReady) return;
+    if (isReady || isPackOpening) return;
     socket.emit('open-bonus-pack', packKey);
   };
 
@@ -570,9 +575,16 @@ export default function ShopTab({
                 </div>
               </div>
               <button
-                onClick={() => handleBuyPack('starter', 0)}
-                disabled={isReady}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-emerald-400 text-black font-rajdhani font-black text-base uppercase tracking-wider hover:bg-emerald-300 transition-all cursor-pointer shadow-lg shadow-emerald-400/20 whitespace-nowrap"
+                onClick={(e) => {
+                  e.currentTarget?.blur?.();
+                  handleBuyPack('starter', 0);
+                }}
+                disabled={isReady || isPackOpening}
+                className={`w-full sm:w-auto px-8 py-3.5 rounded-2xl font-rajdhani font-black text-base uppercase tracking-wider transition-all whitespace-nowrap ${
+                  isReady || isPackOpening
+                    ? 'bg-emerald-400/30 text-black/50 cursor-not-allowed shadow-none'
+                    : 'bg-emerald-400 text-black hover:bg-emerald-300 cursor-pointer shadow-lg shadow-emerald-400/20'
+                }`}
               >
                 Ouvrir le Starter →
               </button>
@@ -669,6 +681,7 @@ export default function ShopTab({
                                     {bonusProbs['Épique'] > 0 && <div style={{ width: `${bonusProbs['Épique']}%`, backgroundColor: RARITY_COLORS['Épique'] }} />}
                                     {bonusProbs['Légendaire'] > 0 && <div style={{ width: `${bonusProbs['Légendaire']}%`, backgroundColor: RARITY_COLORS['Légendaire'] }} />}
                                     {bonusProbs.WANTED > 0 && <div style={{ width: `${bonusProbs.WANTED}%`, backgroundColor: RARITY_COLORS.WANTED }} />}
+                                    {bonusProbs['Légende de club'] > 0 && <div style={{ width: `${bonusProbs['Légende de club']}%`, backgroundColor: RARITY_COLORS['Légende de club'] || '#F59E0B' }} />}
                                   </div>
                                 </div>
                               );
@@ -677,9 +690,16 @@ export default function ShopTab({
                         )}
 
                         <button
-                          onClick={() => handleOpenBonusPack(packKey)}
-                          disabled={isReady}
-                          className="w-full py-3 rounded-xl font-rajdhani font-black text-sm uppercase tracking-wider bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white shadow-lg shadow-purple-500/30 cursor-pointer transition-all hover:scale-[1.02]"
+                          onClick={(e) => {
+                            e.currentTarget?.blur?.();
+                            handleOpenBonusPack(packKey);
+                          }}
+                          disabled={isReady || isPackOpening}
+                          className={`w-full py-3 rounded-xl font-rajdhani font-black text-sm uppercase tracking-wider transition-all ${
+                            isReady || isPackOpening
+                              ? 'bg-purple-900/30 text-white/40 cursor-not-allowed shadow-none'
+                              : 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-white shadow-lg shadow-purple-500/30 cursor-pointer hover:scale-[1.02]'
+                          }`}
                         >
                           Ouvrir le Booster →
                         </button>
@@ -692,7 +712,7 @@ export default function ShopTab({
           )}
 
           {/* Grille des 4 Boosters Disponibles */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {boosters.map(pack => {
               const canAfford = myEconomy >= pack.price;
               const probs = calculatePackProbabilities(pack.weights);
@@ -772,6 +792,9 @@ export default function ShopTab({
                           {probs.WANTED > 0 && (
                             <div style={{ width: `${probs.WANTED}%`, backgroundColor: RARITY_COLORS.WANTED }} />
                           )}
+                          {probs['Légende de club'] > 0 && (
+                            <div style={{ width: `${probs['Légende de club']}%`, backgroundColor: RARITY_COLORS['Légende de club'] || '#F59E0B' }} />
+                          )}
                         </div>
                       </div>
                     )}
@@ -783,11 +806,14 @@ export default function ShopTab({
                       </span>
 
                       <button
-                        onClick={() => handleBuyPack(pack.id, pack.price)}
-                        disabled={!canAfford || isReady}
-                        className={`px-6 py-3 rounded-xl font-rajdhani font-black text-sm uppercase tracking-wider transition-all cursor-pointer ${
-                          canAfford && !isReady
-                            ? 'bg-white text-black hover:bg-emerald-400 hover:shadow-lg'
+                        onClick={(e) => {
+                          e.currentTarget?.blur?.();
+                          handleBuyPack(pack.id, pack.price);
+                        }}
+                        disabled={!canAfford || isReady || isPackOpening}
+                        className={`px-6 py-3 rounded-xl font-rajdhani font-black text-sm uppercase tracking-wider transition-all ${
+                          canAfford && !isReady && !isPackOpening
+                            ? 'bg-white text-black hover:bg-emerald-400 hover:shadow-lg cursor-pointer'
                             : 'bg-white/5 text-text-faint/30 cursor-not-allowed border border-white/5'
                         }`}
                       >

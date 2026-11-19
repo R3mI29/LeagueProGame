@@ -9,6 +9,7 @@ export const RARITY_STAR_ICONS = {
   'Épique': '/assets/rarity/epique.png',
   'Légendaire': '/assets/rarity/legendaire.png',
   'WANTED': '/assets/rarity/WANTED.png',
+  'Légende de club': '/assets/rarity/legendaire.png',
 };
 
 export const DUPLICATE_SALVAGE = {
@@ -17,6 +18,7 @@ export const DUPLICATE_SALVAGE = {
   'Épique': 75,
   'Légendaire': 200,
   'WANTED': 500,
+  'Légende de club': 650,
   'SECRET': 800,
 };
 

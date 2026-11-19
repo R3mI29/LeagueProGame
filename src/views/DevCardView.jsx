@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { socket } from '../api/socket';
 import { CARD_POOL, RARITY_ORDER, registerCardInPool, unregisterCardFromPool, getCardTeamTags, getCardTeamDisplay } from '../constants/cardPlayers';
+import { isClubLegendCard } from '../constants/clubLegends';
 import { ORDERED_ROLES } from '../constants/roles';
 import { EVENTS } from '../constants/seasonConfig';
 import CardIllustration from '../components/CardIllustration';
@@ -46,6 +47,10 @@ export default function DevCardsView({ onClose, state }) {
     return list.length;
   }, [state?.createdCardsThisGame, poolVersion]);
 
+  const legendCardsCount = useMemo(() => {
+    return CARD_POOL.filter(isClubLegendCard).length;
+  }, [poolVersion]);
+
   const rarityCounts = useMemo(() => {
     const counts = {
       Total: CARD_POOL.length,
@@ -62,7 +67,7 @@ export default function DevCardsView({ onClose, state }) {
       }
     });
     return counts;
-  }, [poolVersion, CARD_POOL.length]);
+  }, [poolVersion]);
 
   const displayedCards = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -74,6 +79,8 @@ export default function DevCardsView({ onClose, state }) {
             ? true
             : filterRole === 'Custom'
             ? isThisGameCard
+            : filterRole === 'Legend'
+            ? isClubLegendCard(c)
             : c.role === filterRole;
         if (!matchRole) return false;
 
@@ -292,6 +299,13 @@ export default function DevCardsView({ onClose, state }) {
                     CRÉÉES ({customCardsCount})
                   </button>
 
+                  <button 
+                    className={`font-rajdhani font-bold tracking-widest uppercase py-2 px-4 rounded text-[13px] transition-all border-2 ${filterRole === 'Legend' ? 'bg-amber-400 text-black border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]' : 'bg-amber-500/10 text-amber-300 border-amber-500/30 hover:border-amber-400'}`}
+                    onClick={() => setFilterRole('Legend')}
+                  >
+                    ★ LÉGENDES ({legendCardsCount})
+                  </button>
+
                   {ORDERED_ROLES.map(role => (
                     <button 
                       key={role} 
@@ -357,6 +371,11 @@ export default function DevCardsView({ onClose, state }) {
                     <div className="mt-3.5 text-center">
                       <span className="font-rajdhani text-accent-cyan text-[14px] block font-bold uppercase tracking-wide">{card.id}</span>
                       <span className="text-text-muted text-[11px] block mt-1 uppercase tracking-wider">{card.rarity}</span>
+                      {isClubLegendCard(card) && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold uppercase tracking-wider mt-1.5 inline-block">
+                          ★ LÉGENDE {card.teamTag}
+                        </span>
+                      )}
                       <span className="text-[10px] text-accent-pink block mt-2 tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">CLIQUEZ POUR OBTENIR</span>
                     </div>
                   </div>

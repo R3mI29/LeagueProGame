@@ -260,7 +260,13 @@ export default function App() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
       
-      {myLastOpened.length > 0 && <PackOpener cardIds={myLastOpened} onClose={() => socket.emit('close-pack')} />}
+      {myLastOpened.length > 0 && (
+        <PackOpener 
+          key={myLastOpened.map(c => c?.id || c).join('-')} 
+          cardIds={myLastOpened} 
+          onClose={() => socket.emit('close-pack')} 
+        />
+      )}
 
       {renderMainContent()}
 

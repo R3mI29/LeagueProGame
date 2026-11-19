@@ -146,6 +146,42 @@ test('cardHandlers buy-pack handles elite pack and economy deduction', () => {
   assert.equal(state.economy['p1'], 500 - 220);
   assert.equal(state.pendingPackResults['p1'].length, 5);
 });
+
+test('cardHandlers buy-pack prevents multiple purchases while a pack is pending', () => {
+  resetGameState();
+  const io = createMockIo();
+  const socket = createMockSocket('p1');
+
+  registerSocketHandlers(io, socket);
+
+  state.phase = 'cards';
+  state.participants = [{ id: 'p1', name: 'Team1', isBot: false }];
+  state.starterPackClaimed['p1'] = true;
+  state.economy['p1'] = 500;
+
+  // Premier achat
+  socket.handlers['buy-pack']('elite');
+  assert.equal(state.economy['p1'], 280);
+  assert.equal(state.pendingPackResults['p1'].length, 5);
+  const firstPackIds = state.pendingPackResults['p1'].map(c => c.id);
+
+  // Deuxième tentative d'achat alors que le premier pack n'a pas été fermé (glitch / spam espace)
+  socket.handlers['buy-pack']('elite');
+  // L'argent ne doit PAS être débité une seconde fois
+  assert.equal(state.economy['p1'], 280);
+  // Les cartes du premier pack ne doivent PAS être écrasées
+  assert.deepEqual(state.pendingPackResults['p1'].map(c => c.id), firstPackIds);
+
+  // Fermeture du pack par le joueur
+  socket.handlers['close-pack']();
+  assert.equal(state.pendingPackResults['p1'], undefined);
+  assert.equal(state.lastOpenedPack['p1'].length, 0);
+
+  // Nouvel achat désormais autorisé
+  socket.handlers['buy-pack']('elite');
+  assert.equal(state.economy['p1'], 60);
+  assert.equal(state.pendingPackResults['p1'].length, 5);
+});
 test('devHandlers dev-give-pack deposits pack into bonusPacks without opening', () => {
   resetGameState();
   const io = createMockIo();

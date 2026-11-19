@@ -1,7 +1,7 @@
 // Pool de cartes du mode "Draft aux packs" — calibré sur l'historique compétitif réel.
 // Échelle impitoyable : 90+ réservé aux performances historiques majeures.
 
-export const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED'];
+export const RARITIES = ['Commune', 'Rare', 'Épique', 'Légendaire', 'WANTED', 'Légende de club'];
 
 export const RARITY_ORDER = {
   'Commune': 1,
@@ -9,7 +9,8 @@ export const RARITY_ORDER = {
   'Épique': 3,
   'Légendaire': 4,
   'WANTED': 5,
-  'SECRET': 6,
+  'Légende de club': 6,
+  'SECRET': 7,
 };
 
 // Probabilités de tirage par emplacement de carte dans un pack (en %).
@@ -19,6 +20,7 @@ export const RARITY_WEIGHTS = {
   'Épique': 40,
   'Légendaire': 10,
   WANTED: 3,
+  'Légende de club': 1,
 };
 
 export const RARITY_COLORS = {
@@ -27,7 +29,10 @@ export const RARITY_COLORS = {
   'Épique': '#ff3366',
   'Légendaire': '#ffd700',
   WANTED: '#ffffff',
+  'Légende de club': '#F59E0B',
 };
+
+export { isClubLegendCard, getClubLegendTheme, CLUB_LEGEND_THEMES } from './clubLegends.js';
 
 export const CARD_POOL = [
 
@@ -194,7 +199,7 @@ export const CARD_POOL = [
     "variant": "T1 Legend",
     "role": "ADC",
     "rating": 92,
-    "rarity": "Légendaire",
+    "rarity": "Légende de club",
     "image": "/cardsImg/others/T1_gumayusi.jpg",
     "nationality": "KR",
     "teamTag": "T1",
@@ -676,7 +681,7 @@ export const CARD_POOL = [
     "variant": "DWG Legend",
     "role": "Jungle",
     "rating": 93,
-    "rarity": "Légendaire",
+    "rarity": "Légende de club",
     "image": "/cardsImg/others/DWG_canyon.jpeg",
     "nationality": "KR",
     "teamTag": "DWG",
@@ -1075,7 +1080,6 @@ export const CARD_POOL = [
     "nationality": "KR",
     "teamTag": "ROX",
     "league": "LCK",
-    "video": "/videos/smeb_lck_legend.mp4",
     "themeColor": "#fffafa"
   },
 
@@ -2060,14 +2064,14 @@ export const CARD_POOL = [
   {
     "id": "viper-lpl-champion",
     "baseName": "Viper",
-    "variant": "First Stand Champion",
+    "variant": "2x First Stand Champion",
     "role": "ADC",
-    "rating": 85,
+    "rating": 87,
     "rarity": "Épique",
     "image": "/cardsImg/others/viper_2026.jpg",
     "nationality": "KR",
     "teamTag": "BLG",
-    "league": "LCK"
+    "league": "LPL"
   },/*
   {
     "id": "viper-lpl-MVP",
@@ -2387,13 +2391,13 @@ export const CARD_POOL = [
   {
     "id": "edg-viper-world-champion",
     "baseName": "Viper",
-    "variant": "World Champion",
+    "variant": "2x World Champion",
     "role": "ADC",
-    "rating": 92,
+    "rating": 94,
     "rarity": "Légendaire",
     "image": "/cardsImg/external/edg_viper.jpg",
     "nationality": "KR",
-    "teamTag": "EDG",
+    "teamTag": ["EDG","BLG"],
     "league": "LPL"
   },
   // Meiko
@@ -2415,7 +2419,7 @@ export const CARD_POOL = [
     "variant": "EDG Legend",
     "role": "Support",
     "rating": 92,
-    "rarity": "Légendaire",
+    "rarity": "Légende de club",
     "image": "/cardsImg/others/legend_MEIKO.jpg",
     "nationality": "CN",
     "teamTag": "EDG",
@@ -2526,9 +2530,11 @@ export const CARD_POOL = [
     "rating": 93,
     "rarity": "WANTED",
     "image": "/cardsImg/external/fpx_tian.jpg",
+    "video": "/videos/FPX_Tian_edit.mp4",
     "nationality": "CN",
     "teamTag": "FPX",
     "league": "LPL"
+    
   },
   // Doinb
   {
